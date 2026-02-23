@@ -16,6 +16,7 @@ const initialState = {
   errorMessage: "",
   categoryLoading: false,
   categoryData: [],
+  priceData: {},
 };
 
 // ---------------------------------------------------------------------------------------
@@ -35,6 +36,7 @@ const categorySlice = createSlice({
         state.errorMessage = "";
         state.categoryLoading = false;
         state.categoryData = action.payload.data;
+        state.priceData = action.payload.price_range;
       })
       .addCase(getAllCategoriesWithSubCategories.rejected, (state, action) => {
         state.errorMessage = action.payload || "Failed";

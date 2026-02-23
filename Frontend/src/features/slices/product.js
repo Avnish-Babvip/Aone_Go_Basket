@@ -1,6 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { toast } from "sonner";
-import { getAllProducts } from "../actions/product";
+import { getAllProducts, getRelatedProducts } from "../actions/product";
 
 const formattedDate = new Date().toLocaleString("en-US", {
   weekday: "long",
@@ -16,6 +16,7 @@ const initialState = {
   errorMessage: "",
   productLoading: false,
   productData: [],
+  relatedProductData: [],
 };
 
 // ---------------------------------------------------------------------------------------
@@ -36,6 +37,22 @@ const productSlice = createSlice({
         state.productData = action.payload.data;
       })
       .addCase(getAllProducts.rejected, (state, action) => {
+        state.errorMessage = action.payload || "Failed";
+        state.productLoading = false;
+        toast(action.payload, {
+          description: formattedDate,
+        });
+      })
+      .addCase(getRelatedProducts.pending, (state) => {
+        state.errorMessage = "";
+        state.productLoading = true;
+      })
+      .addCase(getRelatedProducts.fulfilled, (state, action) => {
+        state.errorMessage = "";
+        state.productLoading = false;
+        state.relatedProductData = action.payload.data;
+      })
+      .addCase(getRelatedProducts.rejected, (state, action) => {
         state.errorMessage = action.payload || "Failed";
         state.productLoading = false;
         toast(action.payload, {

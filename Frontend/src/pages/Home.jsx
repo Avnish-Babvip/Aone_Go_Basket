@@ -19,17 +19,19 @@ function Home() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen  bg-white">
       {/* The HeroBanner starts here */}
       <HeroBanner />
       <CategoryCards categoryData={categories} />
       <HomeProduct
         products={latestProducts}
+        viewMore={"products?sort=new"}
         heading={"Newly Added Products"}
         subheading={"Discover the latest items freshly stocked for you"}
       />
       <HomeProduct
         products={featuredProducts}
+        viewMore={"products?sort=featured"}
         heading={"Featured Products"}
         subheading={"Popular choices customers love the most"}
       />

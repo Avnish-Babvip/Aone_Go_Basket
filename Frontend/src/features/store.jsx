@@ -7,6 +7,10 @@ import authentication from "./slices/authentication";
 import category from "./slices/category";
 import home from "./slices/home";
 import product from "./slices/product";
+import cart from "./slices/cart";
+import customer from "./slices/customer";
+import location from "./slices/location";
+import order from "./slices/order";
 
 // ---------------------------------------------------------
 
@@ -31,6 +35,10 @@ const reducer = combineReducers({
   category,
   home,
   product,
+  cart,
+  customer,
+  location,
+  order,
 });
 
 const rootReducer = (state, action) => {

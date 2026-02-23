@@ -1,11 +1,21 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import QuickViewModal from "../Product/QuickView";
+import { useDispatch, useSelector } from "react-redux";
+import { FiChevronDown, FiChevronUp, FiTrash } from "react-icons/fi";
+import { addToCart, deleteCart, updateCart } from "../../features/actions/cart";
+import { useNavigate } from "react-router-dom";
 
-const HomeProduct = ({ products, isLoading, heading, subheading }) => {
+const HomeProduct = ({
+  products,
+  isLoading,
+  viewMore,
+  heading,
+  subheading,
+}) => {
   const [selectedProduct, setSelectedProduct] = useState(null);
-
+  const navigate = useNavigate();
   return (
-    <div className="bg-white relative">
+    <div className="bg-white max-w-7xl mx-auto relative">
       <div className="rounded-sm p-4 md:p-10 ">
         <div className="text-center mb-10">
           <h1 className="font-bold text-2xl md:text-3xl text-[#003d29]">
@@ -14,7 +24,7 @@ const HomeProduct = ({ products, isLoading, heading, subheading }) => {
           <p className="font-medium text-gray-500 mt-2">{subheading}</p>
         </div>
 
-        <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4">
+        <div className=" grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4  gap-4">
           {products.map((product) => (
             <ProductCard
               key={product.id}
@@ -24,7 +34,10 @@ const HomeProduct = ({ products, isLoading, heading, subheading }) => {
           ))}
         </div>
         <div className="w-full flex justify-center mt-10">
-          <button className=" font-bold px-10 py-2 text-sm md:text-base  text-white rounded-md hover:bg-lime-500 hover:text-white transition-all duration-300 cursor-pointer uppercase tracking-wide bg-brand-green">
+          <button
+            onClick={() => navigate(viewMore)}
+            className=" font-bold px-10 py-2 text-sm md:text-base  text-white rounded-md hover:bg-lime-500 hover:text-white transition-all duration-300 cursor-pointer uppercase tracking-wide bg-brand-green"
+          >
             View All
           </button>
         </div>
@@ -35,6 +48,7 @@ const HomeProduct = ({ products, isLoading, heading, subheading }) => {
         <QuickViewModal
           product={selectedProduct}
           onClose={() => setSelectedProduct(null)}
+          onSwitchProduct={setSelectedProduct}
         />
       )}
     </div>
@@ -42,6 +56,9 @@ const HomeProduct = ({ products, isLoading, heading, subheading }) => {
 };
 
 const ProductCard = ({ product, onQuickView }) => {
+  const dispatch = useDispatch();
+  const { cartData } = useSelector((state) => state.cart);
+  const items = cartData?.items || [];
   const getStockColor = (message) => {
     if (!message) return "text-gray-500";
 
@@ -51,7 +68,6 @@ const ProductCard = ({ product, onQuickView }) => {
 
     return "text-gray-500";
   };
-  const [quantity, setQuantity] = useState(0);
 
   const getDefaultVariation = () => {
     if (!product.variations?.length) return null;
@@ -66,10 +82,24 @@ const ProductCard = ({ product, onQuickView }) => {
   const [selectedVariation, setSelectedVariation] =
     useState(getDefaultVariation);
 
+  const variationId =
+    product.type === "variable" ? selectedVariation?.id : null;
+
+  const cartItem =
+    Array.isArray(items) &&
+    items.find(
+      (i) =>
+        i.product_id === product.id && i.product_variation_id === variationId,
+    );
+
+  const quantity = cartItem?.quantity || 0;
+
   const stockMessage =
     product.type === "variable"
       ? selectedVariation?.stock_message
       : product.stock_message;
+
+  const isOutOfStock = stockMessage?.toLowerCase().includes("out");
 
   const primaryImage =
     product.images?.find((img) => img.is_primary) || product.images?.[0];
@@ -86,12 +116,9 @@ const ProductCard = ({ product, onQuickView }) => {
 
   const showSale = product.is_on_sale && salePrice;
 
-  const isOutOfStock = stockMessage?.toLowerCase().includes("out");
-
-  useEffect(() => {
-    if (isOutOfStock) setQuantity(0);
-  }, [selectedVariation]);
-
+  // useEffect(() => {
+  //   if (isOutOfStock) setQuantity(0);
+  // }, [selectedVariation]);
   return (
     <div className="relative group border border-gray-100 rounded-md p-4 bg-white hover:shadow-md transition-shadow flex flex-col h-full">
       {showSale && (
@@ -197,7 +224,16 @@ const ProductCard = ({ product, onQuickView }) => {
         {quantity === 0 ? (
           <button
             disabled={isOutOfStock}
-            onClick={() => !isOutOfStock && setQuantity(1)}
+            onClick={() =>
+              !isOutOfStock &&
+              dispatch(
+                addToCart({
+                  product_id: product.id,
+                  product_variation_id: variationId || null,
+                  quantity: 1,
+                }),
+              )
+            }
             className={`w-9 h-9 text-3xl rounded-full
     ${
       isOutOfStock
@@ -209,19 +245,42 @@ const ProductCard = ({ product, onQuickView }) => {
             +
           </button>
         ) : (
-          <div className="flex items-center border border-gray-100 rounded-full px-1 py-[3px]">
+          <div className="flex items-center  rounded-lg px-1 py-[3px]">
+            {quantity > 1 ? (
+              <button
+                onClick={() =>
+                  dispatch(
+                    updateCart({
+                      id: cartItem.id,
+                      payload: { quantity: cartItem.quantity - 1 },
+                    }),
+                  )
+                }
+                className="p-2 bg-white hover:bg-red-50 text-red-500 rounded-lg shadow-sm"
+              >
+                <FiChevronDown />
+              </button>
+            ) : (
+              <button
+                onClick={() => dispatch(deleteCart(cartItem.id))}
+                className="p-2 bg-white hover:bg-red-50 text-red-500 rounded-lg shadow-sm"
+              >
+                <FiTrash />
+              </button>
+            )}
+            <span className="px-4 font-bold">{quantity}</span>
             <button
-              onClick={() => setQuantity(quantity - 1)}
-              className="px-2 text-gray-400 text-xl"
+              onClick={() =>
+                dispatch(
+                  updateCart({
+                    id: cartItem.id,
+                    payload: { quantity: cartItem.quantity + 1 },
+                  }),
+                )
+              }
+              className="p-2 bg-white hover:bg-emerald-50 text-brand-green rounded-lg shadow-sm"
             >
-              -
-            </button>
-            <span className="px-1 font-bold">{quantity}</span>
-            <button
-              onClick={() => setQuantity(quantity + 1)}
-              className="px-2 text-gray-400 text-xl"
-            >
-              +
+              <FiChevronUp />
             </button>
           </div>
         )}

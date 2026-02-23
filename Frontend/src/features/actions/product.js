@@ -3,7 +3,10 @@ import { instance } from "../../services/axiosInterceptor";
 
 export const getAllProducts = createAsyncThunk(
   "/api/customer/products",
-  async ({ search, page, per_page, sort }, { rejectWithValue }) => {
+  async (
+    { search, page, per_page, sort, min_price, max_price, category_slug },
+    { rejectWithValue },
+  ) => {
     try {
       const params = new URLSearchParams();
 
@@ -12,8 +15,25 @@ export const getAllProducts = createAsyncThunk(
 
       if (search) params.append("search", search);
       if (sort) params.append("sort", sort);
+      if (max_price) params.append("max_price", max_price);
+      if (min_price) params.append("min_price", min_price);
+      if (category_slug) params.append("category_slug", category_slug);
 
       const link = `/customer/products?${params.toString()}`;
+
+      const { data } = await instance.get(link);
+      return data;
+    } catch (error) {
+      return rejectWithValue(error.response.data.message || "Failed");
+    }
+  },
+);
+
+export const getRelatedProducts = createAsyncThunk(
+  "api/customer/products-related/slug/aashirvaad-wheat-atta",
+  async (slug, { rejectWithValue }) => {
+    try {
+      const link = `/customer/products-related/slug/${slug}`;
 
       const { data } = await instance.get(link);
       return data;

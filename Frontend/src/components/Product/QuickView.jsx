@@ -1,8 +1,27 @@
 import { useEffect, useState } from "react";
-import { FiShoppingCart, FiX } from "react-icons/fi";
+import {
+  FiChevronDown,
+  FiChevronUp,
+  FiShoppingCart,
+  FiTrash,
+  FiX,
+} from "react-icons/fi";
+import { useDispatch, useSelector } from "react-redux";
+import { getRelatedProducts } from "../../features/actions/product";
+import { addToCart, deleteCart, updateCart } from "../../features/actions/cart";
 
-function QuickViewModal({ product, onClose, allProducts, onSwitchProduct }) {
+function QuickViewModal({ product, onClose, onSwitchProduct }) {
+  const { relatedProductData } = useSelector((state) => state.product);
+  const dispatch = useDispatch();
   const [activeImg, setActiveImg] = useState(0);
+  const [selectedVariation, setSelectedVariation] = useState(
+    product?.variations?.[0] || null,
+  );
+  const stockMessage =
+    product.type === "variable"
+      ? selectedVariation?.stock_message
+      : product.stock_message;
+
   const getStockColor = (message) => {
     if (!message) return "text-gray-500";
 
@@ -12,17 +31,6 @@ function QuickViewModal({ product, onClose, allProducts, onSwitchProduct }) {
 
     return "text-gray-500";
   };
-
-  const [selectedVariation, setSelectedVariation] = useState(
-    product?.variations?.[0] || null,
-  );
-
-  useEffect(() => {
-    document.body.style.overflow = "hidden";
-    return () => (document.body.style.overflow = "unset");
-  }, []);
-
-  if (!product) return null;
 
   /* ---------------- IMAGE LOGIC ---------------- */
   const images = product.images?.length ? product.images : [];
@@ -41,15 +49,55 @@ function QuickViewModal({ product, onClose, allProducts, onSwitchProduct }) {
       : product.regular_price;
 
   const showSale = product.is_on_sale && salePrice;
+  const isOutOfStock = stockMessage?.toLowerCase().includes("out");
 
-  /* ---------------- RELATED ---------------- */
-  const related = allProducts
-    ?.filter(
-      (p) =>
-        p.categories_data?.[0]?.id === product.categories_data?.[0]?.id &&
-        p.id !== product.id,
-    )
-    .slice(0, 3);
+  const { cartData } = useSelector((state) => state.cart);
+  const items = cartData?.items || [];
+
+  const variationId =
+    product.type === "variable" ? selectedVariation?.id : null;
+
+  const cartItem =
+    Array.isArray(items) &&
+    items.find(
+      (i) =>
+        i.product_id === product.id && i.product_variation_id === variationId,
+    );
+
+  const quantity = cartItem?.quantity || 0;
+
+  // useEffect(() => {
+  //   if (isOutOfStock) setQuantity(0);
+  // }, [selectedVariation]);
+
+  useEffect(() => {
+    if (!product) return;
+
+    setActiveImg(0);
+
+    // pick first in stock variation or first one
+    if (product.type === "variable") {
+      const inStock =
+        product.variations?.find((v) => v.stock > 0) || product.variations?.[0];
+      setSelectedVariation(inStock);
+    } else {
+      setSelectedVariation(null);
+    }
+
+    // 🔥 reload related products for new item
+    dispatch(getRelatedProducts(product.slug));
+
+    // scroll to top
+    const el = document.querySelector(".quickview-scroll");
+    el?.scrollTo({ top: 0, behavior: "smooth" });
+  }, [product]);
+
+  useEffect(() => {
+    document.body.style.overflow = "hidden";
+    return () => (document.body.style.overflow = "unset");
+  }, []);
+
+  if (!product) return null;
 
   return (
     <div className="fixed inset-0 z-[2000] flex items-center justify-center p-4 bg-black/70 backdrop-blur-md overflow-y-auto">
@@ -161,9 +209,9 @@ function QuickViewModal({ product, onClose, allProducts, onSwitchProduct }) {
 
             {/* STOCK */}
             <p
-              className={`text-sm my-2 font-semibold ${getStockColor(product.stock_message)}`}
+              className={`text-sm my-2 font-semibold ${getStockColor(stockMessage)}`}
             >
-              {product.stock_message}
+              {stockMessage}
             </p>
 
             <p className="text-gray-600 text-sm mb-8 leading-relaxed">
@@ -172,21 +220,84 @@ function QuickViewModal({ product, onClose, allProducts, onSwitchProduct }) {
             </p>
 
             {/* ADD TO CART */}
-            <button className="w-full bg-gray-900 hover:bg-brand-green text-white py-5 rounded-2xl font-bold text-lg transition-all flex items-center justify-center gap-3 shadow-xl active:scale-95">
-              <FiShoppingCart /> Add To Cart
-            </button>
+            <div className="mt-4">
+              {quantity === 0 ? (
+                <button
+                  disabled={isOutOfStock}
+                  onClick={() =>
+                    !isOutOfStock &&
+                    dispatch(
+                      addToCart({
+                        product_id: product.id,
+                        product_variation_id: variationId || null,
+                        quantity: 1,
+                      }),
+                    )
+                  }
+                  className={`w-full py-4 rounded-2xl font-bold transition flex items-center justify-center gap-2
+        ${
+          isOutOfStock
+            ? "bg-gray-300 text-gray-500 cursor-not-allowed"
+            : "bg-gray-900 hover:bg-brand-green text-white"
+        }`}
+                >
+                  <FiShoppingCart /> Add To Cart
+                </button>
+              ) : (
+                <div className="flex items-center justify-between bg-gray-100 rounded-2xl p-2 ring-2 ring-brand-green/20">
+                  {quantity > 1 ? (
+                    <button
+                      onClick={() =>
+                        dispatch(
+                          updateCart({
+                            id: cartItem.id,
+                            payload: { quantity: cartItem.quantity - 1 },
+                          }),
+                        )
+                      }
+                      className="p-3 bg-white hover:bg-red-50 text-red-500 rounded-xl shadow"
+                    >
+                      <FiChevronDown />
+                    </button>
+                  ) : (
+                    <button
+                      onClick={() => dispatch(deleteCart(cartItem.id))}
+                      className="p-3 bg-white hover:bg-red-50 text-red-500 rounded-xl shadow"
+                    >
+                      <FiTrash />
+                    </button>
+                  )}
+
+                  <span className="font-black text-lg">{quantity}</span>
+
+                  <button
+                    onClick={() =>
+                      dispatch(
+                        updateCart({
+                          id: cartItem.id,
+                          payload: { quantity: cartItem.quantity + 1 },
+                        }),
+                      )
+                    }
+                    className="p-3 bg-white hover:bg-emerald-50 text-brand-green rounded-xl shadow"
+                  >
+                    <FiChevronUp />
+                  </button>
+                </div>
+              )}
+            </div>
           </div>
         </div>
 
         {/* ================= RELATED PRODUCTS ================= */}
-        {related?.length > 0 && (
+        {relatedProductData?.length > 0 && (
           <div className="bg-gray-50/80 p-8 border-t border-gray-100">
             <h3 className="text-[11px] font-black text-gray-400 uppercase tracking-[0.2em] mb-6">
               Related Products
             </h3>
 
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-              {related.map((item) => {
+              {relatedProductData.map((item) => {
                 const img =
                   item.images?.find((i) => i.is_primary) || item.images?.[0];
 

@@ -80,7 +80,7 @@ const LoginOTP = ({ isOpen, onClose, onSwitch }) => {
               {/* Logo */}
               <div className="mb-8 md:mb-5 text-center md:text-left">
                 <img
-                  src="src/assets/images/logo.png"
+                  src="/images/logo.png"
                   alt="Logo"
                   className="h-24 md:h-32 w-auto inline-block md:block"
                 />

@@ -15,7 +15,7 @@ function Footer() {
           <div className="lg:col-span-1 min-w-[200px]">
             <NavLink to="/" className="flex items-center mb-6">
               <img
-                src="src/assets/images/logo.png"
+                src="/images/logo.png"
                 alt="Logo"
                 className="h-20 w-30 object-contain"
               />
@@ -36,36 +36,37 @@ function Footer() {
             <h3 className="text-black font-bold text-base mb-6">About Us</h3>
             <ul className="space-y-4 text-gray-500 text-[14px]">
               <li>
-                <a
-                  href="#"
+                <Link
+                  to="/about-us"
                   className="hover:text-brand-green transition-colors"
                 >
                   About us
-                </a>
+                </Link>
               </li>
               <li>
-                <a
-                  href="#"
+                <Link
+                  to="/contact-us"
                   className="hover:text-brand-green transition-colors"
                 >
                   Contact us
-                </a>
+                </Link>
               </li>
+
               <li>
-                <a
-                  href="#"
-                  className="hover:text-brand-green transition-colors"
-                >
-                  Orders
-                </a>
-              </li>
-              <li>
-                <a
-                  href="#"
+                <Link
+                  to="/faq"
                   className="hover:text-brand-green transition-colors"
                 >
                   FAQ's
-                </a>
+                </Link>
+              </li>
+              <li>
+                <Link
+                  to="#"
+                  className="hover:text-brand-green transition-colors"
+                >
+                  Orders
+                </Link>
               </li>
             </ul>
           </div>
@@ -78,7 +79,7 @@ function Footer() {
                 categoryData.map((cat, idx) => (
                   <li>
                     <Link
-                      to={`/category/${cat?.slug}`}
+                      to={`/category?category_slug=${cat?.slug}`}
                       className="hover:text-brand-green transition-colors"
                     >
                       {cat?.name}
@@ -94,28 +95,12 @@ function Footer() {
             </h3>
             <ul className="space-y-4 text-gray-500 text-[14px]">
               <li>
-                <a
-                  href="#"
+                <Link
+                  to="/privacy-policy"
                   className="hover:text-brand-green transition-colors"
                 >
                   Privacy policy
-                </a>
-              </li>
-              <li>
-                <a
-                  href="#"
-                  className="hover:text-brand-green transition-colors"
-                >
-                  Terms & conditions
-                </a>
-              </li>
-              <li>
-                <a
-                  href="#"
-                  className="hover:text-brand-green transition-colors"
-                >
-                  Return Policy
-                </a>
+                </Link>
               </li>
             </ul>
           </div>
@@ -150,13 +135,9 @@ function Footer() {
           </p>
 
           <div className="flex flex-wrap items-center justify-center gap-5 ">
+            <img src="/images/visa.png" alt="Visa" className="h-3 md:h-4" />
             <img
-              src="src/assets/images/visa.png"
-              alt="Visa"
-              className="h-3 md:h-4"
-            />
-            <img
-              src="src/assets/images/mastercard.png"
+              src="/images/mastercard.png"
               alt="Mastercard"
               className="h-5 md:h-10"
             />

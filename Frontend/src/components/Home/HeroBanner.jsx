@@ -1,7 +1,6 @@
 import React from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
-import { Navigation, Pagination, Autoplay } from "swiper/modules";
-import { FiSearch } from "react-icons/fi";
+import { Pagination, Autoplay } from "swiper/modules";
 
 // Import Swiper styles
 import "swiper/css";
@@ -14,20 +13,20 @@ const sliderData = [
     title: "Healthy vegetable that you deserve to eat fresh",
     subtitle:
       "We source and sell the very best beef, lamb and pork, sourced with the greatest care from farmers.",
-    bgImage: "../images/Banner-bg-1.jpg",
+    bgImage: "/images/Banner-bg-1.jpg",
   },
   {
     id: 2,
     title: "Organic Fruits delivered to your doorstep",
     subtitle:
       "Freshness guaranteed from our local farms to your dining table every single day.",
-    bgImage: "../images/Banner-bg-2.jpg",
+    bgImage: "/images/Banner-bg-2.jpg",
   },
 ];
 
 function HeroBanner() {
   return (
-    <div className="relative w-full h-[300px] md:h-[300px] lg:h-[500px] mt-20">
+    <div className="relative w-full h-[300px] md:h-[300px] lg:h-[500px] mt-20 ">
       <Swiper
         modules={[Pagination, Autoplay]}
         pagination={{ clickable: true }}

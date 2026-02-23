@@ -1,10 +1,8 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 
 const CategoryCard = ({ categoryData }) => {
-  // const { categoryData, categoryLoading } = useSelector(
-  //   (state) => state.category,
-  // );
-
+  const navigate = useNavigate();
   // if (categoryLoading) {
   //   return (
   //     <div className="flex justify-center items-center py-20">
@@ -14,7 +12,7 @@ const CategoryCard = ({ categoryData }) => {
   // }
 
   return (
-    <section className="container-fluid items-center bg-white p-4 mt-2">
+    <section className="max-w-7xl mx-auto items-center bg-white mt-10">
       <div className="mb-12 text-center">
         <h2 className="font-bold text-3xl md:text-4xl text-[#003d29]">
           What food you love to order
@@ -24,7 +22,7 @@ const CategoryCard = ({ categoryData }) => {
         </p>
       </div>
 
-      <div className="container mx-auto grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-y-10 gap-x-4 mb-14 justify-items-center">
+      <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-y-10 gap-x-4 mb-14 justify-items-center">
         {Array.isArray(categoryData) && categoryData.length > 0 ? (
           categoryData.map((cat) => {
             const fullImagePath = `${import.meta.env.VITE_REACT_APP_IMAGE_URL}/${cat.image}`;
@@ -64,7 +62,10 @@ const CategoryCard = ({ categoryData }) => {
       </div>
 
       <div className="w-full flex justify-center mb-3">
-        <button className=" font-bold px-10 py-2 text-sm md:text-base  text-white rounded-md hover:bg-lime-500 hover:text-white transition-all duration-300 cursor-pointer uppercase tracking-wide bg-brand-green">
+        <button
+          onClick={() => navigate("/categories")}
+          className=" font-bold px-10 py-2 text-sm md:text-base  text-white rounded-md hover:bg-lime-500 hover:text-white transition-all duration-300 cursor-pointer uppercase tracking-wide bg-brand-green"
+        >
           View All
         </button>
       </div>

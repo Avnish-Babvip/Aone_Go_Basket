@@ -9,7 +9,8 @@ import {
   FiMinus,
   FiSearch,
   FiUser,
-  FiHome,
+  FiChevronUp,
+  FiTrash,
 } from "react-icons/fi";
 import Login from "../../components/Modal/Authentication/Login";
 import SignUp from "../../components/Modal/Authentication/SignUp";
@@ -18,6 +19,11 @@ import ForgotPassword from "../../components/Modal/Authentication/ForgotPassword
 import { useDispatch, useSelector } from "react-redux";
 import { customerLogout } from "../../features/actions/authentication";
 import { getAllCategoriesWithSubCategories } from "../../features/actions/category";
+import {
+  deleteCart,
+  getCartData,
+  updateCart,
+} from "../../features/actions/cart";
 
 /* ================= HEADER ================= */
 
@@ -42,10 +48,23 @@ function Header() {
   const [authView, setAuthView] = useState(null);
 
   useEffect(() => {
+    dispatch(getCartData());
+  }, [isCustomerLoggedIn]);
+
+  useEffect(() => {
     setInput(urlSearch);
   }, [urlSearch]);
 
+  const isTyping = useRef(false);
+
+  const handleChange = (value) => {
+    isTyping.current = true;
+    setInput(value);
+  };
+
   useEffect(() => {
+    if (!isTyping.current) return; // 🚫 ignore non-typing updates
+
     const timer = setTimeout(() => {
       const params = {};
 
@@ -58,6 +77,8 @@ function Header() {
         pathname: "/products",
         search: new URLSearchParams(params).toString(),
       });
+
+      isTyping.current = false; // reset
     }, 500);
 
     return () => clearTimeout(timer);
@@ -68,6 +89,7 @@ function Header() {
   }, [searchParams]);
 
   useEffect(() => {
+    dispatch(getCartData());
     dispatch(getAllCategoriesWithSubCategories());
   }, []);
   useEffect(() => {
@@ -86,7 +108,7 @@ function Header() {
           setAuthView={setAuthView}
           category={categoryData}
           input={input}
-          setInput={setInput}
+          setInput={handleChange}
           searchRef={searchRef}
         />
       </header>
@@ -196,6 +218,7 @@ function MainNavbar({
   setInput,
   searchRef,
 }) {
+  const { cartData } = useSelector((state) => state.cart);
   const linkClass = ({ isActive }) =>
     `relative h-20 flex items-center text-sm font-semibold px-1
      ${isActive ? "text-brand-green after:w-full" : "text-gray-700 hover:text-brand-green after:w-0 hover:after:w-full"}
@@ -207,14 +230,14 @@ function MainNavbar({
         {/* LOGO */}
         <NavLink to="/" className="flex-shrink-0 ">
           <img
-            src="src/assets/images/logo.png"
+            src="/images/logo.png"
             alt="Logo"
             className="h-18 w-18 object-contain"
           />
         </NavLink>
 
         {/* DESKTOP NAV */}
-        <nav className="hidden xl:flex items-center gap-7 h-20">
+        <nav className="hidden lg:flex items-center gap-7 h-20">
           <NavLink to="/" className={linkClass}>
             Home
           </NavLink>
@@ -232,17 +255,9 @@ function MainNavbar({
             title="More"
             isCategory={false}
             options={[
-              {
-                name: "Users",
-                children_recursive: [
-                  { name: "My Account", slug: "/profile" },
-                  { name: "Sign In", slug: "/login" },
-                  { name: "Sign Up", slug: "/signup" },
-                ],
-              },
               { name: "About Us", slug: "/about-us" },
+              { name: "FAQ", slug: "/faq" },
               { name: "Privacy Policy", slug: "/privacy-policy" },
-              { name: "Terms & Condition", slug: "/terms-condition" },
               { name: "Contact Us", slug: "/contact-us" },
             ]}
           />
@@ -266,7 +281,7 @@ function MainNavbar({
           >
             <FiShoppingBag className="text-2xl" />
             <span className="absolute -top-1.5 -right-2 bg-brand-green text-white text-[10px] font-bold rounded-full h-4 w-4 flex items-center justify-center">
-              0
+              {cartData?.items ? cartData?.items?.length : 0}
             </span>
           </div>
         </div>
@@ -325,7 +340,7 @@ function DesktopSubItem({ item, parentSlug = "", isCategory }) {
 
   // ✅ URL LOGIC
   const path = isCategory
-    ? `/category/${parentSlug ? parentSlug + "/" : ""}${currentSlug}`
+    ? `/category?category_slug=${currentSlug}`
     : `/${currentSlug}`;
 
   return (
@@ -377,6 +392,8 @@ function Search({ input, setInput, searchRef }) {
 
 function AccountSection({ setAuthView }) {
   const [open, setOpen] = useState(false);
+  const dropdownRef = useRef(null);
+
   const { customerData, isCustomerLoggedIn } = useSelector(
     (state) => state.authentication,
   );
@@ -388,12 +405,27 @@ function AccountSection({ setAuthView }) {
   }
 
   const handleLogout = () => {
-    dispatch(customerLogout()); // change if your action different
+    dispatch(customerLogout());
     setOpen(false);
   };
 
+  // ✅ Close on outside click
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setOpen(false);
+      }
+    };
+
+    document.addEventListener("click", handleClickOutside, true); // ✅ use capture phase
+
+    return () => {
+      document.removeEventListener("click", handleClickOutside, true);
+    };
+  }, []);
+
   return (
-    <div className="relative">
+    <div ref={dropdownRef} className="relative">
       {/* BUTTON */}
       <button
         onClick={() => setOpen((p) => !p)}
@@ -406,9 +438,9 @@ function AccountSection({ setAuthView }) {
 
       {/* DROPDOWN */}
       {open && (
-        <div className="absolute right-0 mt-3 w-48 bg-white border  border-gray-200 rounded-lg shadow-xl py-2 z-[200]">
+        <div className="absolute right-0 mt-3 w-48 bg-white border border-gray-200 rounded-lg shadow-xl py-2 z-[200]">
           <NavLink
-            to="/account/profile"
+            to="/my-profile"
             className="block px-4 py-2 text-sm hover:bg-gray-100"
             onClick={() => setOpen(false)}
           >
@@ -424,7 +456,7 @@ function AccountSection({ setAuthView }) {
           </NavLink>
 
           <NavLink
-            to="/account/orders"
+            to="/account/order-history"
             className="block px-4 py-2 text-sm hover:bg-gray-100"
             onClick={() => setOpen(false)}
           >
@@ -455,10 +487,7 @@ function MobileMenuSidebar({ isOpen, onClose, category }) {
       }`}
     >
       <div className="flex items-center justify-between px-5 border-b border-gray-200">
-        <img
-          src="src/assets/images/logo.png"
-          className="h-12 w-12 object-contain"
-        />
+        <img src="/images/logo.png" className="h-12 w-12 object-contain" />
         <button onClick={onClose} className="text-2xl text-gray-400">
           <FiX />
         </button>
@@ -486,7 +515,6 @@ function MobileMenuSidebar({ isOpen, onClose, category }) {
             { name: "About Us", slug: "/about-us" },
             { name: "FAQ", slug: "/faq" },
             { name: "Privacy Policy", slug: "/privacy-policy" },
-            { name: "Terms & Condition", slug: "/terms-condition" },
             { name: "Contact Us", slug: "/contact-us" },
           ]}
           onClose={onClose}
@@ -589,28 +617,181 @@ function MobileSubItem({ item, parentSlug = "", onClose }) {
 }
 
 /* ================= CART ================= */
+function CartItem({ item }) {
+  const dispatch = useDispatch();
+  const formatAmount = (amount) => Number(parseFloat(amount || 0).toFixed(2));
+
+  const regularPrice =
+    item.variation?.regular_price ?? item.product?.regular_price ?? item.price;
+
+  const salePrice =
+    item.variation?.sale_price ?? item.product?.sale_price ?? null;
+
+  const isOnSale =
+    salePrice && parseFloat(salePrice) < parseFloat(regularPrice);
+
+  const displayPrice = isOnSale ? salePrice : regularPrice;
+  return (
+    <div className="flex gap-3 border border-gray-100 rounded-xl p-3">
+      {/* IMAGE */}
+      <img
+        src={`${import.meta.env.VITE_REACT_APP_IMAGE_URL}/${item?.product?.primary_image?.image}`}
+        className="w-16 h-16 object-contain bg-gray-50 rounded-lg"
+      />
+
+      {/* INFO */}
+      <div className="flex-1">
+        <h4 className="text-sm font-semibold line-clamp-2">
+          {item?.product?.name}
+        </h4>
+
+        {item?.variation?.attributes?.length > 0 && (
+          <div className="flex flex-wrap gap-2 mt-1">
+            {item.variation.attributes.map((attr, index) => (
+              <span
+                key={index}
+                className="text-[11px] px-2 py-1 bg-gray-100 rounded-md text-gray-600"
+              >
+                {attr.attribute_name}: {attr.attribute_value_name}
+              </span>
+            ))}
+          </div>
+        )}
+
+        <div className="mt-1 flex items-center gap-2">
+          {isOnSale ? (
+            <>
+              <span className="text-sm font-bold text-gray-900">
+                ₹{formatAmount(displayPrice)}
+              </span>
+              <span className="text-xs text-gray-400 line-through">
+                ₹{formatAmount(regularPrice)}
+              </span>
+            </>
+          ) : (
+            <span className="text-sm font-bold text-gray-900">
+              ₹{formatAmount(displayPrice)}
+            </span>
+          )}
+        </div>
+
+        {/* QUANTITY */}
+        <div className="flex items-center gap-2 mt-2">
+          {item.quantity > 1 ? (
+            <button
+              onClick={() =>
+                dispatch(
+                  updateCart({
+                    id: item.id,
+                    payload: { quantity: item.quantity - 1 },
+                  }),
+                )
+              }
+              className="p-3 bg-white hover:bg-red-50 text-red-500 rounded-xl shadow"
+            >
+              <FiChevronDown />
+            </button>
+          ) : (
+            <button
+              onClick={() => dispatch(deleteCart(item.id))}
+              className="p-3 bg-white hover:bg-red-50 text-red-500 rounded-xl shadow"
+            >
+              <FiTrash />
+            </button>
+          )}
+
+          <span className="text-sm px-3 font-bold">{item.quantity}</span>
+
+          {/* INCREASE */}
+          <button
+            onClick={() =>
+              dispatch(
+                updateCart({
+                  id: item.id,
+                  payload: { quantity: item.quantity + 1 },
+                }),
+              )
+            }
+            className="p-3 bg-white hover:bg-emerald-50 text-brand-green rounded-xl shadow"
+          >
+            <FiChevronUp />
+          </button>
+
+          {/* REMOVE */}
+          <button
+            onClick={() => dispatch(deleteCart(item.id))}
+            className="text-xs ps-3 text-red-600 hover:text-red-500 font-medium"
+          >
+            Remove
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 function CartSidebar({ isOpen, onClose }) {
+  const { cartData } = useSelector((state) => state.cart);
+  const items = cartData?.items || [];
+  const total = cartData?.total;
+  const navigate = useNavigate();
+
+  const isEmpty = items?.length === 0;
+
   return (
     <div
-      className={`fixed top-0 right-0 h-full w-full sm:w-[380px] bg-white z-[120] shadow-2xl transition-transform duration-300 flex flex-col ${isOpen ? "translate-x-0" : "translate-x-full"}`}
+      className={`fixed top-0 right-0 h-full w-full sm:w-[400px] bg-white z-[120] shadow-2xl transition-transform duration-300 flex flex-col ${
+        isOpen ? "translate-x-0" : "translate-x-full"
+      }`}
     >
+      {/* HEADER */}
       <div className="flex items-center justify-between p-5 border-b border-gray-200">
         <span className="text-lg font-bold">Shopping Cart</span>
         <button onClick={onClose} className="text-2xl text-gray-400">
           <FiX />
         </button>
       </div>
-      <div className="flex-1 flex flex-col items-center justify-center p-10 text-center">
-        <FiShoppingBag className="text-5xl text-gray-200 mb-4" />
-        <h3 className="text-lg font-bold">Your cart is empty</h3>
-        <button
-          onClick={onClose}
-          className="mt-6 bg-brand-green text-white w-full py-3 rounded-md font-bold hover:bg-emerald-600 transition-colors"
-        >
-          Return to Shop
-        </button>
-      </div>
+
+      {/* ================= EMPTY ================= */}
+      {isEmpty ? (
+        <div className="flex-1 flex flex-col items-center justify-center p-10 text-center">
+          <FiShoppingBag className="text-5xl text-gray-200 mb-4" />
+          <h3 className="text-lg font-bold">Your cart is empty</h3>
+          <button
+            onClick={onClose}
+            className="mt-6 bg-brand-green text-white w-full py-3 rounded-md font-bold hover:bg-lime-600 transition"
+          >
+            Return to Shop
+          </button>
+        </div>
+      ) : (
+        <>
+          {/* ================= ITEMS ================= */}
+          <div className="flex-1 overflow-y-auto p-5 space-y-4">
+            {items.map((item) => (
+              <CartItem key={item.cartId} item={item} />
+            ))}
+          </div>
+
+          {/* ================= FOOTER ================= */}
+          <div className="border-t border-gray-200 p-5 space-y-4">
+            <div className="flex justify-between font-semibold">
+              <span>Subtotal</span>
+              <span>₹{total}</span>
+            </div>
+
+            <button
+              onClick={() => {
+                navigate("/checkout");
+                onClose();
+              }}
+              className="w-full bg-brand-green text-white py-3 rounded-xl font-bold hover:bg-emerald-600 transition"
+            >
+              Checkout
+            </button>
+          </div>
+        </>
+      )}
     </div>
   );
 }
