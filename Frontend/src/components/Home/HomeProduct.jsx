@@ -15,8 +15,8 @@ const HomeProduct = ({
   const [selectedProduct, setSelectedProduct] = useState(null);
   const navigate = useNavigate();
   return (
-    <div className="bg-white max-w-7xl mx-auto relative">
-      <div className="rounded-sm p-4 md:p-10 ">
+    <div className="bg-white max-w-7xl mt-14 mx-auto relative">
+      <div className="rounded-sm  ">
         <div className="text-center mb-10">
           <h1 className="font-bold text-2xl md:text-3xl text-[#003d29]">
             {heading}
