@@ -1,6 +1,44 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import { instance } from "../../services/axiosInterceptor";
 
+export const getCustomerKycStatus = createAsyncThunk(
+  "api/customer/kyc-status",
+  async (_, { getState, rejectWithValue }) => {
+    try {
+      const loginToken = getState().authentication?.customerData?.token;
+
+      const { data } = await instance.get("/customer/kyc-status", {
+        headers: {
+          Authorization: `Bearer ${loginToken}`,
+        },
+      });
+
+      return data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data?.message || "Failed");
+    }
+  },
+);
+
+export const getCustomerDetails = createAsyncThunk(
+  "api/customer/profile",
+  async (_, { getState, rejectWithValue }) => {
+    try {
+      const loginToken = getState().authentication?.customerData?.token;
+
+      const { data } = await instance.get("/customer/profile", {
+        headers: {
+          Authorization: `Bearer ${loginToken}`,
+        },
+      });
+
+      return data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data?.message || "Failed");
+    }
+  },
+);
+
 export const getCustomerAddresses = createAsyncThunk(
   "/api/customer/addresses",
   async (_, { getState, rejectWithValue }) => {
@@ -16,6 +54,42 @@ export const getCustomerAddresses = createAsyncThunk(
       return data;
     } catch (error) {
       return rejectWithValue(error.response?.data?.message || "Failed");
+    }
+  },
+);
+
+export const updateProfile = createAsyncThunk(
+  "/api/customer/profile",
+  async (payload, { getState, rejectWithValue }) => {
+    try {
+      const loginToken = getState().authentication?.customerData?.token;
+
+      const { data } = await instance.post(`/customer/profile`, payload, {
+        headers: {
+          Authorization: `Bearer ${loginToken}`,
+        },
+      });
+      return data;
+    } catch (error) {
+      return rejectWithValue(error.response.data.message || "Failed");
+    }
+  },
+);
+
+export const submitKyc = createAsyncThunk(
+  "/api/customer/kyc-submit",
+  async (payload, { getState, rejectWithValue }) => {
+    try {
+      const loginToken = getState().authentication?.customerData?.token;
+
+      const { data } = await instance.post("/customer/kyc-submit", payload, {
+        headers: {
+          Authorization: `Bearer ${loginToken}`,
+        },
+      });
+      return data;
+    } catch (error) {
+      return rejectWithValue(error.response.data.message || "Failed");
     }
   },
 );

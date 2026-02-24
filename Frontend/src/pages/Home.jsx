@@ -5,6 +5,7 @@ import { useEffect } from "react";
 import { getHomeData } from "../features/actions/home";
 import { useDispatch, useSelector } from "react-redux";
 import HomeProduct from "../components/Home/HomeProduct";
+import AppDownloadBanner from "../components/Home/AppDownloadBanner";
 
 function Home() {
   const dispatch = useDispatch();
@@ -36,6 +37,7 @@ function Home() {
         subheading={"Popular choices customers love the most"}
       />
       <DiscountBanner />
+      <AppDownloadBanner />
     </div>
   );
 }

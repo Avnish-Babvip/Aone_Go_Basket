@@ -6,6 +6,7 @@ import {
   updateCart,
   addToCart,
   updateCartCharges,
+  reorderCart,
 } from "../actions/cart";
 
 const formattedDate = new Date().toLocaleString("en-US", {
@@ -32,7 +33,32 @@ const cartSlice = createSlice({
   reducers: {},
   extraReducers: (builder) => {
     builder
+      .addCase(reorderCart.pending, (state, action) => {
+        state.errorMessage = "";
+        state.cartLoading = true;
+      })
 
+      .addCase(reorderCart.fulfilled, (state, action) => {
+        state.errorMessage = "";
+        state.cartLoading = false;
+        toast.success("ADDED TO CART", {
+          position: "top-right",
+          style: {
+            background: "#79BF28",
+            color: "#fff",
+            borderRadius: "16px",
+            padding: "16px",
+            fontWeight: "600",
+          },
+        });
+      })
+
+      .addCase(reorderCart.rejected, (state, action) => {
+        state.errorMessage = "";
+        state.cartLoading = false;
+        state.errorMessage = action.payload || "Failed";
+        toast(action.payload);
+      })
       .addCase(getCartData.pending, (state) => {
         state.errorMessage = "";
         state.cartLoading = true;
@@ -45,9 +71,9 @@ const cartSlice = createSlice({
       .addCase(getCartData.rejected, (state, action) => {
         state.errorMessage = action.payload || "Failed";
         state.cartLoading = false;
-        toast(action.payload, {
-          description: formattedDate,
-        });
+        // toast(action.payload, {
+        //   description: formattedDate,
+        // });
       })
       .addCase(updateCart.pending, (state, action) => {
         state.errorMessage = "";

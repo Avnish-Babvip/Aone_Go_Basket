@@ -1,6 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { toast } from "sonner";
 import {
+  changePassword,
   customerLogin,
   customerLogout,
   customerSignUp,
@@ -41,16 +42,48 @@ const authSlice = createSlice({
       ((state.isLoading = false),
         (state.isCredentials = false),
         (state.isPasswordChanged = false),
-        (state.isAdminLoggedIn = false),
         (state.errorMessage = ""),
         (state.loginCredentials = {
           email: "",
           password: "",
         }));
     },
+    resetInterceptorState: (state) => initialState,
   },
   extraReducers: (builder) => {
     builder
+      .addCase(changePassword.pending, (state) => {
+        state.isLoading = true;
+        state.errorMessage = "";
+      })
+      .addCase(changePassword.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.errorMessage = "";
+        toast("PASSWORD CHANGED", {
+          position: "top-right",
+          style: {
+            background: "#79BF28",
+            color: "#fff",
+            borderRadius: "16px",
+            padding: "16px",
+            fontWeight: "600",
+          },
+        });
+      })
+      .addCase(changePassword.rejected, (state, action) => {
+        state.isLoading = false;
+        state.errorMessage = action.payload || "Failed to login API.";
+        toast(action.payload, {
+          position: "top-right",
+          style: {
+            background: "#fb2c36",
+            color: "#fff",
+            borderRadius: "16px",
+            padding: "16px",
+            fontWeight: "600",
+          },
+        });
+      })
       .addCase(customerLogin.pending, (state) => {
         state.isLoading = true;
         state.isCredentials = false;
@@ -83,7 +116,7 @@ const authSlice = createSlice({
       .addCase(customerSignUp.fulfilled, (state, action) => {
         state.isLoading = false;
         state.errorMessage = "";
-        toast("Your account details submitted for verification.", {
+        toast("Your account has been successfully registered.", {
           description: formattedDate,
         });
       })
@@ -194,5 +227,5 @@ const authSlice = createSlice({
 // -------------------------------------------------------------------------
 
 // Action creators are generated for each case reducer function
-export const { resetUserState } = authSlice.actions;
+export const { resetUserState, resetInterceptorState } = authSlice.actions;
 export default authSlice.reducer;

@@ -3,6 +3,7 @@ import { toast } from "sonner";
 import {
   addBulkProduct,
   addProduct,
+  addZipImages,
   deleteProduct,
   editProduct,
   getAllProducts,
@@ -23,6 +24,7 @@ const initialState = {
   productLoading: false,
   productData: [],
   bulkData: {},
+  bulkZipResult: {},
 };
 
 // ---------------------------------------------------------------------------------------
@@ -129,18 +131,14 @@ const productSlice = createSlice({
       .addCase(addBulkProduct.fulfilled, (state, action) => {
         state.errorMessage = "";
         state.productLoading = false;
-        console.log(action.payload);
         state.bulkData = action.payload;
-
-        toast("Product added successfully.", {
+        toast("File Submitted Successfully.", {
           description: formattedDate,
         });
       })
       .addCase(addBulkProduct.rejected, (state, action) => {
         state.productLoading = false;
-
         const payload = action.payload;
-
         // ✅ Validation errors from backend
         if (payload?.data?.errors) {
           Object.values(payload.data.errors).forEach((messages) => {
@@ -150,7 +148,41 @@ const productSlice = createSlice({
               });
             });
           });
+          state.errorMessage = payload.message || "Validation error";
+        } else {
+          // ✅ Fallback error
+          const message = payload?.message || payload || "Failed";
+          state.errorMessage = message;
 
+          toast.error(message, {
+            description: formattedDate,
+          });
+        }
+      })
+      .addCase(addZipImages.pending, (state) => {
+        state.errorMessage = "";
+        state.productLoading = true;
+      })
+      .addCase(addZipImages.fulfilled, (state, action) => {
+        state.errorMessage = "";
+        state.productLoading = false;
+        state.bulkZipResult = action.payload;
+        toast("Zip Submitted Successfully.", {
+          description: formattedDate,
+        });
+      })
+      .addCase(addZipImages.rejected, (state, action) => {
+        state.productLoading = false;
+        const payload = action.payload;
+        // ✅ Validation errors from backend
+        if (payload?.data?.errors) {
+          Object.values(payload.data.errors).forEach((messages) => {
+            messages.forEach((msg) => {
+              toast.error(msg, {
+                description: formattedDate,
+              });
+            });
+          });
           state.errorMessage = payload.message || "Validation error";
         } else {
           // ✅ Fallback error

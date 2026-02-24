@@ -11,7 +11,7 @@ export const getAllAdminUsers = createAsyncThunk(
       const params = new URLSearchParams();
 
       params.append("page", page);
-      params.append("per_page", 1);
+      params.append("per_page", 10);
 
       if (search) params.append("search", search);
 

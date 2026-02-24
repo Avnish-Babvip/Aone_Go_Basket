@@ -21,11 +21,17 @@ export const checkout = createAsyncThunk(
 
 export const orderHistory = createAsyncThunk(
   "/api/customer/orders",
-  async (_, { getState, rejectWithValue }) => {
+  async ({ page, status }, { getState, rejectWithValue }) => {
     try {
+      const params = new URLSearchParams();
       const loginToken = getState().authentication?.customerData?.token;
 
-      const { data } = await instance.get("/customer/orders", {
+      params.append("page", page || 1);
+      if (status) params.append("status", status);
+
+      const link = `/customer/orders?${params.toString()}`;
+
+      const { data } = await instance.get(link, {
         headers: {
           Authorization: `Bearer ${loginToken}`,
         },
@@ -44,6 +50,24 @@ export const orderDetails = createAsyncThunk(
       const loginToken = getState().authentication?.customerData?.token;
 
       const { data } = await instance.get(`/customer/orders/${id}`, {
+        headers: {
+          Authorization: `Bearer ${loginToken}`,
+        },
+      });
+      return data;
+    } catch (error) {
+      return rejectWithValue(error.response.data.message || "Failed");
+    }
+  },
+);
+
+export const paymentStatus = createAsyncThunk(
+  "customer/payment/details/AGB043",
+  async (id, { getState, rejectWithValue }) => {
+    try {
+      const loginToken = getState().authentication?.customerData?.token;
+
+      const { data } = await instance.get(`/customer/payment/details/${id}`, {
         headers: {
           Authorization: `Bearer ${loginToken}`,
         },

@@ -13,10 +13,17 @@ const sliderData = [
     title: "Healthy vegetable that you deserve to eat fresh",
     subtitle:
       "We source and sell the very best beef, lamb and pork, sourced with the greatest care from farmers.",
-    bgImage: "/images/Banner-bg-1.jpg",
+    bgImage: "/images/Banner-bg-3.jpg",
   },
   {
     id: 2,
+    title: "Healthy vegetable that you deserve to eat fresh",
+    subtitle:
+      "We source and sell the very best beef, lamb and pork, sourced with the greatest care from farmers.",
+    bgImage: "/images/Banner-bg-1.jpg",
+  },
+  {
+    id: 3,
     title: "Organic Fruits delivered to your doorstep",
     subtitle:
       "Freshness guaranteed from our local farms to your dining table every single day.",
@@ -37,7 +44,7 @@ function HeroBanner() {
         {sliderData.map((slide) => (
           <SwiperSlide key={slide.id}>
             <div
-              className="relative w-full h-full flex items-center justify-center bg-cover bg-center transition-transform duration-700"
+              className="relative w-full h-full flex items-center justify-center  bg-cover bg-center transition-transform duration-700"
               style={{ backgroundImage: `url(${slide.bgImage})` }}
             >
               {/* Soft Overlay to make text readable */}

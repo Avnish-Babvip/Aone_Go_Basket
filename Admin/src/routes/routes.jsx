@@ -18,6 +18,10 @@ import SubCategory from "../pages/Category/SubCategory";
 import AttributeValue from "../pages/Attribute/AttributeValue";
 import Product from "../pages/Product/Product";
 import AddBulkProduct from "../pages/Product/AddBulkProduct";
+import AddZipImages from "../pages/Product/AddZipImages";
+import Rider from "../pages/Rider/Rider";
+import RiderReferral from "../pages/Rider/RiderReferral";
+import Order from "../pages/Order/Order";
 
 export const appRouter = createBrowserRouter([
   /* ---------------- PUBLIC ROUTES ---------------- */
@@ -49,7 +53,11 @@ export const appRouter = createBrowserRouter([
       { path: "attribute", element: <Attribute /> },
       { path: "attribute/:id", element: <AttributeValue /> },
       { path: "product", element: <Product /> },
-      { path: "product/bulk", element: <AddBulkProduct /> },
+      { path: "product/bulk-products", element: <AddBulkProduct /> },
+      { path: "product/bulk-images", element: <AddZipImages /> },
+      { path: "order", element: <Order /> },
+      { path: "rider", element: <Rider /> },
+      { path: "rider/referral", element: <RiderReferral /> },
     ],
   },
 

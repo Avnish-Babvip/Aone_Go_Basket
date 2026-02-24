@@ -8,7 +8,7 @@ import { FiKey, FiMail, FiX } from "react-icons/fi";
 
 const Login = ({ isOpen, onClose, onSwitch }) => {
   const dispatch = useDispatch();
-  const { isLoading, isCredentials } = useSelector(
+  const { isLoading, isCredentials, errorMessage } = useSelector(
     (state) => state.authentication,
   );
 
@@ -79,7 +79,7 @@ const Login = ({ isOpen, onClose, onSwitch }) => {
               <img
                 src="/images/logo.png"
                 alt="Logo"
-                className="h-24 md:h-32 w-auto inline-block md:block"
+                className="h-24 w-auto inline-block md:block"
               />
             </div>
 

@@ -114,3 +114,27 @@ export const addBulkProduct = createAsyncThunk(
     }
   },
 );
+
+export const addZipImages = createAsyncThunk(
+  "/admin/products/bulk-upload-image",
+  async (payload, { getState, rejectWithValue }) => {
+    try {
+      // ✅ Get token directly from store
+      const loginToken = getState().authentication?.adminData?.token;
+      const { data } = await instance.post(
+        `/admin/products/bulk-upload-image`,
+        payload,
+        {
+          headers: {
+            Authorization: `Bearer ${loginToken}`,
+          },
+        },
+      );
+      return data;
+    } catch (error) {
+      return rejectWithValue(
+        error.response?.data || { message: "Something went wrong" },
+      );
+    }
+  },
+);

@@ -137,10 +137,13 @@ export const EditProductModal = ({
   ========================= */
     if (data.type === "variable") {
       data.variations.forEach((variation, vIndex) => {
-        formData.append(
-          `variations[${vIndex}][id]`,
-          product.variations[vIndex].id,
-        );
+        if (product.variations[vIndex]) {
+          formData.append(
+            `variations[${vIndex}][id]`,
+            product.variations[vIndex].id,
+          );
+        }
+
         formData.append(`variations[${vIndex}][sku]`, variation.sku);
         formData.append(
           `variations[${vIndex}][regular_price]`,
@@ -450,14 +453,6 @@ export const EditProductModal = ({
                       required
                       errors={errors}
                     />
-
-                    {/* <Input
-                      label="Low Stock Alert"
-                      name={`variations.${vIndex}.low_stock_alert`}
-                      register={register}
-                      required
-                      errors={errors}
-                    /> */}
                   </div>
 
                   {/* ATTRIBUTES */}

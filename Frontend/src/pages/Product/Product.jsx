@@ -86,6 +86,11 @@ export default function Product() {
         category_slug,
       }),
     );
+
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth", // remove if you don't want animation
+    });
   }, [page, searchQuery, sort, min_price, max_price, searchParams]);
 
   useEffect(() => {

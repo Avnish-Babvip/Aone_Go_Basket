@@ -22,6 +22,7 @@ const formattedDate = new Date().toLocaleString("en-US", {
 const initialState = {
   errorMessage: "",
   categoryLoading: false,
+  categoryTreeLoading: false,
   categoryData: [],
   categoryTreeData: [],
   subCategoryData: {},
@@ -69,16 +70,16 @@ const categorySlice = createSlice({
       })
       .addCase(getAllCategoriesWithSubCategories.pending, (state) => {
         state.errorMessage = "";
-        state.categoryLoading = true;
+        state.categoryTreeLoading = true;
       })
       .addCase(getAllCategoriesWithSubCategories.fulfilled, (state, action) => {
         state.errorMessage = "";
-        state.categoryLoading = false;
+        state.categoryTreeLoading = false;
         state.categoryTreeData = action.payload.data;
       })
       .addCase(getAllCategoriesWithSubCategories.rejected, (state, action) => {
         state.errorMessage = action.payload || "Failed";
-        state.categoryLoading = false;
+        state.categoryTreeLoading = false;
         toast(action.payload, {
           description: formattedDate,
         });

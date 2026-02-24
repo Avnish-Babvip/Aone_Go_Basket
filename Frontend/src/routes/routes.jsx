@@ -15,6 +15,9 @@ import OrderPlaced from "../pages/Checkout/OrderPlaced";
 import MyOrders from "../pages/Order/MyOrders";
 import OrderDetails from "../pages/Order/OrderDetails";
 import Category from "../pages/Category";
+import ProtectedRoute from "../pages/ProtectedRoute";
+import OnlineOrderPlaced from "../pages/Checkout/OnlineOrderPlaced";
+import OnlineOrderFailed from "../pages/Checkout/OnlineOrderFailed";
 
 // Lazy Loading 😴
 // const Blog = lazy(() => import("../pages/Blog"));
@@ -30,32 +33,68 @@ export const appRouter = createBrowserRouter([
         element: <Home />,
       },
       {
+        path: "checkout",
+        element: (
+          <ProtectedRoute>
+            <Checkout />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "checkout/order-placed",
+        element: (
+          <ProtectedRoute>
+            <OrderPlaced />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "payment/success",
+        element: (
+          <ProtectedRoute>
+            <OnlineOrderPlaced />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "payment/failed",
+        element: (
+          <ProtectedRoute>
+            <OnlineOrderFailed />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "account/my-profile",
+        element: (
+          <ProtectedRoute>
+            <MyProfile />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "account/order-history",
+        element: (
+          <ProtectedRoute>
+            <MyOrders />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "account/order-history/:slug",
+        element: (
+          <ProtectedRoute>
+            <OrderDetails />
+          </ProtectedRoute>
+        ),
+      },
+      {
         path: "products",
         element: <Product />,
       },
       {
-        path: "checkout",
-        element: <Checkout />,
-      },
-      {
         path: "categories",
         element: <Category />,
-      },
-      {
-        path: "checkout/order-placed",
-        element: <OrderPlaced />,
-      },
-      {
-        path: "account/my-profile",
-        element: <MyProfile />,
-      },
-      {
-        path: "account/order-history",
-        element: <MyOrders />,
-      },
-      {
-        path: "account/order-history/:slug",
-        element: <OrderDetails />,
       },
       {
         path: "category",

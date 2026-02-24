@@ -6,6 +6,9 @@ import {
   deleteAttribute,
   getAllAttributes,
 } from "../../features/actions/attribute";
+import * as XLSX from "xlsx";
+import { saveAs } from "file-saver";
+
 import { EditAttributeModal } from "../../components/Modal/Attribute/EditAttribute";
 import AddAttributeModal from "../../components/Modal/Attribute/AddAttribute";
 import DeleteModal from "../../components/Modal/Delete";
@@ -25,6 +28,49 @@ const Attribute = () => {
   const [openModal, setOpenModal] = useState(false);
   const [openEditModal, setOpenEditModal] = useState(false);
   const [openDeleteModal, setOpenDeleteModal] = useState(false);
+
+  const handleDownloadExcel = () => {
+    if (!data?.length) return;
+
+    let rows = [];
+
+    data.forEach((attr) => {
+      if (attr.values?.length) {
+        attr.values.forEach((val) => {
+          rows.push({
+            attribute_id: attr.id,
+            attribute_name: attr.name,
+            value_id: val.id,
+            value_name: val.value,
+          });
+        });
+      } else {
+        // attribute without values
+        rows.push({
+          attribute_id: attr.id,
+          attribute_name: attr.name,
+          value_id: "",
+          value_name: "",
+        });
+      }
+    });
+
+    const worksheet = XLSX.utils.json_to_sheet(rows);
+    const workbook = XLSX.utils.book_new();
+
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Attributes");
+
+    const excelBuffer = XLSX.write(workbook, {
+      bookType: "xlsx",
+      type: "array",
+    });
+
+    const blob = new Blob([excelBuffer], {
+      type: "application/octet-stream",
+    });
+
+    saveAs(blob, "attributes.xlsx");
+  };
 
   useEffect(() => {
     if (!openEditModal && !openModal && !openDeleteModal) {
@@ -51,6 +97,13 @@ const Attribute = () => {
               className="bg-[#79BF28] hover:bg-[#6dac24] text-white text-sm px-4 py-2 rounded-lg"
             >
               Add New Attribute
+            </button>
+
+            <button
+              onClick={handleDownloadExcel}
+              className="bg-indigo-600 hover:bg-indigo-700 text-white text-sm px-4 py-2 rounded-lg"
+            >
+              Download Attribute & Value Data
             </button>
           </div>
         </div>

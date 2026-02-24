@@ -24,6 +24,7 @@ const AddProductModal = ({
     formState: { errors },
     watch,
     setValue,
+    setError,
     control,
   } = useForm();
 
@@ -72,6 +73,20 @@ const AddProductModal = ({
   });
 
   const onSubmit = (data) => {
+    // 🚨 Validate variations
+    if (
+      data.type === "variable" &&
+      (!data.variations || data.variations.length === 0)
+    ) {
+      setError("variations", {
+        type: "manual",
+        message: "At least one variation is required.",
+      });
+      return;
+    }
+
+    clearErrors("variations");
+
     const formData = new FormData();
 
     // Parent category always exists
@@ -414,6 +429,12 @@ const AddProductModal = ({
               >
                 + Add Variation
               </button>
+
+              {errors.variations && (
+                <p className="text-sm text-red-500 ">
+                  {errors.variations.message}
+                </p>
+              )}
             </div>
           )}
         </div>

@@ -1,12 +1,18 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { toast } from "sonner";
-import { checkout, orderDetails, orderHistory } from "../actions/order";
+import {
+  checkout,
+  orderDetails,
+  orderHistory,
+  paymentStatus,
+} from "../actions/order";
 
 const initialState = {
   errorMessage: "",
   orderLoading: false,
   orderData: [],
   orderDetailData: {},
+  paymentData: {},
 };
 
 const orderSlice = createSlice({
@@ -36,6 +42,23 @@ const orderSlice = createSlice({
       })
 
       .addCase(checkout.rejected, (state, action) => {
+        state.errorMessage = "";
+        state.orderLoading = false;
+        state.errorMessage = action.payload || "Failed";
+        toast(action.payload);
+      })
+      .addCase(paymentStatus.pending, (state, action) => {
+        state.errorMessage = "";
+        state.orderLoading = true;
+      })
+
+      .addCase(paymentStatus.fulfilled, (state, action) => {
+        state.errorMessage = "";
+        state.orderLoading = false;
+        state.paymentData = action.payload.order;
+      })
+
+      .addCase(paymentStatus.rejected, (state, action) => {
         state.errorMessage = "";
         state.orderLoading = false;
         state.errorMessage = action.payload || "Failed";

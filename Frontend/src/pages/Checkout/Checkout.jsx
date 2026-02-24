@@ -87,13 +87,20 @@ export default function Checkout() {
     try {
       const response = await dispatch(checkout(payload)).unwrap();
 
-      // ✅ Refresh cart (backend will return empty cart)
+      const orderData = response?.data;
+
+      if (orderData?.payment_mode === "online") {
+        // 💳 Redirect to payment gateway
+        window.location.href = orderData.payment_url;
+        return;
+      }
+
+      // ✅ COD flow
       await dispatch(getCartData());
 
-      // ✅ Navigate to success page
       navigate("/checkout/order-placed", {
         state: {
-          order: response?.data,
+          order: orderData,
         },
       });
     } catch (error) {

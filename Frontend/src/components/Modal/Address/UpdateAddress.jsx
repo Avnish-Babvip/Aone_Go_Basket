@@ -2,11 +2,7 @@ import React, { useEffect } from "react";
 import { HiX } from "react-icons/hi";
 import { useForm } from "react-hook-form";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  getCities,
-  getPincode,
-  getStates,
-} from "../../../features/actions/location";
+import { getCities, getStates } from "../../../features/actions/location";
 
 export default function UpdateAddressModal({
   isOpen,
@@ -82,7 +78,7 @@ export default function UpdateAddressModal({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black/40 flex justify-center items-center z-50">
+    <div className="fixed inset-0 bg-black/40 flex justify-center items-center z-50 pb-10">
       <div className="bg-white w-[95%] sm:w-[650px] max-h-[90vh] rounded-2xl shadow-xl relative overflow-y-auto">
         <button
           onClick={onClose}

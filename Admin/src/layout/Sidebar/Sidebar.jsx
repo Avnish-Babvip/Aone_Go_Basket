@@ -12,7 +12,6 @@ import {
 } from "../../features/slices/references";
 import { adminLogout } from "../../features/actions/authentication";
 import { FaUnlockAlt } from "react-icons/fa";
-import { HiOutlineCube } from "react-icons/hi";
 
 const Sidebar = ({ closeSidebar }) => {
   const navigate = useNavigate();
@@ -44,6 +43,20 @@ const Sidebar = ({ closeSidebar }) => {
       label: "Dashboard",
       icon: TbDashboardFilled,
       url: "/admin/dashboard",
+    },
+    {
+      label: "Order Management",
+      icon: FaUnlockAlt,
+      children: [
+        {
+          name: "View Orders",
+          url: `/admin/order`,
+        },
+        {
+          name: "Assign Order",
+          url: "/admin/rider/referral",
+        },
+      ],
     },
     {
       label: "Admin User Profile",
@@ -149,7 +162,25 @@ const Sidebar = ({ closeSidebar }) => {
         },
         {
           name: "Add Bulk Products",
-          url: "/admin/product/bulk",
+          url: "/admin/product/bulk-products",
+        },
+        {
+          name: "Add Bulk Images",
+          url: "/admin/product/bulk-images",
+        },
+      ],
+    },
+    {
+      label: "Rider Management",
+      icon: FaUnlockAlt,
+      children: [
+        {
+          name: "All Riders",
+          url: `/admin/rider`,
+        },
+        {
+          name: "Riders Referrals",
+          url: "/admin/rider/referral",
         },
       ],
     },

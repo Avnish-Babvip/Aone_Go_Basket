@@ -71,7 +71,7 @@ const ResetForgotPassword = () => {
             {/* Logo */}
             <div className="mb-6 text-center md:text-left">
               <img
-                src="../assets/images/logo.png"
+                src="/images/logo.png"
                 alt="Logo"
                 className="h-24 md:h-32 w-auto inline-block md:block"
               />
@@ -83,6 +83,7 @@ const ResetForgotPassword = () => {
               </h2>
 
               <button
+                type="button"
                 onClick={() => navigate("/")}
                 className="text-[#84BC22] font-bold hover:underline cursor-pointer ml-1"
               >

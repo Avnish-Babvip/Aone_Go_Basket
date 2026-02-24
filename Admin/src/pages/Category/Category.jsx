@@ -3,10 +3,14 @@ import { FiEye, FiEdit2, FiTrash2 } from "react-icons/fi";
 import { useDispatch, useSelector } from "react-redux";
 import TableSkeleton from "../../components/TableSkeleton";
 import { restrictToVerticalAxis } from "@dnd-kit/modifiers";
+import * as XLSX from "xlsx";
+import { saveAs } from "file-saver";
+
 import {
   deleteCategory,
   editCategory,
   getAllCategories,
+  getAllCategoriesWithSubCategories,
 } from "../../features/actions/category";
 import { EditCategoryModal } from "../../components/Modal/Category/EditCategory";
 import AddCategoryModal from "../../components/Modal/Category/AddCategory";
@@ -36,6 +40,60 @@ const Category = () => {
   const [openModal, setOpenModal] = useState(false);
   const [openEditModal, setOpenEditModal] = useState(false);
   const [openDeleteModal, setOpenDeleteModal] = useState(false);
+
+  const flattenCategories = (list, parent = null) => {
+    let result = [];
+
+    list.forEach((item) => {
+      result.push({
+        id: item.id,
+        name: item.name,
+        slug: item.slug,
+        parent_id: item.parent_id ?? parent,
+        status: item.status,
+        position: item.position,
+      });
+
+      const children =
+        item.children_recursivee || item.children_recursive || [];
+
+      if (children.length) {
+        result = result.concat(flattenCategories(children, item.id));
+      }
+    });
+
+    return result;
+  };
+
+  const handleDownloadExcel = async () => {
+    try {
+      const res = await dispatch(getAllCategoriesWithSubCategories()).unwrap();
+
+      const tree = res?.data || [];
+
+      if (!tree.length) return;
+
+      const flat = flattenCategories(tree);
+
+      const worksheet = XLSX.utils.json_to_sheet(flat);
+      const workbook = XLSX.utils.book_new();
+
+      XLSX.utils.book_append_sheet(workbook, worksheet, "Categories");
+
+      const excelBuffer = XLSX.write(workbook, {
+        bookType: "xlsx",
+        type: "array",
+      });
+
+      const blob = new Blob([excelBuffer], {
+        type: "application/octet-stream",
+      });
+
+      saveAs(blob, "categories.xlsx");
+    } catch (err) {
+      console.log(err);
+    }
+  };
 
   useEffect(() => {
     if (!openEditModal && !openModal && !openDeleteModal) {
@@ -71,6 +129,12 @@ const Category = () => {
               className="bg-[#79BF28] hover:bg-[#6dac24] text-white text-sm px-4 py-2 rounded-lg"
             >
               Add New Category
+            </button>
+            <button
+              onClick={handleDownloadExcel}
+              className="bg-indigo-600 hover:bg-indigo-700 text-white text-sm px-4 py-2 rounded-lg"
+            >
+              Download Category Data
             </button>
           </div>
         </div>

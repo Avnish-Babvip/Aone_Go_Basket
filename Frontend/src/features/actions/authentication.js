@@ -51,6 +51,28 @@ export const customerSignUp = createAsyncThunk(
     }
   },
 );
+
+export const changePassword = createAsyncThunk(
+  "customer/change-password",
+  async (payload, { getState, rejectWithValue }) => {
+    try {
+      const loginToken = getState().authentication?.customerData?.token;
+      const { data } = await instance.post(
+        `/customer/change-password`,
+        payload,
+        {
+          headers: {
+            Authorization: `Bearer ${loginToken}`,
+          },
+        },
+      );
+      return data;
+    } catch (error) {
+      return rejectWithValue(error.response.data.message || "Failed ");
+    }
+  },
+);
+
 export const forgotPassword = createAsyncThunk(
   "customer/forgot-password",
   async (payload, { rejectWithValue }) => {

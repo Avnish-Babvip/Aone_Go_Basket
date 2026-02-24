@@ -4,8 +4,12 @@ import {
   addAddress,
   deleteAddress,
   getCustomerAddresses,
+  getCustomerDetails,
+  getCustomerKycStatus,
   setDefaultAddress,
+  submitKyc,
   updateAddress,
+  updateProfile,
 } from "../actions/customer";
 
 const formattedDate = new Date().toLocaleString("en-US", {
@@ -21,7 +25,10 @@ const formattedDate = new Date().toLocaleString("en-US", {
 const initialState = {
   errorMessage: "",
   customerLoading: false,
+  kycLoading: false,
   addressLoading: false,
+  kycData: {},
+  profileData: {},
   addressData: [],
   defaultAddressData: null,
 };
@@ -33,6 +40,29 @@ const customerSlice = createSlice({
   extraReducers: (builder) => {
     builder
 
+      .addCase(getCustomerKycStatus.pending, (state) => {
+        state.errorMessage = "";
+      })
+      .addCase(getCustomerKycStatus.fulfilled, (state, action) => {
+        state.errorMessage = "";
+        state.kycData = action.payload.data;
+      })
+      .addCase(getCustomerKycStatus.rejected, (state, action) => {
+        state.errorMessage = action.payload || "Failed";
+        toast(action.payload, {
+          description: formattedDate,
+        });
+      })
+      .addCase(getCustomerDetails.pending, (state) => {
+        state.errorMessage = "";
+      })
+      .addCase(getCustomerDetails.fulfilled, (state, action) => {
+        state.errorMessage = "";
+        state.profileData = action.payload.data;
+      })
+      .addCase(getCustomerDetails.rejected, (state, action) => {
+        state.errorMessage = action.payload || "Failed";
+      })
       .addCase(getCustomerAddresses.pending, (state) => {
         state.errorMessage = "";
         state.addressLoading = true;
@@ -47,6 +77,76 @@ const customerSlice = createSlice({
         state.addressLoading = false;
         toast(action.payload, {
           description: formattedDate,
+        });
+      })
+      .addCase(updateProfile.pending, (state, action) => {
+        state.errorMessage = "";
+        state.customerLoading = true;
+      })
+
+      .addCase(updateProfile.fulfilled, (state, action) => {
+        state.errorMessage = "";
+        state.customerLoading = false;
+        toast.success("PROFILE UPDATED.", {
+          position: "top-right",
+          style: {
+            background: "#79BF28",
+            color: "#fff",
+            borderRadius: "16px",
+            padding: "16px",
+            fontWeight: "600",
+          },
+        });
+      })
+
+      .addCase(updateProfile.rejected, (state, action) => {
+        state.errorMessage = "";
+        state.customerLoading = false;
+        state.errorMessage = action.payload || "Failed";
+        toast.error(action.payload, {
+          position: "top-right",
+          style: {
+            background: "#fb2c36",
+            color: "#fff",
+            borderRadius: "16px",
+            padding: "16px",
+            fontWeight: "600",
+          },
+        });
+      })
+      .addCase(submitKyc.pending, (state, action) => {
+        state.errorMessage = "";
+        state.kycLoading = true;
+      })
+
+      .addCase(submitKyc.fulfilled, (state, action) => {
+        state.errorMessage = "";
+        state.kycLoading = false;
+        toast.success("KYC DOCUMENT SUBMITTED.", {
+          position: "top-right",
+          style: {
+            background: "#79BF28",
+            color: "#fff",
+            borderRadius: "16px",
+            padding: "16px",
+            fontWeight: "600",
+          },
+        });
+      })
+
+      .addCase(submitKyc.rejected, (state, action) => {
+        state.errorMessage = "";
+        state.kycLoading = false;
+        state.errorMessage = action.payload || "Failed";
+        toast.error(action.payload, {
+          position: "top-right",
+          style: {
+            background: "#fb2c36",
+            color: "#fff",
+            borderRadius: "16px",
+            padding: "16px",
+            fontWeight: "600",
+          },
         });
       })
       .addCase(addAddress.pending, (state, action) => {

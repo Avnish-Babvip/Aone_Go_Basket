@@ -60,14 +60,6 @@ function Footer() {
                   FAQ's
                 </Link>
               </li>
-              <li>
-                <Link
-                  to="#"
-                  className="hover:text-brand-green transition-colors"
-                >
-                  Orders
-                </Link>
-              </li>
             </ul>
           </div>
           <div>

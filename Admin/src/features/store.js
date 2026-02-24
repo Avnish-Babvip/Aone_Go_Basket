@@ -12,6 +12,8 @@ import permission from "./slices/permission";
 import category from "./slices/category";
 import attribute from "./slices/attribute";
 import product from "./slices/product";
+import rider from "./slices/rider";
+import order from "./slices/order";
 
 const rootReducer = combineReducers({
   references,
@@ -23,6 +25,8 @@ const rootReducer = combineReducers({
   category,
   attribute,
   product,
+  rider,
+  order,
 });
 
 // Redux-persist configuration

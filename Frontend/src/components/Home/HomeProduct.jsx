@@ -101,8 +101,7 @@ const ProductCard = ({ product, onQuickView }) => {
 
   const isOutOfStock = stockMessage?.toLowerCase().includes("out");
 
-  const primaryImage =
-    product.images?.find((img) => img.is_primary) || product.images?.[0];
+  const primaryImage = product.images?.find((img) => img.is_primary);
 
   const salePrice =
     product.type === "variable"

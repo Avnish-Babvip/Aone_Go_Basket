@@ -71,7 +71,7 @@ export const OtpGrid = ({
             text-slate-900 bg-slate-100
             border border-transparent rounded
             hover:border-slate-200
-            focus:bg-white focus:border-blue-700 focus:ring-2 focus:ring-indigo-100
+            focus:bg-white focus:border-brand-green focus:ring-2 focus:ring-lime-100
             outline-none
           "
         />

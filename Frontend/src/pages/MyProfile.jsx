@@ -1,320 +1,377 @@
-import { useEffect, useState } from "react";
+import { React, useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  getCustomerDetails,
+  getCustomerKycStatus,
+  submitKyc,
+  updateProfile,
+} from "../features/actions/customer";
+import { useForm } from "react-hook-form";
+import { Spinner } from "../components/Loader/Spinner";
 
-const initialAddress = {
-  address_for: "shipping",
-  type: "home",
-  name: "",
-  mobile: "",
-  address_line_1: "",
-  address_line_2: "",
-  landmark: "",
-  country_id: "",
-  state_id: "",
-  city_id: "",
-  is_default: false,
-};
-
-export default function MyProfile() {
-  const [profile, setProfile] = useState(null);
-  const [addresses, setAddresses] = useState([]);
-  const [form, setForm] = useState(initialAddress);
-  const [editingId, setEditingId] = useState(null);
-  const [showForm, setShowForm] = useState(false);
-  const [loading, setLoading] = useState(true);
+export default function ProfilePage() {
+  const dispatch = useDispatch();
+  const { profileData, kycData } = useSelector((state) => state.customer);
 
   useEffect(() => {
-    fetchProfile();
-    fetchAddresses();
-  }, []);
-
-  const fetchProfile = async () => {
-    try {
-      const res = await fetch("/api/profile");
-      const data = await res.json();
-      setProfile(data.data);
-    } catch (err) {
-      console.error(err);
-    }
-  };
-
-  const fetchAddresses = async () => {
-    try {
-      const res = await fetch("/api/address");
-      const data = await res.json();
-      setAddresses(data.data || []);
-      setLoading(false);
-    } catch (err) {
-      console.error(err);
-    }
-  };
-
-  const handleChange = (e) => {
-    const { name, value, type, checked } = e.target;
-    setForm({
-      ...form,
-      [name]: type === "checkbox" ? checked : value,
-    });
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
-    try {
-      if (editingId) {
-        await fetch(`/api/address/${editingId}`, {
-          method: "PUT",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(form),
-        });
-      } else {
-        await fetch("/api/address", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(form),
-        });
-      }
-
-      fetchAddresses();
-      setForm(initialAddress);
-      setEditingId(null);
-      setShowForm(false);
-    } catch (err) {
-      console.error(err);
-    }
-  };
-
-  const handleEdit = (address) => {
-    setForm(address);
-    setEditingId(address.id);
-    setShowForm(true);
-  };
-
-  const handleDelete = async (id) => {
-    await fetch(`/api/address/${id}`, { method: "DELETE" });
-    fetchAddresses();
-  };
-
-  if (!profile) return <div className="text-center py-5">Loading...</div>;
+    dispatch(getCustomerDetails());
+    dispatch(getCustomerKycStatus());
+  }, [dispatch]);
 
   return (
-    <div className="container py-5">
-      {/* PROFILE CARD */}
-      <div className="card shadow-sm border-0 rounded-4 p-4 mb-4">
-        <div className="row align-items-center">
-          <div className="col-md-2 text-center">
-            <img
-              src={profile.profile_image || "/default-user.png"}
-              alt="Profile"
-              className="rounded-circle"
-              width="100"
-              height="100"
-            />
-          </div>
-
-          <div className="col-md-10">
-            <h4 className="mb-1">{profile.name}</h4>
-            <p className="text-muted mb-2">@{profile.username}</p>
-
-            <div className="row">
-              <div className="col-md-4">
-                <small className="text-muted">Email</small>
-                <div>{profile.email}</div>
-              </div>
-              <div className="col-md-4">
-                <small className="text-muted">Mobile</small>
-                <div>{profile.mobile}</div>
-              </div>
-              <div className="col-md-4">
-                <small className="text-muted">Status</small>
-                <div>
-                  <span className="badge bg-success">{profile.status}</span>
-                </div>
-              </div>
-            </div>
-
-            <div className="mt-2 text-muted small">
-              Last Login: {new Date(profile.last_login_at).toLocaleString()}
-            </div>
-          </div>
-        </div>
+    <div className="min-h-screen bg-gray-50 pt-28 pb-20 px-4 lg:px-16 space-y-10">
+      {/* ================= PROFILE FORM ================= */}
+      <div className="max-w-5xl mx-auto bg-white rounded-3xl shadow-sm  p-8 md:p-12">
+        <ProfileForm profileData={profileData} />
       </div>
 
-      {/* ADDRESS SECTION */}
-      <div className="card shadow-sm border-0 rounded-4 p-4">
-        <div className="d-flex justify-content-between align-items-center mb-3">
-          <h5 className="mb-0">My Addresses</h5>
-          <button
-            className="btn btn-dark rounded-pill"
-            onClick={() => {
-              setShowForm(true);
-              setEditingId(null);
-              setForm(initialAddress);
-            }}
-          >
-            + Add Address
-          </button>
+      {/* ================= KYC FORM ================= */}
+      <div className="max-w-5xl mx-auto bg-white rounded-3xl shadow-sm p-8 md:p-12">
+        <h2 className="text-xl font-bold text-gray-800 mb-6">
+          KYC Information
+        </h2>
+
+        {kycData ? <KycStatusCard kyc={kycData} /> : <KycUploadSection />}
+      </div>
+    </div>
+  );
+}
+
+function ProfileForm({ profileData }) {
+  const [preview, setPreview] = useState(null);
+  const dispatch = useDispatch();
+  const { customerLoading } = useSelector((state) => state.customer);
+
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = useForm({
+    defaultValues: {
+      name: profileData?.name || "",
+      username: profileData?.username || "",
+      email: profileData?.email || "",
+      mobile: profileData?.mobile || "",
+    },
+  });
+
+  const { ref, onChange: rhfOnChange, ...rest } = register("profile_image");
+
+  const onSubmit = (data) => {
+    const formData = new FormData();
+    formData.append("name", data.name);
+    formData.append("username", data.username);
+    formData.append("mobile", data.mobile);
+
+    if (data.profile_image?.[0]) {
+      formData.append("profile_image", data.profile_image[0]);
+    }
+
+    dispatch(updateProfile(formData));
+  };
+
+  useEffect(() => {
+    if (profileData) {
+      reset({
+        name: profileData?.name || "",
+        username: profileData?.username || "",
+        email: profileData?.email || "",
+        mobile: profileData?.mobile || "",
+        profile_image: null, // 🔥 VERY IMPORTANT
+      });
+    }
+  }, [profileData, reset]);
+
+  return (
+    <>
+      <h2 className="text-xl font-bold text-gray-800 mb-8">
+        Personal Information
+      </h2>
+
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
+        {/* ================= PROFILE IMAGE ================= */}
+        <div className="flex items-center gap-6">
+          <div className="w-24 h-24 rounded-full overflow-hidden bg-gray-100 border border-gray-300">
+            {preview ? (
+              <img
+                src={preview}
+                alt="Preview"
+                className="w-full h-full object-cover"
+              />
+            ) : profileData?.profile_image ? (
+              <img
+                src={profileData.profile_image}
+                alt="Profile"
+                className="w-full h-full object-cover"
+              />
+            ) : (
+              <div className="flex items-center justify-center h-full text-gray-400 text-sm">
+                No Image
+              </div>
+            )}
+          </div>
+
+          <div>
+            <label className="cursor-pointer inline-block px-4 py-2 bg-lime-100 text-brand-green text-sm font-medium rounded-lg hover:bg-lime-200 transition">
+              Change Photo
+              <input
+                type="file"
+                accept="image/*"
+                ref={ref}
+                {...rest}
+                onChange={(e) => {
+                  rhfOnChange(e); // ✅ IMPORTANT — let RHF handle it first
+
+                  const file = e.target.files?.[0];
+                  if (file) {
+                    setPreview(URL.createObjectURL(file));
+                  }
+                }}
+                className="hidden"
+              />
+            </label>
+            {/* <p className="text-xs text-gray-500 mt-2">
+              At least 800 x 800 px recommended. JPG or PNG allowed.
+            </p> */}
+          </div>
         </div>
 
-        {loading ? (
-          <div>Loading addresses...</div>
-        ) : addresses.length === 0 ? (
-          <div className="text-muted">No addresses added yet.</div>
-        ) : (
-          addresses.map((address) => (
-            <div
-              key={address.id}
-              className="border rounded-4 p-3 mb-3 position-relative"
-            >
-              {address.is_default && (
-                <span className="badge bg-dark position-absolute top-0 end-0 m-2">
-                  Default
-                </span>
-              )}
+        {/* ================= FORM FIELDS ================= */}
+        <div className="grid md:grid-cols-2 gap-6">
+          <FormInput label="Email" register={register("email")} disabled />
 
-              <h6 className="fw-semibold mb-1">
-                {address.name} ({address.type})
-              </h6>
+          <FormInput
+            label="Full Name"
+            register={register("name", { required: "Name is required" })}
+            error={errors.name}
+          />
 
-              <p className="mb-1">
-                {address.address_line_1}, {address.address_line_2}
-              </p>
-              <p className="mb-1">{address.landmark}</p>
-              <p className="mb-1">Mobile: {address.mobile}</p>
+          <FormInput
+            label="Username"
+            register={register("username", {
+              required: "Username is required",
+            })}
+            error={errors.username}
+          />
 
-              <div className="d-flex gap-3 mt-2">
-                <button
-                  className="btn btn-sm btn-outline-dark"
-                  onClick={() => handleEdit(address)}
-                >
-                  Edit
-                </button>
+          <FormInput
+            label="Mobile"
+            register={register("mobile", {
+              required: "Mobile number required",
+              minLength: {
+                value: 10,
+                message: "Invalid mobile number",
+              },
+            })}
+            error={errors.mobile}
+          />
+        </div>
 
-                <button
-                  className="btn btn-sm btn-outline-danger"
-                  onClick={() => handleDelete(address.id)}
-                >
-                  Delete
-                </button>
-              </div>
-            </div>
-          ))
+        {/* ================= ACTION BUTTONS ================= */}
+        <div className="flex justify-end items-center">
+          <button
+            type="submit"
+            disabled={customerLoading}
+            className="px-8 py-3 bg-brand-green text-white font-semibold rounded-xl w-44 hover:bg-emerald-600 transition shadow-md"
+          >
+            {customerLoading ? <Spinner /> : "Update Profile"}
+          </button>
+        </div>
+      </form>
+    </>
+  );
+}
+
+function KycUploadSection() {
+  const {
+    register,
+    handleSubmit,
+    watch,
+    formState: { errors },
+  } = useForm();
+  const { kycLoading } = useSelector((state) => state.customer);
+
+  const dispatch = useDispatch();
+  const selectedType = watch("document_type");
+
+  const onSubmit = (data) => {
+    const formData = new FormData();
+
+    formData.append("document_type", data.document_type);
+    formData.append("document_number", data.document_number);
+    formData.append("document_front", data.document_front[0]);
+
+    if (data.document_type === "aadhaar") {
+      formData.append("document_back", data.document_back[0]);
+    }
+
+    dispatch(submitKyc(formData));
+  };
+
+  return (
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+      {/* ================= DOCUMENT TYPE ================= */}
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-2">
+          Select Document Type <span className="text-red-500">*</span>
+        </label>
+
+        <select
+          {...register("document_type", {
+            required: "Select document type",
+          })}
+          className="w-full px-4 py-3 border border-gray-300 rounded-xl outline-none focus:ring-2 focus:ring-brand-green focus:border-brand-green"
+        >
+          <option value="">Choose Document</option>
+          <option value="aadhaar">Aadhaar</option>
+          <option value="pan">PAN</option>
+          <option value="passport">Passport</option>
+        </select>
+
+        {errors.document_type && (
+          <p className="text-red-500 text-xs mt-1">
+            {errors.document_type.message}
+          </p>
         )}
       </div>
 
-      {/* ADDRESS FORM MODAL STYLE */}
-      {showForm && (
-        <div className="card shadow border-0 rounded-4 p-4 mt-4">
-          <h5 className="mb-3">
-            {editingId ? "Update Address" : "Add Address"}
-          </h5>
+      {/* ================= CONDITIONAL FIELDS ================= */}
+      {selectedType && (
+        <>
+          {/* Document Number */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Document Number <span className="text-red-500">*</span>
+            </label>
 
-          <form onSubmit={handleSubmit}>
-            <div className="row g-3">
-              <div className="col-md-6">
-                <label className="form-label">Address For</label>
-                <select
-                  name="address_for"
-                  className="form-select"
-                  value={form.address_for}
-                  onChange={handleChange}
-                >
-                  <option value="shipping">Shipping</option>
-                  <option value="billing">Billing</option>
-                </select>
-              </div>
+            <input
+              {...register("document_number", {
+                required: "Document number required",
+              })}
+              placeholder="Enter document number"
+              className="w-full px-4 py-3 border border-gray-300 rounded-xl outline-none focus:ring-2 focus:ring-brand-green focus:border-brand-green"
+            />
 
-              <div className="col-md-6">
-                <label className="form-label">Type</label>
-                <select
-                  name="type"
-                  className="form-select"
-                  value={form.type}
-                  onChange={handleChange}
-                >
-                  <option value="home">Home</option>
-                  <option value="office">Office</option>
-                </select>
-              </div>
+            {errors.document_number && (
+              <p className="text-red-500 text-xs mt-1">
+                {errors.document_number.message}
+              </p>
+            )}
+          </div>
 
-              <div className="col-md-6">
-                <label className="form-label">Name</label>
-                <input
-                  type="text"
-                  name="name"
-                  className="form-control"
-                  value={form.name}
-                  onChange={handleChange}
-                />
-              </div>
+          {/* Front Image */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Upload Front Image <span className="text-red-500">*</span>
+            </label>
 
-              <div className="col-md-6">
-                <label className="form-label">Mobile</label>
-                <input
-                  type="text"
-                  name="mobile"
-                  className="form-control"
-                  value={form.mobile}
-                  onChange={handleChange}
-                />
-              </div>
+            <input
+              type="file"
+              accept="image/*"
+              {...register("document_front", {
+                required: "Front image required",
+              })}
+              className="w-full px-4 py-2 border border-gray-300 rounded-xl bg-white file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-lime-100 file:text-brand-green file:font-medium hover:file:bg-lime-200"
+            />
 
-              <div className="col-12">
-                <label className="form-label">Address Line 1</label>
-                <input
-                  type="text"
-                  name="address_line_1"
-                  className="form-control"
-                  value={form.address_line_1}
-                  onChange={handleChange}
-                />
-              </div>
+            {errors.document_front && (
+              <p className="text-red-500 text-xs mt-1">
+                {errors.document_front.message}
+              </p>
+            )}
+          </div>
 
-              <div className="col-12">
-                <label className="form-label">Address Line 2</label>
-                <input
-                  type="text"
-                  name="address_line_2"
-                  className="form-control"
-                  value={form.address_line_2}
-                  onChange={handleChange}
-                />
-              </div>
+          {/* Back Image (Only Aadhaar) */}
+          {selectedType === "aadhaar" && (
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Upload Back Image <span className="text-red-500">*</span>
+              </label>
 
-              <div className="col-12">
-                <label className="form-label">Landmark</label>
-                <input
-                  type="text"
-                  name="landmark"
-                  className="form-control"
-                  value={form.landmark}
-                  onChange={handleChange}
-                />
-              </div>
+              <input
+                type="file"
+                accept="image/*"
+                {...register("document_back", {
+                  required: "Back image required",
+                })}
+                className="w-full px-4 py-2 border border-gray-300 rounded-xl bg-white file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-lime-100 file:text-brand-green file:font-medium hover:file:bg-lime-200"
+              />
 
-              <div className="col-12 form-check mt-2">
-                <input
-                  type="checkbox"
-                  name="is_default"
-                  className="form-check-input"
-                  checked={form.is_default}
-                  onChange={handleChange}
-                />
-                <label className="form-check-label">
-                  Set as default address
-                </label>
-              </div>
-
-              <div className="col-12 mt-3">
-                <button
-                  type="submit"
-                  className="btn btn-dark w-100 rounded-pill"
-                >
-                  {editingId ? "Update Address" : "Save Address"}
-                </button>
-              </div>
+              {errors.document_back && (
+                <p className="text-red-500 text-xs mt-1">
+                  {errors.document_back.message}
+                </p>
+              )}
             </div>
-          </form>
+          )}
+
+          {/* Submit Button */}
+          <button
+            type="submit"
+            disabled={kycLoading}
+            className="w-full py-3 bg-brand-green text-white rounded-xl font-semibold hover:bg-emerald-600 transition"
+          >
+            {kycLoading ? <Spinner /> : "Submit KYC"}
+          </button>
+        </>
+      )}
+    </form>
+  );
+}
+
+/* ================= REUSABLE COMPONENTS ================= */
+function FormInput({ label, register, error, disabled = false }) {
+  return (
+    <div>
+      <label className="block text-sm font-medium text-gray-700 mb-2">
+        {label}
+      </label>
+
+      <input
+        {...register}
+        disabled={disabled}
+        className={`w-full px-4 py-3 rounded-xl border transition 
+        ${
+          disabled
+            ? "bg-gray-100 text-gray-500 cursor-not-allowed"
+            : "border-gray-300 outline-none focus:ring-2 focus:ring-brand-green"
+        }`}
+      />
+
+      {error && <p className="text-red-500 text-xs mt-1">{error.message}</p>}
+    </div>
+  );
+}
+
+function KycStatusCard({ kyc }) {
+  const getStatusStyle = () => {
+    if (kyc.status === "approved") return "bg-emerald-100 text-emerald-700";
+    if (kyc.status === "pending") return "bg-yellow-100 text-yellow-700";
+    if (kyc.status === "rejected") return "bg-red-100 text-red-600";
+  };
+
+  return (
+    <div className="bg-gray-50 p-6 rounded-2xl border border-gray-200">
+      <div className="flex justify-between items-center">
+        <div>
+          <p className="font-semibold capitalize">
+            {kyc.document_type} Submitted
+          </p>
+          <p className="text-sm text-gray-500 mt-1">Verification Status</p>
         </div>
+
+        <span
+          className={`px-4 py-1 rounded-full text-xs font-medium capitalize ${getStatusStyle()}`}
+        >
+          {kyc.status}
+        </span>
+      </div>
+
+      {kyc.status === "rejected" && (
+        <p className="text-xs text-red-500 mt-3">
+          Your document was rejected. Please resubmit.
+        </p>
       )}
     </div>
   );

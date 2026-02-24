@@ -3,5 +3,6 @@
 
 @theme{
   --font-play: "Play" , "sans-serif";
+     --color-brand-green: #79BF28;              /* 👈 default green color */
 }
 

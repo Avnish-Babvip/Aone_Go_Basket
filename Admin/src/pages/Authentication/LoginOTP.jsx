@@ -76,19 +76,15 @@ const LoginOTP = () => {
   return (
     <div className="flex justify-center items-center min-h-screen bg-gray-50 relative overflow-hidden">
       {/* Background circles */}
-      <div className="absolute w-40 h-40 bg-gradient-to-r from-blue-700 to-blue-950 rounded-full left-1/2 -translate-x-1/2 -top-20 shadow-[0_0_180px_60px_rgba(200,160,255,0.55)]"></div>
+      <div className="absolute w-40 h-40 bg-gradient-to-r from-[#009220] to-[#549A01] rounded-full left-1/2 -translate-x-1/2 -top-20 shadow-[0_0_180px_60px_rgba(200,160,255,0.55)]"></div>
 
-      <div className="absolute w-60 h-60 bg-gradient-to-r from-blue-700 to-blue-950 shadow-[0_0_180px_60px_rgba(200,160,255,0.55)] rounded-full sm:-bottom-18 -bottom-36 right-64 sm:right-25"></div>
-      <div className="hidden sm:block  absolute w-36 h-36 bg-gradient-to-r from-blue-700 to-blue-950 shadow-[0_0_180px_60px_rgba(200,160,255,0.55)] rounded-full  -left-18"></div>
+      <div className="absolute w-60 h-60 bg-gradient-to-r from-[#009220] to-[#549A01] shadow-[0_0_180px_60px_rgba(200,160,255,0.55)] rounded-full sm:-bottom-18 -bottom-36 right-64 sm:right-25"></div>
+      <div className="hidden sm:block  absolute w-36 h-36 bg-gradient-to-r from-[#009220] to-[#549A01] shadow-[0_0_180px_60px_rgba(200,160,255,0.55)] rounded-full  -left-18"></div>
 
       <div className="flex w-[90%] md:w-[70%] lg:w-[65%] bg-white rounded-3xl shadow-xl overflow-hidden z-10">
         {/* Left Side - Login */}
         <div className="w-full md:w-1/2 px-10 py-20 flex flex-col justify-center text-center">
-          <img
-            src="/src/assets/images/logo.png"
-            alt="Logo"
-            className="mx-auto w-40 mb-4"
-          />
+          <img src="/logo.png" alt="Logo" className="mx-auto w-40 mb-4" />
           <h2 className="text-3xl font-semibold tracking-tight mb-6 text-gray-800">
             Enter the Login OTP
           </h2>
@@ -98,7 +94,7 @@ const LoginOTP = () => {
             <OtpGrid onChange={setOtp} />
             <button
               onClick={handleResendOtp}
-              className="text-blue-700 text-sm hover:underline"
+              className="text-[#009220] text-sm hover:underline"
             >
               Resend
             </button>
@@ -108,7 +104,7 @@ const LoginOTP = () => {
             disabled={otp.length !== 6}
             className="
               w-full mt-4 py-4 rounded-lg font-semibold text-white
-              bg-gradient-to-r from-blue-700 to-blue-950
+              bg-gradient-to-r from-[#009220] to-[#549A01]
               disabled:opacity-50 disabled:cursor-not-allowed
             "
           >
@@ -126,7 +122,7 @@ const LoginOTP = () => {
         </div>
 
         {/* Right Side - Slider */}
-        <div className="hidden md:flex w-1/2 bg-gradient-to-b from-[#0b0230] to-[#150048] text-white flex-col  justify-end px-10 relative">
+        <div className="hidden md:flex w-1/2 bg-gradient-to-b from-[#009220] to-[#549A01] text-white flex-col  justify-end px-10 relative">
           <div className="transition-all duration-700 absolute bottom-10">
             <h2 className="text-3xl font-bold mb-2">{slides[current].title}</h2>
             <h4 className="font-semibold">{slides[current].subtitle}</h4>

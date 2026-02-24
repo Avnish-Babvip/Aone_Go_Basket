@@ -2,16 +2,15 @@ import { useEffect, useRef, useState } from "react";
 import { NavLink, useNavigate, useSearchParams } from "react-router-dom";
 import {
   FiChevronDown,
-  FiMenu,
   FiX,
-  FiShoppingBag,
-  FiPlus,
-  FiMinus,
   FiSearch,
   FiUser,
   FiChevronUp,
   FiTrash,
 } from "react-icons/fi";
+import { PiUserCircleLight } from "react-icons/pi";
+import { BiSolidShoppingBagAlt } from "react-icons/bi";
+import { CgMenuLeftAlt } from "react-icons/cg";
 import Login from "../../components/Modal/Authentication/Login";
 import SignUp from "../../components/Modal/Authentication/SignUp";
 import LoginOTP from "../../components/Modal/Authentication/LoginOTP";
@@ -24,12 +23,15 @@ import {
   getCartData,
   updateCart,
 } from "../../features/actions/cart";
+import ChangePassword from "../../components/Modal/Account/ChangePassword";
+import { getCustomerDetails } from "../../features/actions/customer";
 
 /* ================= HEADER ================= */
 
 function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isCartOpen, setIsCartOpen] = useState(false);
+  const { profileData } = useSelector((state) => state.customer);
   const [isAccountOpen, setIsAccountOpen] = useState(false);
   const { customerData, isCustomerLoggedIn } = useSelector(
     (state) => state.authentication,
@@ -46,6 +48,7 @@ function Header() {
   const [input, setInput] = useState(urlSearch);
 
   const [authView, setAuthView] = useState(null);
+  const { cartData } = useSelector((state) => state.cart);
 
   useEffect(() => {
     dispatch(getCartData());
@@ -103,6 +106,7 @@ function Header() {
       {/* TOP NAVBAR */}
       <header className="fixed top-0 w-full z-50 bg-white shadow-xs">
         <MainNavbar
+          authView={authView}
           setIsMenuOpen={setIsMenuOpen}
           setIsCartOpen={setIsCartOpen}
           setAuthView={setAuthView}
@@ -114,38 +118,29 @@ function Header() {
       </header>
 
       {/* MOBILE BOTTOM NAV */}
-      <div className="lg:hidden fixed bottom-0 left-0 w-full h-16 bg-white border-t border-gray-200 z-[100] flex items-center justify-around shadow-[0_-2px_10px_rgba(0,0,0,0.05)]">
+      <div className="lg:hidden fixed bottom-0 left-0 w-full h-16 bg-white border-t border-gray-100 z-[100] flex items-center justify-around shadow-[0_-4px_20px_rgba(0,0,0,0.06)] backdrop-blur-md">
         <BottomNavItem
-          icon={<FiMenu />}
-          label="Menu"
+          icon={<CgMenuLeftAlt />}
           onClick={() => setIsMenuOpen(true)}
         />
 
         <BottomNavItem
-          icon={<FiShoppingBag />}
-          label="Cart"
+          icon={<BiSolidShoppingBagAlt />}
+          badge={cartData?.items?.length}
           onClick={() => setIsCartOpen(true)}
         />
 
         <BottomNavItem
           icon={<FiSearch />}
-          label="Search"
-          onClick={() => {
-            searchRef.current?.focus();
-          }}
+          onClick={() => searchRef.current?.focus()}
         />
 
-        {/* SIGN IN (MOBILE) */}
         <BottomNavItem
           icon={<FiUser />}
-          label="Account"
           onClick={() => {
             if (isCustomerLoggedIn) {
-              console.log("first");
               setIsAccountOpen(true);
             } else {
-              console.log("first");
-
               setAuthView("signin");
             }
           }}
@@ -178,6 +173,8 @@ function Header() {
       <CartSidebar isOpen={isCartOpen} onClose={() => setIsCartOpen(false)} />
 
       <AccountSidebar
+        authView={authView}
+        setAuthView={setAuthView}
         isOpen={isAccountOpen}
         onClose={() => setIsAccountOpen(false)}
         customer={customer}
@@ -204,6 +201,11 @@ function Header() {
         onClose={() => setAuthView(null)}
         onSwitch={() => setAuthView("signin")}
       />
+      <ChangePassword
+        isOpen={authView === "changePassword"}
+        onClose={() => setAuthView(null)}
+        onSwitch={() => setAuthView("signin")}
+      />
     </>
   );
 }
@@ -211,6 +213,7 @@ function Header() {
 /* ================= MAIN NAVBAR ================= */
 
 function MainNavbar({
+  authView,
   setIsCartOpen,
   setAuthView,
   category,
@@ -272,14 +275,14 @@ function MainNavbar({
         <div className="flex items-center gap-6">
           {/* DESKTOP SIGN IN */}
           <div className="hidden md:block">
-            <AccountSection setAuthView={setAuthView} />
+            <AccountSection authView={authView} setAuthView={setAuthView} />
           </div>
 
           <div
             onClick={() => setIsCartOpen(true)}
             className="relative cursor-pointer text-gray-700 hover:text-brand-green"
           >
-            <FiShoppingBag className="text-2xl" />
+            <BiSolidShoppingBagAlt className="text-2xl" />
             <span className="absolute -top-1.5 -right-2 bg-brand-green text-white text-[10px] font-bold rounded-full h-4 w-4 flex items-center justify-center">
               {cartData?.items ? cartData?.items?.length : 0}
             </span>
@@ -304,14 +307,25 @@ function SignIn({ setAuthView }) {
   );
 }
 
-function BottomNavItem({ icon, onClick }) {
+function BottomNavItem({ icon, onClick, badge }) {
   return (
     <button
       onClick={onClick}
-      className="flex flex-col items-center gap-1 text-gray-500"
+      className="relative flex flex-col items-center justify-center gap-1 text-gray-600 active:scale-95 transition-transform duration-150"
     >
-      <span className="text-2xl ">{icon}</span>
-      {/* <span className="text-[10px]">{label}</span> */}
+      {/* ICON CONTAINER */}
+      <div className="relative w-12 h-11 flex items-center justify-center rounded-xl bg-gray-100 hover:bg-emerald-50 transition-colors duration-200">
+        <span className="text-xl">{icon}</span>
+
+        {/* BADGE */}
+        {badge > 0 && (
+          <span className="absolute -top-1 -right-1 bg-brand-green text-white text-[10px] font-bold rounded-full h-4 min-w-[16px] px-1 flex items-center justify-center shadow">
+            {badge}
+          </span>
+        )}
+      </div>
+
+      {/* LABEL */}
     </button>
   );
 }
@@ -324,7 +338,7 @@ function MenuItem({ title, options, isCategory }) {
         <FiChevronDown className="text-xs group-hover:rotate-180 transition" />
       </div>
 
-      <div className="absolute top-full left-0 hidden group-hover:block border shadow-md border-gray-100  bg-white  min-w-[240px] py-2">
+      <div className="absolute top-full left-0 hidden group-hover:block border rounded-b-xl shadow-md border-gray-100  bg-white  min-w-[240px] py-2">
         {options?.map((item, i) => (
           <DesktopSubItem key={i} item={item} isCategory={isCategory} />
         ))}
@@ -356,7 +370,7 @@ function DesktopSubItem({ item, parentSlug = "", isCategory }) {
 
       {/* CHILDREN */}
       {hasChildren && (
-        <div className="absolute top-0 left-full hidden group-hover/sub:block bg-white border shadow-md border-gray-100  min-w-[220px] py-2">
+        <div className="absolute top-0 left-full hidden group-hover/sub:block bg-white border rounded-xl shadow-md border-gray-100  min-w-[220px] py-2">
           {item.children_recursive.map((child, i) => (
             <DesktopSubItem
               key={i}
@@ -390,26 +404,22 @@ function Search({ input, setInput, searchRef }) {
   );
 }
 
-function AccountSection({ setAuthView }) {
+function AccountSection({ authView, setAuthView }) {
   const [open, setOpen] = useState(false);
   const dropdownRef = useRef(null);
-
+  const isActive = authView === "changePassword";
+  const { profileData } = useSelector((state) => state.customer);
   const { customerData, isCustomerLoggedIn } = useSelector(
     (state) => state.authentication,
   );
   const customer = customerData?.customer;
   const dispatch = useDispatch();
 
-  if (!isCustomerLoggedIn) {
-    return <SignIn setAuthView={setAuthView} />;
-  }
-
   const handleLogout = () => {
     dispatch(customerLogout());
     setOpen(false);
   };
 
-  // ✅ Close on outside click
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
@@ -417,62 +427,132 @@ function AccountSection({ setAuthView }) {
       }
     };
 
-    document.addEventListener("click", handleClickOutside, true); // ✅ use capture phase
+    document.addEventListener("click", handleClickOutside, true);
 
     return () => {
       document.removeEventListener("click", handleClickOutside, true);
     };
   }, []);
 
+  useEffect(() => {
+    const openLogin = () => setAuthView("signin");
+
+    window.addEventListener("openLoginModal", openLogin);
+
+    return () => {
+      window.removeEventListener("openLoginModal", openLogin);
+    };
+  }, []);
+
+  useEffect(() => {
+    dispatch(getCustomerDetails());
+  }, []);
+
+  if (!isCustomerLoggedIn) {
+    return <SignIn setAuthView={setAuthView} />;
+  }
+
   return (
     <div ref={dropdownRef} className="relative">
-      {/* BUTTON */}
+      {/* ================= BUTTON ================= */}
       <button
         onClick={() => setOpen((p) => !p)}
-        className="flex items-center gap-2 font-bold text-sm text-gray-700 hover:text-brand-green"
+        className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-semibold text-gray-700 hover:bg-gray-100 hover:text-brand-green transition-all duration-200"
       >
-        <FiUser className="text-xl" />
-        <span>Hi, {customer?.name || "User"}</span>
-        <FiChevronDown className={`transition ${open ? "rotate-180" : ""}`} />
+        <div className="w-8 h-8 flex items-center justify-center rounded-full text-brand-green">
+          {profileData?.profile_image || customer?.profile_image ? (
+            <img
+              className="rounded-full"
+              src={
+                profileData?.profile_image
+                  ? profileData?.profile_image
+                  : `${import.meta.env.VITE_REACT_APP_IMAGE_URL}/${customer?.profile_image}`
+              }
+            />
+          ) : (
+            <PiUserCircleLight size={24} className="text-lg" />
+          )}
+        </div>
+
+        <span className="hidden md:block">
+          Hi, {customer?.name?.split(" ")[0] || "User"}
+        </span>
+
+        <FiChevronDown
+          className={`transition-transform duration-300 ${
+            open ? "rotate-180 text-brand-green" : ""
+          }`}
+        />
       </button>
 
-      {/* DROPDOWN */}
-      {open && (
-        <div className="absolute right-0 mt-3 w-48 bg-white border border-gray-200 rounded-lg shadow-xl py-2 z-[200]">
+      {/* ================= DROPDOWN ================= */}
+      <div
+        className={`absolute right-0 mt-3 w-56 bg-white rounded-2xl shadow-2xl border border-gray-100 overflow-hidden transition-all duration-300 origin-top ${
+          open
+            ? "opacity-100 scale-100 visible"
+            : "opacity-0 scale-95 invisible"
+        }`}
+      >
+        {/* USER HEADER */}
+        <div className="px-5 py-4 bg-gray-50 border-b border-gray-100">
+          <p className="text-sm font-semibold text-gray-800">
+            {customer?.name}
+          </p>
+          <p className="text-xs text-gray-500 truncate">{customer?.email}</p>
+        </div>
+
+        {/* MENU ITEMS */}
+        <div className="py-2">
           <NavLink
-            to="/my-profile"
-            className="block px-4 py-2 text-sm hover:bg-gray-100"
+            to="/account/my-profile"
             onClick={() => setOpen(false)}
+            className={({ isActive }) =>
+              `flex items-center px-5 py-2.5 text-sm transition-all ${
+                isActive
+                  ? "bg-emerald-50 text-brand-green font-medium"
+                  : "text-gray-700 hover:bg-gray-50"
+              }`
+            }
           >
             My Profile
           </NavLink>
-
-          <NavLink
-            to="/account/change-password"
-            className="block px-4 py-2 text-sm hover:bg-gray-100"
-            onClick={() => setOpen(false)}
+          <button
+            onClick={() => {
+              setOpen(false);
+              setAuthView("changePassword");
+            }}
+            className={`flex items-center w-full text-left px-5 py-2.5 text-sm transition-all ${
+              isActive
+                ? "bg-emerald-50 text-brand-green font-medium"
+                : "text-gray-700 hover:bg-gray-50"
+            }`}
           >
             Change Password
-          </NavLink>
-
+          </button>
           <NavLink
             to="/account/order-history"
-            className="block px-4 py-2 text-sm hover:bg-gray-100"
             onClick={() => setOpen(false)}
+            className={({ isActive }) =>
+              `flex items-center px-5 py-2.5 text-sm transition-all ${
+                isActive
+                  ? "bg-emerald-50 text-brand-green font-medium"
+                  : "text-gray-700 hover:bg-gray-50"
+              }`
+            }
           >
             Orders History
           </NavLink>
 
-          <hr className="my-2 text-gray-200" />
+          <div className="my-2 border-t border-gray-100" />
 
           <button
             onClick={handleLogout}
-            className="w-full text-left px-4 py-2 text-sm text-red-500 hover:bg-red-50"
+            className="w-full text-left px-5 py-2.5 text-sm text-red-500 hover:bg-red-50 transition"
           >
             Logout
           </button>
         </div>
-      )}
+      </div>
     </div>
   );
 }
@@ -486,7 +566,7 @@ function MobileMenuSidebar({ isOpen, onClose, category }) {
         isOpen ? "translate-x-0" : "translate-x-full"
       }`}
     >
-      <div className="flex items-center justify-between px-5 border-b border-gray-200">
+      <div className="flex items-center justify-between px-5 pt-3  border-gray-200">
         <img src="/images/logo.png" className="h-12 w-12 object-contain" />
         <button onClick={onClose} className="text-2xl text-gray-400">
           <FiX />
@@ -526,7 +606,6 @@ function MobileMenuSidebar({ isOpen, onClose, category }) {
 
 function MobileMenuItem({ title, link, options, onClose }) {
   const [open, setOpen] = useState(false);
-
   const hasChildren = options && options.length > 0;
 
   // ✅ NO CHILDREN → DIRECT NAVIGATION
@@ -535,7 +614,14 @@ function MobileMenuItem({ title, link, options, onClose }) {
       <NavLink
         to={link || "#"}
         onClick={onClose}
-        className="block py-4 font-semibold border-b border-gray-200 hover:text-brand-green"
+        className={({ isActive }) =>
+          `block px-5 py-4 text-base font-semibold transition-all duration-200
+           ${
+             isActive
+               ? "text-brand-green bg-emerald-50"
+               : "text-gray-800 hover:text-brand-green hover:bg-gray-50"
+           }`
+        }
       >
         {title}
       </NavLink>
@@ -544,22 +630,32 @@ function MobileMenuItem({ title, link, options, onClose }) {
 
   // ✅ HAS CHILDREN → EXPANDABLE
   return (
-    <div className="border-b border-gray-200">
+    <div className="border-b border-gray-100">
       <button
         onClick={() => setOpen((p) => !p)}
-        className="w-full py-4 flex justify-between items-center font-semibold"
+        className="w-full px-5 py-4 flex justify-between items-center text-base font-semibold text-gray-800 hover:bg-gray-50 transition"
       >
         {title}
-        {open ? <FiMinus /> : <FiPlus />}
+        <span
+          className={`transition-transform duration-300 ${
+            open ? "rotate-180 text-brand-green" : "rotate-0"
+          }`}
+        >
+          {open ? <FiChevronDown /> : <FiChevronDown />}
+        </span>
       </button>
 
-      {open && (
+      <div
+        className={`overflow-hidden transition-all duration-300 ${
+          open ? "max-h-96 opacity-100" : "max-h-0 opacity-0"
+        }`}
+      >
         <div className="pb-3">
           {options.map((item, i) => (
             <MobileSubItem key={i} item={item} onClose={onClose} />
           ))}
         </div>
-      )}
+      </div>
     </div>
   );
 }
@@ -569,10 +665,12 @@ function MobileSubItem({ item, parentSlug = "", onClose }) {
 
   const isCategory = !!item.children_recursive;
 
-  // ✅ BUILD PATH
   const path = isCategory
-    ? `/category/${parentSlug ? parentSlug + "/" : ""}${item.slug}`
+    ? `/category?category_slug=${parentSlug ? parentSlug + "/" : ""}${
+        item.slug
+      }`
     : `${item.slug}`;
+
   // ===============================
   // NO CHILDREN
   // ===============================
@@ -581,7 +679,14 @@ function MobileSubItem({ item, parentSlug = "", onClose }) {
       <NavLink
         to={path}
         onClick={onClose}
-        className="block py-2 px-4 text-sm text-gray-600 hover:text-brand-green"
+        className={({ isActive }) =>
+          `block py-2.5 px-6 text-sm transition-all duration-200 rounded-lg
+           ${
+             isActive
+               ? "text-brand-green bg-emerald-50 font-medium"
+               : "text-gray-600 hover:text-brand-green hover:bg-gray-50"
+           }`
+        }
       >
         {item.name}
       </NavLink>
@@ -595,23 +700,33 @@ function MobileSubItem({ item, parentSlug = "", onClose }) {
     <div>
       <button
         onClick={() => setOpen((p) => !p)}
-        className="w-full flex justify-between items-center py-2 px-4 text-sm text-gray-700"
+        className="w-full flex justify-between items-center py-2.5 px-6 text-sm text-gray-700 hover:bg-gray-50 rounded-lg transition"
       >
-        {item.name}
-        {open ? <FiMinus size={14} /> : <FiPlus size={14} />}
+        <span className="font-medium">{item.name}</span>
+
+        <span
+          className={`transition-transform duration-300 ${
+            open ? "rotate-180 text-brand-green" : ""
+          }`}
+        >
+          {open ? <FiChevronDown /> : <FiChevronDown />}
+        </span>
       </button>
 
-      {open && (
-        <div className="ml-4">
-          {item.children_recursive.map((child, i) => (
-            <MobileSubItem
-              key={i}
-              item={child}
-              parentSlug={`${parentSlug ? parentSlug + "/" : ""}${item.slug}`}
-            />
-          ))}
-        </div>
-      )}
+      <div
+        className={`ml-4 overflow-hidden transition-all duration-300 ${
+          open ? "max-h-96 opacity-100" : "max-h-0 opacity-0"
+        }`}
+      >
+        {item.children_recursive.map((child, i) => (
+          <MobileSubItem
+            key={i}
+            item={child}
+            parentSlug={`${parentSlug ? parentSlug + "/" : ""}${item.slug}`}
+            onClose={onClose}
+          />
+        ))}
+      </div>
     </div>
   );
 }
@@ -755,7 +870,7 @@ function CartSidebar({ isOpen, onClose }) {
       {/* ================= EMPTY ================= */}
       {isEmpty ? (
         <div className="flex-1 flex flex-col items-center justify-center p-10 text-center">
-          <FiShoppingBag className="text-5xl text-gray-200 mb-4" />
+          <BiSolidShoppingBagAlt className="text-5xl text-gray-200 mb-4" />
           <h3 className="text-lg font-bold">Your cart is empty</h3>
           <button
             onClick={onClose}
@@ -796,62 +911,125 @@ function CartSidebar({ isOpen, onClose }) {
   );
 }
 
-function AccountSidebar({ isOpen, onClose, customer }) {
+function AccountSidebar({ isOpen, onClose, customer, authView, setAuthView }) {
+  const dispatch = useDispatch();
+  const [open, setOpen] = useState(false);
+  const isActive = authView === "changePassword";
+
+  const getInitials = (name) => {
+    if (!name) return "U";
+    const parts = name.split(" ");
+    return parts
+      .map((p) => p[0])
+      .join("")
+      .toUpperCase();
+  };
+
   return (
-    <div
-      className={`fixed top-0 right-0 h-full w-full sm:w-[380px] bg-white z-[120] shadow-2xl transition-transform duration-300 ${
-        isOpen ? "translate-x-0" : "translate-x-full"
-      }`}
-    >
-      {/* HEADER */}
-      <div className="flex items-center justify-between p-5 border-b border-gray-200">
-        <div>
-          <p className="font-bold text-lg">My Account</p>
-          <p className="text-sm text-gray-500">{customer?.name}</p>
+    <>
+      {/* OVERLAY */}
+      <div
+        onClick={onClose}
+        className={`fixed inset-0 bg-black/40 backdrop-blur-sm z-[110] transition-opacity duration-300 ${
+          isOpen ? "opacity-100 visible" : "opacity-0 invisible"
+        }`}
+      />
+
+      {/* SIDEBAR */}
+      <div
+        className={`fixed top-0 right-0 h-full w-full sm:w-[380px] bg-white z-[120] shadow-2xl transition-transform duration-300 ${
+          isOpen ? "translate-x-0" : "translate-x-full"
+        }`}
+      >
+        {/* ================= HEADER ================= */}
+        <div className="relative bg-gradient-to-r from-brand-green to-lime-600 text-white p-6">
+          <button
+            onClick={onClose}
+            className="absolute top-4 right-4 text-white text-xl opacity-80 hover:opacity-100"
+          >
+            <FiX />
+          </button>
+
+          <div className="flex items-center gap-4">
+            {/* Profile Image */}
+            <div className="w-16 h-16 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center text-xl font-bold border border-white/30 overflow-hidden">
+              {customer?.profile_image ? (
+                <img
+                  src={`${import.meta.env.VITE_REACT_APP_IMAGE_URL}/${customer.profile_image}`}
+                  alt="Profile"
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                getInitials(customer?.name)
+              )}
+            </div>
+
+            <div>
+              <p className="text-lg font-bold">{customer?.name || "User"}</p>
+              <p className="text-sm opacity-80 truncate">{customer?.email}</p>
+            </div>
+          </div>
         </div>
 
-        <button onClick={onClose} className="text-2xl text-gray-400">
-          <FiX />
-        </button>
+        {/* ================= MENU ================= */}
+        <div className="p-6 space-y-2 text-sm font-medium">
+          <NavLink
+            to="/account/my-profile"
+            onClick={onClose}
+            className={({ isActive }) =>
+              `flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${
+                isActive
+                  ? "bg-emerald-50 text-brand-green font-semibold"
+                  : "text-gray-700 hover:bg-gray-50"
+              }`
+            }
+          >
+            My Profile
+          </NavLink>
+
+          <NavLink
+            to="/account/order-history"
+            onClick={onClose}
+            className={({ isActive }) =>
+              `flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${
+                isActive
+                  ? "bg-emerald-50 text-brand-green font-semibold"
+                  : "text-gray-700 hover:bg-gray-50"
+              }`
+            }
+          >
+            Order History
+          </NavLink>
+
+          <button
+            to="/account/change-password"
+            onClick={() => {
+              setOpen(false);
+              setAuthView("changePassword");
+            }}
+            className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${
+              isActive
+                ? "bg-emerald-50 text-brand-green font-semibold"
+                : "text-gray-700 hover:bg-gray-50"
+            }`}
+          >
+            Change Password
+          </button>
+
+          <div className="border-t border-gray-100 my-4" />
+
+          <button
+            onClick={() => {
+              dispatch(customerLogout());
+              onClose();
+            }}
+            className="w-full text-left px-4 py-3 rounded-xl text-red-500 hover:bg-red-50 transition"
+          >
+            Logout
+          </button>
+        </div>
       </div>
-
-      {/* MENU */}
-      <div className="p-5 space-y-4 text-sm font-medium">
-        <NavLink
-          to="/profile"
-          onClick={onClose}
-          className="block hover:text-brand-green"
-        >
-          My Profile
-        </NavLink>
-
-        <NavLink
-          to="/orders"
-          onClick={onClose}
-          className="block hover:text-brand-green"
-        >
-          Order History
-        </NavLink>
-
-        <NavLink
-          to="/change-password"
-          onClick={onClose}
-          className="block hover:text-brand-green"
-        >
-          Change Password
-        </NavLink>
-
-        <button
-          onClick={() => {
-            dispatch(customerLogout());
-            onClose();
-          }}
-          className="block text-red-500"
-        >
-          Logout
-        </button>
-      </div>
-    </div>
+    </>
   );
 }
 

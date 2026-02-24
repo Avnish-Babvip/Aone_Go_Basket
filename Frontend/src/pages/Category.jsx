@@ -16,9 +16,9 @@ export default function Category() {
   return (
     <div className="min-h-screen bg-gray-50 pt-28 pb-20 px-4 lg:px-16">
       {/* BREADCRUMB */}
-      <div className="max-w-7xl mx-auto mb-6 text-sm text-gray-500">
+      {/* <div className="max-w-7xl mx-auto mb-6 text-sm text-gray-500">
         Home / <span className="text-gray-800 font-medium">Categories</span>
-      </div>
+      </div> */}
 
       {/* HEADER */}
       <div className="max-w-7xl mx-auto mb-12">
@@ -40,7 +40,7 @@ export default function Category() {
             <div key={cat.id}>
               {/* ================= PARENT CATEGORY ================= */}
               <div
-                onClick={() => navigate(`/category/${cat.slug}`)}
+                onClick={() => navigate(`/category?category_slug=${cat.slug}`)}
                 className="flex items-center gap-6 cursor-pointer group"
               >
                 <div className="w-24 h-24 rounded-full bg-[#F3F6FA] flex items-center justify-center overflow-hidden transition group-hover:shadow-lg">
@@ -67,7 +67,9 @@ export default function Category() {
                     return (
                       <div
                         key={sub.id}
-                        onClick={() => navigate(`/category/${sub.slug}`)}
+                        onClick={() =>
+                          navigate(`/category?category_slug=${sub.slug}`)
+                        }
                         className="group cursor-pointer bg-white rounded-xl p-4 text-center transition hover:shadow-md"
                       >
                         <div className="w-20 h-20 mx-auto rounded-full bg-gray-50 flex items-center justify-center overflow-hidden mb-3">

@@ -9,6 +9,7 @@ export const getCartData = createAsyncThunk(
       const loginToken = getState().authentication?.customerData?.token;
 
       const headers = {};
+      console.log(loginToken);
 
       if (loginToken) {
         // ✅ Logged in user
@@ -121,6 +122,28 @@ export const updateCartCharges = createAsyncThunk(
       const { data } = await instance.post(
         `/customer/cart/update-addresses`,
         payload,
+        {
+          headers: {
+            Authorization: `Bearer ${loginToken}`,
+          },
+        },
+      );
+      return data;
+    } catch (error) {
+      return rejectWithValue(error.response.data.message || "Failed");
+    }
+  },
+);
+
+export const reorderCart = createAsyncThunk(
+  "/api/customer/orders/reorder/10",
+  async (id, { getState, rejectWithValue }) => {
+    try {
+      const loginToken = getState().authentication?.customerData?.token;
+
+      const { data } = await instance.post(
+        `/customer/orders/reorder/${id}`,
+        {},
         {
           headers: {
             Authorization: `Bearer ${loginToken}`,

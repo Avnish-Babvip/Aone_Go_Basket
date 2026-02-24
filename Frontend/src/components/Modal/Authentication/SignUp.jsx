@@ -1,6 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-import { FiX, FiUser, FiMail, FiPhone, FiEye, FiEyeOff } from "react-icons/fi";
+import {
+  FiX,
+  FiUser,
+  FiMail,
+  FiPhone,
+  FiEye,
+  FiEyeOff,
+  FiKey,
+} from "react-icons/fi";
 import { useDispatch, useSelector } from "react-redux";
 import { resetUserState } from "../../../features/slices/authentication";
 import { BsFilePerson } from "react-icons/bs";
@@ -89,11 +97,11 @@ const SignUpModal = ({ isOpen, onClose, onSwitch }) => {
         <div className="w-full md:w-[45%] px-8 pb-8 md:px-12 flex flex-col bg-white overflow-y-auto max-h-[100vh]">
           <div className="w-full max-w-sm mx-auto">
             {/* Logo */}
-            <div className="text-center md:text-left">
+            <div className="text-center md:text-left my-4">
               <img
                 src="/images/logo.png"
                 alt="Logo"
-                className="h-24 md:h-32 w-auto inline-block md:block"
+                className="h-16  w-auto inline-block md:block"
               />
             </div>
 
@@ -290,15 +298,15 @@ const SignUpModal = ({ isOpen, onClose, onSwitch }) => {
                 </div>
               </div>
 
-              {/* <div className="group">
+              <div className="group">
                 <label className="block text-xs font-black text-gray-400 uppercase tracking-widest mb-3 ml-1">
-                  Referral Code
+                  Rider Referral Code
                 </label>
                 <div className="relative">
                   <input
-                    {...register("referral_code")}
+                    {...register("used_rider_code")}
                     type="text"
-                    placeholder="Enter referral code..."
+                    placeholder="Enter rider referral code..."
                     className="w-full h-14 px-5 bg-gray-50 border-2 border-gray-100 rounded-md focus:border-brand-green focus:bg-white focus:outline-none transition-all font-semibold"
                   />
                   <FiKey
@@ -306,7 +314,7 @@ const SignUpModal = ({ isOpen, onClose, onSwitch }) => {
                     size={20}
                   />
                 </div>
-              </div> */}
+              </div>
 
               <button className="w-full bg-[#84BC22] hover:bg-[#74a51d] text-white h-14 rounded-md font-black text-lg uppercase tracking-wide transition-all shadow-lg active:scale-[0.98] mt-4">
                 {isLoading ? <Spinner /> : "Sign up"}

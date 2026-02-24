@@ -31,7 +31,18 @@ export const Header = ({ setSidebarOpen }) => {
     },
     "/admin/product": {
       title: "Product List",
-      placeholder: "Search name ",
+      placeholder: "Search product name ",
+    },
+    "/admin/rider": {
+      title: "Rider List",
+      placeholder: "Search rider name ",
+    },
+    "/admin/rider/referral": {
+      title: "Rider Referral List",
+    },
+    "/admin/order": {
+      title: "Order List",
+      placeholder: "Search name or order number ",
     },
 
     "/admin/settings": {
@@ -115,7 +126,7 @@ export const Header = ({ setSidebarOpen }) => {
       )}
       <div className="flex items-center  ">
         <img
-          src={`/src/assets/user.jpg`}
+          src={`/user.jpg`}
           alt="User"
           className="size-8 md:size-9 rounded-full object-cover"
         />
