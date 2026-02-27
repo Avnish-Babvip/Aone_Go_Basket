@@ -1,0 +1,326 @@
+import { useEffect, useState } from "react";
+import { FiEye, FiEdit2, FiTrash2 } from "react-icons/fi";
+import { useDispatch, useSelector } from "react-redux";
+import { useLocation, useSearchParams } from "react-router-dom";
+import Pagination from "../../components/Pagination";
+import TableSkeleton from "../../components/TableSkeleton";
+import { EditOrderStatusModal } from "../../components/Modal/Order/EditOrderStatus";
+import { getAllAssignOrders, getAllOrders } from "../../features/actions/order";
+import FilterSelect from "../../components/FilterSelect";
+import { ViewOrderModal } from "../../components/Modal/Order/ViewOrder";
+
+const UnassignOrder = () => {
+  const { state } = useLocation();
+  const dispatch = useDispatch();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const { orderData, orderLoading } = useSelector((state) => state.order);
+  const [selectedUser, setSelectedUser] = useState({});
+  const [openModal, setOpenModal] = useState(false);
+  const [openViewModal, setOpenViewModal] = useState(false);
+  const [openEditModal, setOpenEditModal] = useState(false);
+  const page = Number(searchParams.get("page")) || 1;
+  const searchQuery = searchParams.get("search") || "";
+  const status = searchParams.get("status") || "";
+  const payment_status = searchParams.get("payment_status") || "";
+  const payment_method = searchParams.get("payment_method") || "";
+
+  const users = orderData?.data || [];
+  const hasData = Array.isArray(users) && users.length > 0;
+  const updateParams = ({
+    page,
+    search,
+    status,
+    payment_status,
+    payment_method,
+  }) => {
+    const params = {};
+    if (page) params.page = page;
+    if (search) params.search = search;
+    if (status !== undefined && status !== "") params.status = status;
+    if (payment_status !== undefined && payment_status !== "")
+      params.payment_status = payment_status;
+    if (payment_method !== undefined && payment_method !== "")
+      params.payment_method = payment_method;
+    setSearchParams(params);
+  };
+
+  const getOrderStatusStyle = (status) => {
+    switch (status?.toLowerCase()) {
+      case "placed":
+        return "bg-yellow-100 text-yellow-700 ring-1 ring-yellow-200";
+      case "confirmed":
+        return "bg-blue-100 text-blue-700 ring-1 ring-blue-200";
+      case "shipped":
+        return "bg-indigo-100 text-indigo-700 ring-1 ring-indigo-200";
+      case "delivered":
+        return "bg-emerald-100 text-emerald-700 ring-1 ring-emerald-200";
+      case "cancelled":
+        return "bg-red-100 text-red-600 ring-1 ring-red-200";
+      case "failed":
+        return "bg-red-100 text-red-600 ring-1 ring-red-200";
+      default:
+        return "bg-gray-100 text-gray-600 ring-1 ring-gray-200";
+    }
+  };
+
+  const getPaymentMethodStyle = (method) => {
+    switch (method?.toLowerCase()) {
+      case "online":
+        return "bg-purple-100 text-purple-700 ring-1 ring-purple-200";
+      case "cod":
+        return "bg-gray-100 text-gray-700 ring-1 ring-gray-200";
+      default:
+        return "bg-gray-100 text-gray-600 ring-1 ring-gray-200";
+    }
+  };
+
+  useEffect(() => {
+    if (!openEditModal && !openModal) {
+      dispatch(
+        getAllAssignOrders({
+          search: searchQuery,
+          page,
+          status,
+          payment_status,
+          payment_method,
+        }),
+      );
+    }
+  }, [
+    openModal,
+    openEditModal,
+    page,
+    searchQuery,
+    status,
+    payment_status,
+    payment_method,
+  ]);
+
+  useEffect(() => {
+    if (state?.openModal) {
+      setOpenModal(true);
+    }
+  }, [state]);
+
+  return (
+    <>
+      <div className="bg-white rounded-xl shadow-sm overflow-hidden">
+        {/* HEADER */}
+        <div className="flex items-center justify-between px-6 py-4 border-b">
+          <h2 className="font-semibold text-gray-800">All Assign Orders</h2>
+
+          <div className="flex items-center gap-2">
+            <FilterSelect
+              label="Payment Method"
+              value={payment_method || "All"}
+              options={[
+                { label: "Online", value: "online" },
+                { label: "Cod", value: "cod" },
+              ]}
+              onChange={(val) =>
+                updateParams({
+                  payment_method: val,
+                  payment_status,
+                  status,
+                  page: 1,
+                  search: searchQuery,
+                })
+              }
+            />
+            <FilterSelect
+              label="Payment Status"
+              value={payment_status || "All"}
+              options={[
+                { label: "Paid", value: "paid" },
+                { label: "Pending", value: "pending" },
+                { label: "Failed", value: "failed" },
+              ]}
+              onChange={(val) =>
+                updateParams({
+                  payment_status: val,
+                  payment_method,
+                  status,
+                  page: 1,
+                  search: searchQuery,
+                })
+              }
+            />
+            <FilterSelect
+              label="Order Status"
+              value={status || "All"}
+              options={[
+                { label: "Placed", value: "placed" },
+                { label: "Confirmed", value: "confirmed" },
+                { label: "Shipped", value: "shipped" },
+                { label: "Delivered", value: "delivered" },
+                { label: "Cancelled", value: "cancelled" },
+                { label: "Failed", value: "failed" },
+              ]}
+              onChange={(val) =>
+                updateParams({
+                  status: val,
+                  payment_status,
+                  payment_method,
+                  page: 1,
+                  search: searchQuery,
+                })
+              }
+            />
+          </div>
+        </div>
+
+        {/* TABLE */}
+        <div className="relative overflow-x-auto">
+          <table className="min-w-[900px] w-full text-sm table-fixed">
+            <thead className="bg-gray-50 text-gray-500">
+              <tr>
+                <th className="text-left  ps-5  px-3 py-3 w-[160px]">
+                  Order Number
+                </th>
+                <th className="text-left px-3 py-3 w-[160px]">Name</th>
+                <th className="text-left px-3 py-3 w-[120px]">
+                  Payment Method
+                </th>
+                <th className="text-left px-3 py-3 w-[120px]">Order Status</th>
+                <th className="text-left px-3 py-3 w-[120px]">Price</th>
+                <th className="text-center px-3 py-3 w-[250px]">Action</th>
+              </tr>
+            </thead>
+
+            <tbody className="divide-y">
+              {orderLoading ? (
+                /* ================= SKELETON ================= */
+                <TableSkeleton
+                  rows={5}
+                  columns={[
+                    { width: "w-24 h-4" }, // Name
+                    { width: "w-24 h-4" }, // Username
+                    { width: "w-24 h-4" }, // Email
+                    { width: "w-24 h-4" }, // Mobile
+                    { width: "w-24 h-4" }, // Status
+                    { width: "w-24 h-4" }, // Status
+                  ]}
+                  actionColumn
+                  actionCount={2}
+                  actionWidth="w-12 h-8"
+                />
+              ) : !hasData ? (
+                /* ================= EMPTY STATE ================= */
+                <tr>
+                  <td colSpan={6} className="py-28">
+                    <div className="w-full flex flex-col items-center justify-center text-center">
+                      <div className="w-14 h-14 flex items-center justify-center rounded-full bg-gray-100 mb-4">
+                        <FiEye className="text-gray-400 text-xl" />
+                      </div>
+
+                      <p className="text-gray-600 font-medium">
+                        No orders found
+                      </p>
+
+                      <p className="text-sm text-gray-400 mt-1">
+                        Try adjusting filters
+                      </p>
+                    </div>
+                  </td>
+                </tr>
+              ) : (
+                /* ================= DATA ROWS ================= */
+                users.map((item) => (
+                  <tr
+                    key={item?.admin?.id}
+                    className="border-b border-gray-100 hover:bg-gray-50 transition"
+                  >
+                    <td className="ps-5 px-3 py-5 text-gray-700">
+                      {item?.order_number || "—"}
+                    </td>
+                    <td className="px-3 py-5 text-gray-700">
+                      {item?.customer?.name || "—"}
+                    </td>
+
+                    <td className="px-3 py-5">
+                      <span
+                        className={`inline-flex items-center gap-2 text-xs font-semibold px-3 py-1.5 rounded-full shadow-sm capitalize ${getPaymentMethodStyle(
+                          item?.payment_method,
+                        )}`}
+                      >
+                        <span className="w-2 h-2 rounded-full bg-current opacity-70"></span>
+                        {item?.payment_method || "—"}
+                      </span>
+                    </td>
+
+                    <td className="px-3 py-5">
+                      <span
+                        className={`inline-flex items-center gap-2 text-xs font-semibold px-3 py-1.5 rounded-full shadow-sm capitalize ${getOrderStatusStyle(
+                          item?.status,
+                        )}`}
+                      >
+                        <span className="w-2 h-2 rounded-full bg-current opacity-70"></span>
+                        {item?.status}
+                      </span>
+                    </td>
+
+                    <td className="px-3 py-5 text-gray-700 whitespace-nowrap">
+                      ₹{item?.total || "—"}
+                    </td>
+
+                    <td className="px-3 py-5">
+                      <div className="flex justify-center gap-2">
+                        <button
+                          onClick={() => {
+                            setOpenViewModal(true);
+                            setSelectedUser(item);
+                          }}
+                          className="p-2 px-3 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200"
+                        >
+                          <FiEye />
+                        </button>
+                        <button
+                          onClick={() => {
+                            setOpenEditModal(true);
+                            setSelectedUser({
+                              id: item?.id,
+                              status: item?.status,
+                            });
+                          }}
+                          className="p-2 px-3 flex items-center gap-2  bg-orange-100 text-orange-500 rounded-lg hover:bg-orange-200"
+                        >
+                          <FiEdit2 />
+                          <span>Change Status</span>
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
+
+        {/* PAGINATION */}
+        {!orderLoading && hasData && (
+          <Pagination
+            data={orderData}
+            page={page}
+            label="orders"
+            onPageChange={updateParams}
+            extraParams={{ search: searchQuery, status }}
+          />
+        )}
+      </div>
+      <EditOrderStatusModal
+        isOpen={openEditModal}
+        onClose={() => setOpenEditModal(false)}
+        user={selectedUser}
+      />
+      <ViewOrderModal
+        isOpen={openViewModal}
+        onClose={() => {
+          setOpenViewModal(false);
+        }}
+        id={selectedUser.id}
+      />
+    </>
+  );
+};
+
+export default UnassignOrder;

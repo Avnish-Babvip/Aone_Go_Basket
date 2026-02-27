@@ -24,6 +24,7 @@ import RiderReferral from "../pages/Rider/RiderReferral";
 import Order from "../pages/Order/Order";
 import AssignOrder from "../pages/Order/AssignOrder";
 import RiderAssignOrder from "../pages/RiderDashboard/RiderAssignOrder";
+import UnassignOrder from "../pages/Order/UnAssignOrder";
 
 export const appRouter = createBrowserRouter([
   /* ---------------- PUBLIC ROUTES ---------------- */
@@ -59,6 +60,7 @@ export const appRouter = createBrowserRouter([
       { path: "product/bulk-images", element: <AddZipImages /> },
       { path: "order", element: <Order /> },
       { path: "order/assigned", element: <AssignOrder /> },
+      { path: "order/unassigned", element: <UnassignOrder /> },
       { path: "rider", element: <Rider /> },
       { path: "rider/referral", element: <RiderReferral /> },
     ],

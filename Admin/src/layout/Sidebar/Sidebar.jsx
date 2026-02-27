@@ -57,8 +57,8 @@ const Sidebar = ({ closeSidebar }) => {
           url: "/admin/order/assigned",
         },
         {
-          name: "UnAssigned Order",
-          url: "/admin/order/unassign",
+          name: "Unassigned Order",
+          url: "/admin/order/unassigned",
         },
       ],
     },
