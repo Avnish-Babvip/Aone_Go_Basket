@@ -20,17 +20,15 @@ export default function UpdateAddressModal({
     register,
     handleSubmit,
     reset,
-    watch,
     setValue,
     formState: { errors },
   } = useForm();
 
-  const selectedCountry = watch("country_id");
-  const selectedState = watch("state_id");
 
-  /* ================= PREFILL EDIT ================= */
-  useEffect(() => {
-    if (!isOpen) return;
+useEffect(() => {
+  if (!isOpen) return;
+
+  const loadData = async () => {
     if (editData) {
       reset({
         name: editData.name || "",
@@ -39,10 +37,19 @@ export default function UpdateAddressModal({
         address_line_2: editData.address_line_2 || "",
         landmark: editData.landmark || "",
         pincode: editData.pincode || "",
-        country_id: editData.country_id || "",
-        state_id: editData.state_id || "",
-        city_id: editData.city_id || "",
       });
+
+      if (editData.country_id) {
+        await dispatch(getStates(editData.country_id)).unwrap();
+      }
+
+      if (editData.state_id) {
+        await dispatch(getCities(editData.state_id)).unwrap();
+      }
+
+      setValue("country_id", editData.country_id);
+      setValue("state_id", editData.state_id);
+      setValue("city_id", editData.city_id);
     } else {
       reset({
         name: "",
@@ -56,26 +63,12 @@ export default function UpdateAddressModal({
         city_id: "",
       });
     }
-  }, [editData, isOpen, reset]);
+  };
 
-  /* ================= COUNTRY -> STATE ================= */
-  useEffect(() => {
-    if (selectedCountry) {
-      dispatch(getStates(selectedCountry));
-      setValue("state_id", "");
-      setValue("city_id", "");
-    }
-  }, [selectedCountry, dispatch, setValue]);
+  loadData();
+}, [isOpen, editData, dispatch]);
 
-  /* ================= STATE -> CITY ================= */
-  useEffect(() => {
-    if (selectedState) {
-      dispatch(getCities(selectedState));
-      setValue("city_id", "");
-    }
-  }, [selectedState, dispatch, setValue]);
-
-  if (!isOpen) return null;
+  if (!isOpen) return;
 
   return (
     <div className="fixed inset-0 bg-black/40 flex justify-center items-center z-50 pb-10">
@@ -131,12 +124,18 @@ export default function UpdateAddressModal({
               />
 
               <InputField
-                label="Mobile"
-                name="mobile"
-                register={register}
-                errors={errors}
-                required
-              />
+  label="Mobile"
+  name="mobile"
+  register={register}
+  errors={errors}
+  required
+  validation={{
+    pattern: {
+      value: /^[0-9]{10}$/,
+      message: "Mobile number must be exactly 10 digits",
+    },
+  }}
+/>
 
               <InputField
                 label="Address Line 1"
@@ -170,12 +169,17 @@ export default function UpdateAddressModal({
                 <label className="text-sm font-semibold mb-2 block">
                   Country
                 </label>
-                <select
-                  {...register("country_id", {
-                    required: "Country is required",
-                  })}
-                  className="w-full px-4 py-3 rounded-xl border border-gray-200"
-                >
+             <select
+              className="w-full px-4 py-3 rounded-xl border border-gray-200"
+  {...register("country_id", { required: "Country is required" })}
+  onChange={(e) => {
+    const value = e.target.value;
+    setValue("country_id", value);
+    setValue("state_id", "");
+    setValue("city_id", "");
+    dispatch(getStates(value));
+  }}
+>
                   <option value="">Select Country</option>
                   {countryData?.map((c) => (
                     <option key={c.id} value={c.id}>
@@ -195,13 +199,16 @@ export default function UpdateAddressModal({
                 <label className="text-sm font-semibold mb-2 block">
                   State
                 </label>
-                <select
-                  {...register("state_id", {
-                    required: "State is required",
-                  })}
-                  disabled={!selectedCountry}
-                  className="w-full px-4 py-3 rounded-xl border border-gray-200"
-                >
+           <select
+            className="w-full px-4 py-3 rounded-xl border border-gray-200"
+  {...register("state_id", { required: "State is required" })}
+  onChange={(e) => {
+    const value = e.target.value;
+    setValue("state_id", value);
+    setValue("city_id", "");
+    dispatch(getCities(value));
+  }}
+>
                   <option value="">Select State</option>
                   {stateData?.map((s) => (
                     <option key={s.id} value={s.id}>
@@ -223,7 +230,7 @@ export default function UpdateAddressModal({
                   {...register("city_id", {
                     required: "City is required",
                   })}
-                  disabled={!selectedState}
+                disabled={!stateData?.length}
                   className="w-full px-4 py-3 rounded-xl border border-gray-200"
                 >
                   <option value="">Select City</option>
@@ -240,13 +247,19 @@ export default function UpdateAddressModal({
                 )}
               </div>
               {/* PINCODE */}
-              <InputField
-                label="Pincode"
-                name="pincode"
-                register={register}
-                errors={errors}
-                required
-              />
+        <InputField
+  label="Pincode"
+  name="pincode"
+  register={register}
+  errors={errors}
+  required
+  validation={{
+    pattern: {
+      value: /^[0-9]{6}$/,
+      message: "Pincode must be exactly 6 digits",
+    },
+  }}
+/>
             </div>
 
             <button
@@ -269,14 +282,19 @@ function InputField({
   register,
   errors,
   required,
+  validation = {},
   className = "",
 }) {
   return (
     <div className={className}>
       <label className="text-sm font-semibold mb-2 block">{label}</label>
       <input
+  type="tel"
+  maxLength={name === "mobile" ? 10 : name === "pincode" ? 6 : undefined}
+  inputMode="numeric"
         {...register(name, {
           required: required ? `${label} is required` : false,
+          ...validation,
         })}
         className="w-full px-4 py-3 rounded-xl border border-gray-200"
       />

@@ -6,13 +6,13 @@ export default function ContactUs() {
       {/* ===== HERO SECTION ===== */}
       <div className="relative h-[300px] w-full">
         <img
-          src="https://images.unsplash.com/photo-1521737604893-d14cc237f11d"
+          src="/images/contact-us.webp"
           alt="Contact"
           className="h-full w-full object-cover"
         />
         <div className="absolute inset-0 bg-black/40 flex flex-col items-center justify-center text-white">
           <h1 className="text-4xl font-bold">Contact Us</h1>
-          <p className="text-sm mt-2">Home / Contact</p>
+          {/* <p className="text-sm mt-2">Home / Contact</p> */}
         </div>
       </div>
 
@@ -81,7 +81,7 @@ export default function ContactUs() {
 
           <button
             type="submit"
-            className="w-full bg-green-500 text-white py-2 rounded hover:bg-green-600 transition"
+            className="w-full bg-brand-green text-white py-2 rounded-xl hover:bg-lime-600 transition"
           >
             Send Message
           </button>
@@ -93,7 +93,7 @@ export default function ContactUs() {
         <div className="max-w-6xl mx-auto px-4 grid md:grid-cols-3 gap-8 text-center">
           {/* LOCATION */}
           <div className="flex flex-col items-center gap-3">
-            <div className="w-12 h-12 flex items-center justify-center rounded-full bg-green-100 text-green-600">
+            <div className="w-12 h-12 flex items-center justify-center rounded-full bg-lime-100 text-brand-green">
               📍
             </div>
             <h4 className="font-semibold">Office Location</h4>
@@ -104,7 +104,7 @@ export default function ContactUs() {
 
           {/* PHONE */}
           <div className="flex flex-col items-center gap-3">
-            <div className="w-12 h-12 flex items-center justify-center rounded-full bg-green-100 text-green-600">
+            <div className="w-12 h-12 flex items-center justify-center rounded-full bg-lime-100 text-brand-green">
               📞
             </div>
             <h4 className="font-semibold">Call us anytime</h4>
@@ -115,7 +115,7 @@ export default function ContactUs() {
 
           {/* EMAIL */}
           <div className="flex flex-col items-center gap-3">
-            <div className="w-12 h-12 flex items-center justify-center rounded-full bg-green-100 text-green-600">
+            <div className="w-12 h-12 flex items-center justify-center rounded-full bg-lime-100 text-brand-green">
               ✉️
             </div>
             <h4 className="font-semibold">Send Mail</h4>

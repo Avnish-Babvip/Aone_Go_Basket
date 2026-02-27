@@ -1,26 +1,33 @@
 import { useEffect, useState } from "react";
-import { FiEye, FiEdit2, FiTrash2 } from "react-icons/fi";
+import { FiEye, FiEdit2 } from "react-icons/fi";
 import { useDispatch, useSelector } from "react-redux";
 import { useLocation, useSearchParams } from "react-router-dom";
-import Pagination from "../../components/Pagination";
 import TableSkeleton from "../../components/TableSkeleton";
-import { EditOrderStatusModal } from "../../components/Modal/Order/EditOrderStatus";
-import { getAllOrders } from "../../features/actions/order";
 import FilterSelect from "../../components/FilterSelect";
-import { ViewOrderModal } from "../../components/Modal/Order/ViewOrder";
-import { AssignOrderModal } from "../../components/Modal/Order/AssignOrder";
-import { TbTruckDelivery } from "react-icons/tb";
+import Pagination from "../../components/Pagination";
+import {
+  getAssignedOrders,
+  markedDelivered,
+  markedFailed,
+  markedPicked,
+} from "../../features/actions/rider/order";
+import { ViewAssignedOrderModal } from "../../components/Modal/RiderDashboard/ViewAssignedOrder";
+import { Spinner } from "../../components/Loader/Spinner";
+import { FailedAssignedOrderModal } from "../../components/Modal/RiderDashboard/FailedAssignedOrder";
 
-const Order = () => {
-  const { state } = useLocation();
+const RiderAssignOrder = () => {
   const dispatch = useDispatch();
   const [searchParams, setSearchParams] = useSearchParams();
-  const { orderData, orderLoading } = useSelector((state) => state.order);
-  const [selectedUser, setSelectedUser] = useState({});
-  const [openModal, setOpenModal] = useState(false);
+  const {
+    orderData,
+    orderLoading,
+    pickedLoading,
+    deliveredLoading,
+    failedLoading,
+  } = useSelector((state) => state.rider_order);
+  const [selected, setSelected] = useState({});
   const [openViewModal, setOpenViewModal] = useState(false);
   const [openEditModal, setOpenEditModal] = useState(false);
-  const [openAssignModal, setOpenAssignModal] = useState(false);
   const page = Number(searchParams.get("page")) || 1;
   const searchQuery = searchParams.get("search") || "";
   const status = searchParams.get("status") || "";
@@ -49,8 +56,6 @@ const Order = () => {
 
   const getOrderStatusStyle = (status) => {
     switch (status?.toLowerCase()) {
-      case "placed":
-        return "bg-yellow-100 text-yellow-700 ring-1 ring-yellow-200";
       case "confirmed":
         return "bg-blue-100 text-blue-700 ring-1 ring-blue-200";
       case "shipped":
@@ -77,53 +82,24 @@ const Order = () => {
     }
   };
 
-  const getPaymentStatusStyle = (status) => {
-    switch (status?.toLowerCase()) {
-      case "paid":
-        return "bg-emerald-100 text-emerald-700 ring-1 ring-emerald-200";
-      case "pending":
-        return "bg-yellow-100 text-yellow-700 ring-1 ring-yellow-200";
-      case "failed":
-        return "bg-red-100 text-red-600 ring-1 ring-red-200";
-      default:
-        return "bg-gray-100 text-gray-600 ring-1 ring-gray-200";
-    }
-  };
-
   useEffect(() => {
-    if (!openEditModal && !openModal && !openAssignModal) {
-      dispatch(
-        getAllOrders({
-          search: searchQuery,
-          page,
-          status,
-          payment_status,
-          payment_method,
-        }),
-      );
-    }
-  }, [
-    openModal,
-    openEditModal,
-    page,
-    searchQuery,
-    status,
-    payment_status,
-    payment_method,
-  ]);
-
-  useEffect(() => {
-    if (state?.openModal) {
-      setOpenModal(true);
-    }
-  }, [state]);
+    dispatch(
+      getAssignedOrders({
+        search: searchQuery,
+        page,
+        status,
+        payment_status,
+        payment_method,
+      }),
+    );
+  }, [page, searchQuery, status, payment_status, payment_method]);
 
   return (
     <>
       <div className="bg-white rounded-xl shadow-sm overflow-hidden">
         {/* HEADER */}
         <div className="flex items-center justify-between px-6 py-4 border-b">
-          <h2 className="font-semibold text-gray-800">All Orders</h2>
+          <h2 className="font-semibold text-gray-800">Your Assigned Orders</h2>
 
           <div className="flex items-center gap-2">
             <FilterSelect
@@ -165,8 +141,6 @@ const Order = () => {
               label="Order Status"
               value={status || "All"}
               options={[
-                { label: "Placed", value: "placed" },
-                { label: "Confirmed", value: "confirmed" },
                 { label: "Shipped", value: "shipped" },
                 { label: "Delivered", value: "delivered" },
                 { label: "Cancelled", value: "cancelled" },
@@ -214,10 +188,9 @@ const Order = () => {
                     { width: "w-24 h-4" }, // Email
                     { width: "w-24 h-4" }, // Mobile
                     { width: "w-24 h-4" }, // Status
-                    { width: "w-24 h-4" }, // Status
                   ]}
                   actionColumn
-                  actionCount={3}
+                  actionCount={2}
                   actionWidth="w-12 h-8"
                 />
               ) : !hasData ? (
@@ -284,37 +257,85 @@ const Order = () => {
                         <button
                           onClick={() => {
                             setOpenViewModal(true);
-                            setSelectedUser(item);
+                            setSelected(item);
                           }}
                           className="p-2 px-3 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200"
                         >
                           <FiEye />
                         </button>
-                        {item?.is_assigned && (
+                        {item?.status === "confirmed" && (
                           <button
+                            disabled={pickedLoading}
                             onClick={() => {
-                              setOpenAssignModal(true);
-                              setSelectedUser(item?.id);
+                              setSelected(item);
+                              dispatch(markedPicked(item?.id))
+                                .unwrap()
+                                .then(() => {
+                                  dispatch(
+                                    getAssignedOrders({
+                                      search: searchQuery,
+                                      page,
+                                      status,
+                                      payment_status,
+                                      payment_method,
+                                    }),
+                                  );
+                                });
                             }}
-                            className="p-2 px-3 flex items-center gap-2 bg-indigo-100 text-indigo-500 rounded-lg hover:bg-indigo-200"
+                            className="p-2 px-3 flex items-center justify-center gap-2 w-30 bg-orange-100 text-orange-500 rounded-lg hover:bg-orange-200"
                           >
-                            <TbTruckDelivery />
-                            <span>Assign Rider</span>
+                            {pickedLoading && item?.id === selected.id ? (
+                              <Spinner />
+                            ) : (
+                              <span>Marked Picked</span>
+                            )}
                           </button>
                         )}
-                        <button
-                          onClick={() => {
-                            setOpenEditModal(true);
-                            setSelectedUser({
-                              id: item?.id,
-                              status: item?.status,
-                            });
-                          }}
-                          className="p-2 px-3 flex items-center gap-2  bg-orange-100 text-orange-500 rounded-lg hover:bg-orange-200"
-                        >
-                          <FiEdit2 />
-                          <span>Change Status</span>
-                        </button>
+                        {item?.status === "shipped" && (
+                          <button
+                            disabled={deliveredLoading}
+                            onClick={() => {
+                              setSelected(item);
+                              dispatch(markedDelivered(item?.id))
+                                .unwrap()
+                                .then(() => {
+                                  dispatch(
+                                    getAssignedOrders({
+                                      search: searchQuery,
+                                      page,
+                                      status,
+                                      payment_status,
+                                      payment_method,
+                                    }),
+                                  );
+                                });
+                            }}
+                            className="p-2 px-3 flex items-center justify-center gap-2 w-36 bg-orange-100 text-orange-500 rounded-lg hover:bg-orange-200"
+                          >
+                            {deliveredLoading && item?.id === selected.id ? (
+                              <Spinner />
+                            ) : (
+                              <span>Marked Delivered</span>
+                            )}
+                          </button>
+                        )}
+                        {item?.status !== "failed" &&
+                          item?.status !== "delivered" && (
+                            <button
+                              disabled={failedLoading}
+                              onClick={() => {
+                                setSelected(item);
+                                setOpenEditModal(true);
+                              }}
+                              className="p-2 px-3 flex items-center justify-center gap-2 bg-red-100 w-30 text-red-500 rounded-lg hover:bg-red-200"
+                            >
+                              {failedLoading && item?.id === selected.id ? (
+                                <Spinner />
+                              ) : (
+                                <span>Marked Failed</span>
+                              )}
+                            </button>
+                          )}
                       </div>
                     </td>
                   </tr>
@@ -335,25 +356,44 @@ const Order = () => {
           />
         )}
       </div>
-      <EditOrderStatusModal
+      <FailedAssignedOrderModal
         isOpen={openEditModal}
         onClose={() => setOpenEditModal(false)}
-        user={selectedUser}
+        onSubmit={(data) => {
+          try {
+            setOpenEditModal(false);
+            dispatch(
+              markedFailed({
+                id: selected.id,
+                reason: data.reason,
+              }),
+            )
+              .unwrap()
+              .then(() =>
+                dispatch(
+                  getAssignedOrders({
+                    search: searchQuery,
+                    page,
+                    status,
+                    payment_status,
+                    payment_method,
+                  }),
+                ),
+              );
+          } catch (err) {
+            console.error(err);
+          }
+        }}
       />
-      <AssignOrderModal
-        isOpen={openAssignModal}
-        onClose={() => setOpenAssignModal(false)}
-        id={selectedUser}
-      />
-      <ViewOrderModal
+      <ViewAssignedOrderModal
         isOpen={openViewModal}
         onClose={() => {
           setOpenViewModal(false);
         }}
-        id={selectedUser.id}
+        order={selected}
       />
     </>
   );
 };
 
-export default Order;
+export default RiderAssignOrder;

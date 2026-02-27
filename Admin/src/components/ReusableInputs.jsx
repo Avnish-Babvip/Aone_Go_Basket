@@ -164,3 +164,43 @@ export const Checkbox = React.forwardRef(({ label, ...props }, ref) => (
     {label}
   </label>
 ));
+
+export const AttributeSelectWithId = ({
+  label,
+  name,
+  options = [],
+  register,
+  watch, // 👈 add this
+  errors,
+  required,
+}) => {
+  const value = watch ? watch(name) : undefined;
+
+  return (
+    <div>
+      <label className="text-gray-700 text-sm font-medium">{label}</label>
+
+      <select
+        value={value ?? ""} // ✅ make it controlled
+        {...register(name, { required })}
+        className="
+          w-full mt-1 rounded-lg p-2.5 text-sm
+          bg-white border border-gray-300
+          text-gray-800 focus:ring-2 focus:ring-blue-100 focus:border-blue-500 outline-none
+        "
+      >
+        <option value="">Select {label}</option>
+
+        {options.map((opt) => (
+          <option key={opt.value} value={opt.value}>
+            {opt.label}
+          </option>
+        ))}
+      </select>
+
+      {errors?.[name] && (
+        <p className="text-red-500 text-xs mt-1">{label} is required</p>
+      )}
+    </div>
+  );
+};

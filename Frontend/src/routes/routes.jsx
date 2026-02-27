@@ -18,6 +18,9 @@ import Category from "../pages/Category";
 import ProtectedRoute from "../pages/ProtectedRoute";
 import OnlineOrderPlaced from "../pages/Checkout/OnlineOrderPlaced";
 import OnlineOrderFailed from "../pages/Checkout/OnlineOrderFailed";
+import TermsAndConditions from "../pages/Terms&conditions";
+import ReturnPolicy from "../pages/ReturnPolicy";
+import OnlineOrderPending from "../pages/Checkout/OnlineOrderPending";
 
 // Lazy Loading 😴
 // const Blog = lazy(() => import("../pages/Blog"));
@@ -45,6 +48,14 @@ export const appRouter = createBrowserRouter([
         element: (
           <ProtectedRoute>
             <OrderPlaced />
+          </ProtectedRoute>
+        ),
+      },
+            {
+        path: "payment/pending",
+        element: (
+          <ProtectedRoute>
+            <OnlineOrderPending />
           </ProtectedRoute>
         ),
       },
@@ -115,6 +126,14 @@ export const appRouter = createBrowserRouter([
       {
         path: "privacy-policy",
         element: <PrivacyPolicy />,
+      },
+      {
+        path: "terms-conditions",
+        element: <TermsAndConditions />,
+      },
+      {
+        path: "return-policy",
+        element: <ReturnPolicy />,
       },
       {
         path: "customer/reset-password",

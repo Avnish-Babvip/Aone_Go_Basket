@@ -31,7 +31,6 @@ import { getCustomerDetails } from "../../features/actions/customer";
 function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isCartOpen, setIsCartOpen] = useState(false);
-  const { profileData } = useSelector((state) => state.customer);
   const [isAccountOpen, setIsAccountOpen] = useState(false);
   const { customerData, isCustomerLoggedIn } = useSelector(
     (state) => state.authentication,
@@ -262,6 +261,8 @@ function MainNavbar({
               { name: "FAQ", slug: "/faq" },
               { name: "Privacy Policy", slug: "/privacy-policy" },
               { name: "Contact Us", slug: "/contact-us" },
+              { name: "Terms & Conditions", slug: "/terms-conditions" },
+              { name: "Return Policy", slug: "/return-policy" },
             ]}
           />
         </nav>

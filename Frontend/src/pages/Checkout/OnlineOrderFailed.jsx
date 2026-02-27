@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { paymentStatus } from "../../features/actions/order";
+import { RxCrossCircled } from "react-icons/rx";
 
 export default function OnlineOrderFailed() {
   const [searchParams] = useSearchParams();
@@ -61,15 +62,18 @@ export default function OnlineOrderFailed() {
       <div className="bg-white shadow-2xl rounded-3xl p-10 max-w-xl w-full">
         {/* ❌ FAILED HEADER */}
         <div className="text-center">
-          <div className="text-5xl mb-4">❌</div>
+          <div className="text-5xl mb-4 flex justify-center text-red-600">
+            <RxCrossCircled />
+          </div>
           <h1 className="text-2xl font-black text-red-600">Payment Failed!</h1>
           <p className="text-gray-500 mt-2">
-            Unfortunately your payment was not successful.
+            Unfortunately your payment was not successful. <br />
+            You can try again in your order history.
           </p>
         </div>
 
         {/* ORDER INFO */}
-        <div className="mt-8 space-y-3 text-sm border-t pt-6">
+        <div className="mt-8 space-y-3 text-sm border-t border-gray-200 pt-6">
           <div className="flex justify-between">
             <span className="text-gray-500">Order Number</span>
             <span className="font-semibold">{order.order_number}</span>
@@ -100,7 +104,7 @@ export default function OnlineOrderFailed() {
 
           <div className="flex justify-between">
             <span className="text-gray-500">Payment Status</span>
-            <span className="font-semibold text-red-600 capitalize">
+            <span className="font-semibold  text-red-600 uppercase">
               {order.payment_status}
             </span>
           </div>

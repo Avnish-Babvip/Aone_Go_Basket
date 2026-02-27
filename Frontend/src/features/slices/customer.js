@@ -2,13 +2,16 @@ import { createSlice } from "@reduxjs/toolkit";
 import { toast } from "sonner";
 import {
   addAddress,
+  addBusinessInfo,
   deleteAddress,
+  getBusinessInfo,
   getCustomerAddresses,
   getCustomerDetails,
   getCustomerKycStatus,
   setDefaultAddress,
   submitKyc,
   updateAddress,
+  updateBusinessInfo,
   updateProfile,
 } from "../actions/customer";
 
@@ -25,8 +28,10 @@ const formattedDate = new Date().toLocaleString("en-US", {
 const initialState = {
   errorMessage: "",
   customerLoading: false,
+  businessLoading: false,
   kycLoading: false,
   addressLoading: false,
+  businessData: {},
   kycData: {},
   profileData: {},
   addressData: [],
@@ -40,6 +45,19 @@ const customerSlice = createSlice({
   extraReducers: (builder) => {
     builder
 
+      .addCase(getBusinessInfo.pending, (state) => {
+        state.errorMessage = "";
+      })
+      .addCase(getBusinessInfo.fulfilled, (state, action) => {
+        state.errorMessage = "";
+        state.businessData = action.payload.data;
+      })
+      .addCase(getBusinessInfo.rejected, (state, action) => {
+        state.errorMessage = action.payload || "Failed";
+        toast(action.payload, {
+          description: formattedDate,
+        });
+      })
       .addCase(getCustomerKycStatus.pending, (state) => {
         state.errorMessage = "";
       })
@@ -77,6 +95,76 @@ const customerSlice = createSlice({
         state.addressLoading = false;
         toast(action.payload, {
           description: formattedDate,
+        });
+      })
+      .addCase(addBusinessInfo.pending, (state, action) => {
+        state.errorMessage = "";
+        state.businessLoading = true;
+      })
+
+      .addCase(addBusinessInfo.fulfilled, (state, action) => {
+        state.errorMessage = "";
+        state.businessLoading = false;
+        toast.success("BUSSINESS INFORMATION ADDED.", {
+          position: "top-right",
+          style: {
+            background: "#79BF28",
+            color: "#fff",
+            borderRadius: "16px",
+            padding: "16px",
+            fontWeight: "600",
+          },
+        });
+      })
+
+      .addCase(addBusinessInfo.rejected, (state, action) => {
+        state.errorMessage = "";
+        state.businessLoading = false;
+        state.errorMessage = action.payload || "Failed";
+        toast.error(action.payload, {
+          position: "top-right",
+          style: {
+            background: "#fb2c36",
+            color: "#fff",
+            borderRadius: "16px",
+            padding: "16px",
+            fontWeight: "600",
+          },
+        });
+      })
+      .addCase(updateBusinessInfo.pending, (state, action) => {
+        state.errorMessage = "";
+        state.businessLoading = true;
+      })
+
+      .addCase(updateBusinessInfo.fulfilled, (state, action) => {
+        state.errorMessage = "";
+        state.businessLoading = false;
+        toast.success("BUSSINESS INFORMATION UPDATED.", {
+          position: "top-right",
+          style: {
+            background: "#79BF28",
+            color: "#fff",
+            borderRadius: "16px",
+            padding: "16px",
+            fontWeight: "600",
+          },
+        });
+      })
+
+      .addCase(updateBusinessInfo.rejected, (state, action) => {
+        state.errorMessage = "";
+        state.businessLoading = false;
+        state.errorMessage = action.payload || "Failed";
+        toast.error(action.payload, {
+          position: "top-right",
+          style: {
+            background: "#fb2c36",
+            color: "#fff",
+            borderRadius: "16px",
+            padding: "16px",
+            fontWeight: "600",
+          },
         });
       })
       .addCase(updateProfile.pending, (state, action) => {

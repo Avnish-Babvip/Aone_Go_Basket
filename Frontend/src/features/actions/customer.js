@@ -58,6 +58,46 @@ export const getCustomerAddresses = createAsyncThunk(
   },
 );
 
+export const addBusinessInfo = createAsyncThunk(
+  "/api/customer/business-info",
+  async (payload, { getState, rejectWithValue }) => {
+    try {
+      const loginToken = getState().authentication?.customerData?.token;
+
+      const { data } = await instance.post(`/customer/business-info`, payload, {
+        headers: {
+          Authorization: `Bearer ${loginToken}`,
+        },
+      });
+      return data;
+    } catch (error) {
+      return rejectWithValue(error.response.data.message || "Failed");
+    }
+  },
+);
+
+export const updateBusinessInfo = createAsyncThunk(
+  "/api/customer/business-info/sa",
+  async ({ payload, id }, { getState, rejectWithValue }) => {
+    try {
+      const loginToken = getState().authentication?.customerData?.token;
+
+      const { data } = await instance.put(
+        `/customer/business-info/${id}`,
+        payload,
+        {
+          headers: {
+            Authorization: `Bearer ${loginToken}`,
+          },
+        },
+      );
+      return data;
+    } catch (error) {
+      return rejectWithValue(error.response.data.message || "Failed");
+    }
+  },
+);
+
 export const updateProfile = createAsyncThunk(
   "/api/customer/profile",
   async (payload, { getState, rejectWithValue }) => {
@@ -65,6 +105,24 @@ export const updateProfile = createAsyncThunk(
       const loginToken = getState().authentication?.customerData?.token;
 
       const { data } = await instance.post(`/customer/profile`, payload, {
+        headers: {
+          Authorization: `Bearer ${loginToken}`,
+        },
+      });
+      return data;
+    } catch (error) {
+      return rejectWithValue(error.response.data.message || "Failed");
+    }
+  },
+);
+
+export const getBusinessInfo = createAsyncThunk(
+  "/api/customer/business-info/default",
+  async (_, { getState, rejectWithValue }) => {
+    try {
+      const loginToken = getState().authentication?.customerData?.token;
+
+      const { data } = await instance.get(`/customer/business-info/default`, {
         headers: {
           Authorization: `Bearer ${loginToken}`,
         },

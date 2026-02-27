@@ -23,7 +23,7 @@ function Home() {
     <div className="min-h-screen  bg-white">
       {/* The HeroBanner starts here */}
       <HeroBanner />
-      <CategoryCards categoryData={categories} />
+      <CategoryCards categoryData={categories} loading={homeLoading} />
       <HomeProduct
         products={latestProducts}
         viewMore={"products?sort=new"}

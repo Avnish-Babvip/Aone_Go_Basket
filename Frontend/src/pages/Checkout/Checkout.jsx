@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { FiCheckCircle } from "react-icons/fi";
+import { TbTruckDelivery } from "react-icons/tb";
 import {
   addAddress,
   deleteAddress,
@@ -13,6 +14,7 @@ import UpdateAddressModal from "../../components/Modal/Address/UpdateAddress";
 import { getCartData, updateCartCharges } from "../../features/actions/cart";
 import { checkout } from "../../features/actions/order";
 import { useNavigate } from "react-router-dom";
+import { Spinner } from "../../components/Loader/Spinner";
 
 export default function Checkout() {
   const dispatch = useDispatch();
@@ -23,6 +25,7 @@ export default function Checkout() {
 
   const { cartData } = useSelector((state) => state.cart);
   const { addressData } = useSelector((state) => state.customer);
+  const { errorMessage, orderLoading } = useSelector((state) => state.order);
 
   const items = cartData?.items || [];
   const chargeBreakup = cartData?.charge_breakup || [];
@@ -414,7 +417,7 @@ export default function Checkout() {
               ))}
 
               {/* TOTAL */}
-              <div className="flex justify-between text-lg font-black pt-4 border-t">
+              <div className="flex justify-between text-lg font-black pt-4 border-t  border-gray-200">
                 <span>Total</span>
                 <span>₹{formatAmount(cartData?.total)}</span>
               </div>
@@ -423,15 +426,15 @@ export default function Checkout() {
             {/* ================= ESTIMATED DELIVERY ================= */}
             {estimatedDelivery && (
               <div className="mt-6 p-4 bg-emerald-50 rounded-xl border border-emerald-100">
-                <p className="text-sm font-semibold text-emerald-700">
-                  🚚 {estimatedDelivery.courier_name}
+                <p className="text-sm flex items-center gap-1 font-semibold text-brand-green">
+                  <TbTruckDelivery /> {estimatedDelivery.courier_name}
                 </p>
 
                 <p className="text-sm text-gray-600 mt-1">
                   {estimatedDelivery.note}
                 </p>
 
-                <p className="text-xs text-gray-500 mt-1">
+                <p className="text-sm mt-1 text-brand-green font-bold">
                   {estimatedDelivery.min_days} - {estimatedDelivery.max_days}{" "}
                   days
                 </p>
@@ -471,18 +474,31 @@ export default function Checkout() {
               </div>
             </div>
 
+            {errorMessage && (
+              <div className="text-sm mt-3 rounded-xl py-1  bg-red-500 text-white text-center">
+                {errorMessage}
+              </div>
+            )}
+
             {/* PLACE ORDER BUTTON */}
             <button
-              disabled={!paymentMethod}
+              disabled={!paymentMethod || orderLoading}
               onClick={() => handlePlaceOrder()}
-              className={`mt-8 w-full py-4 rounded-2xl text-white font-bold text-lg transition flex items-center justify-center gap-2 shadow-lg ${
+              className={`mt-4 w-full py-4 rounded-2xl text-white font-bold text-lg transition flex items-center justify-center gap-2 shadow-lg ${
                 paymentMethod
                   ? "bg-brand-green hover:bg-emerald-600"
                   : "bg-gray-300 cursor-not-allowed"
               }`}
             >
-              <FiCheckCircle />
-              Place Order
+              {orderLoading ? (
+                <Spinner />
+              ) : (
+                <>
+                  {" "}
+                  <FiCheckCircle />
+                  Place Order
+                </>
+              )}
             </button>
           </div>
         </div>

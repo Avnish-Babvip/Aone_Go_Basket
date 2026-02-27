@@ -14,7 +14,7 @@ export const getAllProducts = createAsyncThunk(
       const params = new URLSearchParams();
 
       params.append("page", page);
-      params.append("per_page", per_page || 5);
+      params.append("per_page", per_page || 10);
 
       if (search) params.append("search", search);
       if (status) params.append("status", status);
@@ -79,6 +79,24 @@ export const deleteProduct = createAsyncThunk(
       // ✅ Get token directly from store
       const loginToken = getState().authentication?.adminData?.token;
       const { data } = await instance.delete(`/admin/products/${id}`, {
+        headers: {
+          "Content-type": "application/json",
+          Authorization: `Bearer ${loginToken}`,
+        },
+      });
+      return data;
+    } catch (error) {
+      return rejectWithValue(error.response.data.message || "Failed ");
+    }
+  },
+);
+export const deleteImage = createAsyncThunk(
+  "admin/products/image/12",
+  async (id, { getState, rejectWithValue }) => {
+    try {
+      // ✅ Get token directly from store
+      const loginToken = getState().authentication?.adminData?.token;
+      const { data } = await instance.delete(`/admin/products/image/${id}`, {
         headers: {
           "Content-type": "application/json",
           Authorization: `Bearer ${loginToken}`,

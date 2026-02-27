@@ -4,6 +4,7 @@ import {
   addBulkProduct,
   addProduct,
   addZipImages,
+  deleteImage,
   deleteProduct,
   editProduct,
   getAllProducts,
@@ -120,6 +121,24 @@ const productSlice = createSlice({
       .addCase(deleteProduct.rejected, (state, action) => {
         state.errorMessage = action.payload || "Failed";
         state.productLoading = false;
+        toast(action.payload, {
+          description: formattedDate,
+        });
+      })
+      .addCase(deleteImage.pending, (state) => {
+        state.errorMessage = "";
+        state.imageLoading = true;
+      })
+      .addCase(deleteImage.fulfilled, (state, action) => {
+        state.errorMessage = "";
+        state.imageLoading = false;
+        toast("Product image deleted successfully.", {
+          description: formattedDate,
+        });
+      })
+      .addCase(deleteImage.rejected, (state, action) => {
+        state.errorMessage = action.payload || "Failed";
+        state.imageLoading = false;
         toast(action.payload, {
           description: formattedDate,
         });

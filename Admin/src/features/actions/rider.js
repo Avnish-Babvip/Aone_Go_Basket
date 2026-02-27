@@ -3,15 +3,15 @@ import { instance } from "../../services/axiosInterceptor";
 
 export const getAllRiders = createAsyncThunk(
   "admin/riders",
-  async ({ search, status, page }, { getState, rejectWithValue }) => {
+  async ({ search, status, page ,per_page}, { getState, rejectWithValue }) => {
     try {
       // ✅ Get token directly from store
       const loginToken = getState().authentication?.adminData?.token;
 
       const params = new URLSearchParams();
 
-      params.append("page", page);
-      params.append("per_page", 1);
+      params.append("page", page || 1);
+      params.append("per_page", per_page || 1);
 
       if (search) params.append("search", search);
 

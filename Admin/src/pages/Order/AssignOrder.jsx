@@ -5,13 +5,11 @@ import { useLocation, useSearchParams } from "react-router-dom";
 import Pagination from "../../components/Pagination";
 import TableSkeleton from "../../components/TableSkeleton";
 import { EditOrderStatusModal } from "../../components/Modal/Order/EditOrderStatus";
-import { getAllOrders } from "../../features/actions/order";
+import { getAllAssignOrders, getAllOrders } from "../../features/actions/order";
 import FilterSelect from "../../components/FilterSelect";
 import { ViewOrderModal } from "../../components/Modal/Order/ViewOrder";
-import { AssignOrderModal } from "../../components/Modal/Order/AssignOrder";
-import { TbTruckDelivery } from "react-icons/tb";
 
-const Order = () => {
+const AssignOrder = () => {
   const { state } = useLocation();
   const dispatch = useDispatch();
   const [searchParams, setSearchParams] = useSearchParams();
@@ -20,7 +18,6 @@ const Order = () => {
   const [openModal, setOpenModal] = useState(false);
   const [openViewModal, setOpenViewModal] = useState(false);
   const [openEditModal, setOpenEditModal] = useState(false);
-  const [openAssignModal, setOpenAssignModal] = useState(false);
   const page = Number(searchParams.get("page")) || 1;
   const searchQuery = searchParams.get("search") || "";
   const status = searchParams.get("status") || "";
@@ -77,23 +74,10 @@ const Order = () => {
     }
   };
 
-  const getPaymentStatusStyle = (status) => {
-    switch (status?.toLowerCase()) {
-      case "paid":
-        return "bg-emerald-100 text-emerald-700 ring-1 ring-emerald-200";
-      case "pending":
-        return "bg-yellow-100 text-yellow-700 ring-1 ring-yellow-200";
-      case "failed":
-        return "bg-red-100 text-red-600 ring-1 ring-red-200";
-      default:
-        return "bg-gray-100 text-gray-600 ring-1 ring-gray-200";
-    }
-  };
-
   useEffect(() => {
-    if (!openEditModal && !openModal && !openAssignModal) {
+    if (!openEditModal && !openModal) {
       dispatch(
-        getAllOrders({
+        getAllAssignOrders({
           search: searchQuery,
           page,
           status,
@@ -123,7 +107,7 @@ const Order = () => {
       <div className="bg-white rounded-xl shadow-sm overflow-hidden">
         {/* HEADER */}
         <div className="flex items-center justify-between px-6 py-4 border-b">
-          <h2 className="font-semibold text-gray-800">All Orders</h2>
+          <h2 className="font-semibold text-gray-800">All Assign Orders</h2>
 
           <div className="flex items-center gap-2">
             <FilterSelect
@@ -199,7 +183,7 @@ const Order = () => {
                 </th>
                 <th className="text-left px-3 py-3 w-[120px]">Order Status</th>
                 <th className="text-left px-3 py-3 w-[120px]">Price</th>
-                <th className="text-center px-3 py-3 w-[350px]">Action</th>
+                <th className="text-center px-3 py-3 w-[250px]">Action</th>
               </tr>
             </thead>
 
@@ -217,7 +201,7 @@ const Order = () => {
                     { width: "w-24 h-4" }, // Status
                   ]}
                   actionColumn
-                  actionCount={3}
+                  actionCount={2}
                   actionWidth="w-12 h-8"
                 />
               ) : !hasData ? (
@@ -290,18 +274,6 @@ const Order = () => {
                         >
                           <FiEye />
                         </button>
-                        {item?.is_assigned && (
-                          <button
-                            onClick={() => {
-                              setOpenAssignModal(true);
-                              setSelectedUser(item?.id);
-                            }}
-                            className="p-2 px-3 flex items-center gap-2 bg-indigo-100 text-indigo-500 rounded-lg hover:bg-indigo-200"
-                          >
-                            <TbTruckDelivery />
-                            <span>Assign Rider</span>
-                          </button>
-                        )}
                         <button
                           onClick={() => {
                             setOpenEditModal(true);
@@ -340,11 +312,6 @@ const Order = () => {
         onClose={() => setOpenEditModal(false)}
         user={selectedUser}
       />
-      <AssignOrderModal
-        isOpen={openAssignModal}
-        onClose={() => setOpenAssignModal(false)}
-        id={selectedUser}
-      />
       <ViewOrderModal
         isOpen={openViewModal}
         onClose={() => {
@@ -356,4 +323,4 @@ const Order = () => {
   );
 };
 
-export default Order;
+export default AssignOrder;

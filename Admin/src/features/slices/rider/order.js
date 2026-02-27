@@ -1,6 +1,11 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { toast } from "sonner";
-import { assignOrder, editOrderStatus, getAllOrders, getSingleOrder } from "../actions/order";
+import {
+  getAssignedOrders,
+  markedDelivered,
+  markedFailed,
+  markedPicked,
+} from "../../actions/rider/order";
 
 const formattedDate = new Date().toLocaleString("en-US", {
   weekday: "long",
@@ -15,82 +20,86 @@ const formattedDate = new Date().toLocaleString("en-US", {
 const initialState = {
   errorMessage: "",
   orderLoading: false,
+  pickedLoading: false,
+  deliveredLoading: false,
+  failedLoading: false,
   orderData: {},
-    orderDetails: {},
 };
 
 // ---------------------------------------------------------------------------------------
 
-const orderSlice = createSlice({
-  name: "orderSlice",
+const rider_orderSlice = createSlice({
+  name: "rider_OrderSlice",
   initialState,
   reducers: {},
   extraReducers: (builder) => {
     builder
-      .addCase(getAllOrders.pending, (state) => {
+      .addCase(getAssignedOrders.pending, (state) => {
         state.errorMessage = "";
         state.orderLoading = true;
       })
-      .addCase(getAllOrders.fulfilled, (state, action) => {
+      .addCase(getAssignedOrders.fulfilled, (state, action) => {
         state.errorMessage = "";
         state.orderLoading = false;
         state.orderData = action.payload.data;
       })
-      .addCase(getAllOrders.rejected, (state, action) => {
+      .addCase(getAssignedOrders.rejected, (state, action) => {
         state.errorMessage = action.payload || "Failed";
         state.orderLoading = false;
         toast(action.payload, {
           description: formattedDate,
         });
       })
-            .addCase(getSingleOrder.pending, (state) => {
+      .addCase(markedPicked.pending, (state) => {
         state.errorMessage = "";
-        state.orderLoading = true;
+        state.pickedLoading = true;
       })
-      .addCase(getSingleOrder.fulfilled, (state, action) => {
+      .addCase(markedPicked.fulfilled, (state, action) => {
         state.errorMessage = "";
-        state.orderLoading = false;
-        state.orderDetails = action.payload.data;
+        state.pickedLoading = false;
+        toast("Order status marked picked.", {
+          description: formattedDate,
+        });
       })
-      .addCase(getSingleOrder.rejected, (state, action) => {
+      .addCase(markedPicked.rejected, (state, action) => {
         state.errorMessage = action.payload || "Failed";
-        state.orderLoading = false;
+        state.pickedLoading = false;
         toast(action.payload, {
           description: formattedDate,
         });
       })
-         .addCase(assignOrder.pending, (state) => {
+      .addCase(markedDelivered.pending, (state) => {
         state.errorMessage = "";
-        state.orderLoading = true;
+        state.deliveredLoading = true;
       })
-      .addCase(assignOrder.fulfilled, (state, action) => {
+      .addCase(markedDelivered.fulfilled, (state, action) => {
         state.errorMessage = "";
-        state.orderLoading = false;
-        toast("Order assigned to the rider.", {
+        state.deliveredLoading = false;
+        toast("Order status marked delivered.", {
           description: formattedDate,
         });
       })
-      .addCase(assignOrder.rejected, (state, action) => {
+      .addCase(markedDelivered.rejected, (state, action) => {
         state.errorMessage = action.payload || "Failed";
-        state.orderLoading = false;
+        state.deliveredLoading = false;
         toast(action.payload, {
           description: formattedDate,
         });
       })
-      .addCase(editOrderStatus.pending, (state) => {
+      .addCase(markedFailed.pending, (state) => {
         state.errorMessage = "";
-        state.orderLoading = true;
+        state.failedLoading = true;
       })
-      .addCase(editOrderStatus.fulfilled, (state, action) => {
+      .addCase(markedFailed.fulfilled, (state, action) => {
         state.errorMessage = "";
-        state.orderLoading = false;
-        toast("Order status updated successfully.", {
+        state.failedLoading = false;
+        toast("Order status marked failed.", {
           description: formattedDate,
         });
       })
-      .addCase(editOrderStatus.rejected, (state, action) => {
+      .addCase(markedFailed.rejected, (state, action) => {
         state.errorMessage = action.payload || "Failed";
-        state.orderLoading = false;
+        state.failedLoading = false;
         toast(action.payload, {
           description: formattedDate,
         });
@@ -101,5 +110,5 @@ const orderSlice = createSlice({
 // -------------------------------------------------------------------------
 
 // Action creators are generated for each case reducer function
-export const {} = orderSlice.actions;
-export default orderSlice.reducer;
+export const {} = rider_orderSlice.actions;
+export default rider_orderSlice.reducer;

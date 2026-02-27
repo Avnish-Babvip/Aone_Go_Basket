@@ -34,30 +34,26 @@ const FAQPage = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 mt-15">
-      {/* Hero Section */}
-      <div
-        className="relative h-64 flex flex-col items-center justify-center text-center bg-cover bg-center px-4"
-        style={{
-          backgroundImage: `url('https://images.unsplash.com/photo-1490818387583-1baba5e638af?q=80&w=2000&auto=format&fit=crop')`, // Background with fresh veggies
-          backgroundColor: "rgba(255, 255, 255, 0.8)",
-          backgroundBlendMode: "overlay",
-        }}
-      >
-        <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4 tracking-tight">
-          Frequently Asked Questions
-        </h1>
+      <div className="relative w-full h-44 md:h-56 overflow-hidden flex flex-col items-center justify-center border-b border-gray-100">
+        <img
+          src="/images/faq.webp"
+          alt="Privacy Background"
+          className="absolute inset-0 w-full h-full object-cover"
+        />
+        <div className="absolute inset-0 bg-black/20"></div>
 
-        {/* Breadcrumbs */}
-        <nav className="flex items-center space-x-2 text-sm text-gray-600">
-          <BiHome size={16} className="text-gray-400" />
-          <Link to={"/"} className="hover:text-brand-green cursor-pointer">
-            Home
-          </Link>
-          <BiChevronRight size={14} className="text-gray-400" />
-          <span className="font-semibold text-gray-900 underline decoration-brand-green underline-offset-4">
-            Faqs
-          </span>
-        </nav>
+        <div className="relative z-10 text-center">
+          <h1 className="text-3xl md:text-4xl font-bold text-white mb-2">
+            Frequently Asked Questions
+          </h1>
+          {/* <div className="flex items-center justify-center text-sm text-gray-500">
+            <Link to={"/"} className="hover:text-brand-green">
+              Home
+            </Link>
+            <span className="mx-2 text-gray-400">/</span>
+            <span className="text-white font-medium">FAQ</span>
+          </div> */}
+        </div>
       </div>
 
       {/* FAQ List Section */}

@@ -22,6 +22,8 @@ import AddZipImages from "../pages/Product/AddZipImages";
 import Rider from "../pages/Rider/Rider";
 import RiderReferral from "../pages/Rider/RiderReferral";
 import Order from "../pages/Order/Order";
+import AssignOrder from "../pages/Order/AssignOrder";
+import RiderAssignOrder from "../pages/RiderDashboard/RiderAssignOrder";
 
 export const appRouter = createBrowserRouter([
   /* ---------------- PUBLIC ROUTES ---------------- */
@@ -56,8 +58,17 @@ export const appRouter = createBrowserRouter([
       { path: "product/bulk-products", element: <AddBulkProduct /> },
       { path: "product/bulk-images", element: <AddZipImages /> },
       { path: "order", element: <Order /> },
+      { path: "order/assigned", element: <AssignOrder /> },
       { path: "rider", element: <Rider /> },
       { path: "rider/referral", element: <RiderReferral /> },
+    ],
+  },
+  {
+    path: "/rider",
+    element: <AdminDefaultLayout />, // Protected layout
+    children: [
+      { path: "dashboard", element: <Dashboard /> },
+      { path: "order/assigned", element: <RiderAssignOrder /> },
     ],
   },
 

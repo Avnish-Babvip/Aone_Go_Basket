@@ -67,11 +67,36 @@ export const paymentStatus = createAsyncThunk(
     try {
       const loginToken = getState().authentication?.customerData?.token;
 
-      const { data } = await instance.get(`/customer/payment/details/${id}`, {
-        headers: {
-          Authorization: `Bearer ${loginToken}`,
+      const { data } = await instance.post(
+        `/customer/payment/details/${id}`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${loginToken}`,
+          },
         },
-      });
+      );
+      return data;
+    } catch (error) {
+      return rejectWithValue(error.response.data.message || "Failed");
+    }
+  },
+);
+
+export const checkPendingStatus = createAsyncThunk(
+  "customer/payment/hdfc/status",
+  async (id, { getState, rejectWithValue }) => {
+    try {
+      const loginToken = getState().authentication?.customerData?.token;
+
+      const { data } = await instance.get(
+        `/customer/payment/hdfc/status/${id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${loginToken}`,
+          },
+        },
+      );
       return data;
     } catch (error) {
       return rejectWithValue(error.response.data.message || "Failed");

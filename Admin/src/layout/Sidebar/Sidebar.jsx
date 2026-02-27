@@ -38,7 +38,7 @@ const Sidebar = ({ closeSidebar }) => {
     if (closeSidebar) closeSidebar();
   };
 
-  const menuItems = [
+  const adminMenuItems = [
     {
       label: "Dashboard",
       icon: TbDashboardFilled,
@@ -53,8 +53,12 @@ const Sidebar = ({ closeSidebar }) => {
           url: `/admin/order`,
         },
         {
-          name: "Assign Order",
-          url: "/admin/rider/referral",
+          name: "Assigned Order",
+          url: "/admin/order/assigned",
+        },
+        {
+          name: "UnAssigned Order",
+          url: "/admin/order/unassign",
         },
       ],
     },
@@ -79,6 +83,10 @@ const Sidebar = ({ closeSidebar }) => {
       children: [
         {
           name: "All Customers",
+          url: "/admin/customer",
+        },
+        {
+          name: "KYC Approval",
           url: "/admin/customer",
         },
       ],
@@ -184,11 +192,38 @@ const Sidebar = ({ closeSidebar }) => {
         },
       ],
     },
-
     {
       label: "Settings",
       icon: TbSettingsFilled,
       url: "/admin/settings",
+    },
+    {
+      label: "Order rider",
+      icon: FaUnlockAlt,
+      children: [
+        {
+          name: "Assigned Orders",
+          url: `/rider/order/assigned`,
+        },
+      ],
+    },
+  ];
+
+  const riderMenuItems = [
+    {
+      label: "Dashboard",
+      icon: TbDashboardFilled,
+      url: "/admin/dashboard",
+    },
+    {
+      label: "Order Management",
+      icon: FaUnlockAlt,
+      children: [
+        {
+          name: "Assigned Orders",
+          url: `/rider/order/assigned`,
+        },
+      ],
     },
   ];
 
@@ -203,7 +238,7 @@ const Sidebar = ({ closeSidebar }) => {
         {/* Main Menu */}
         <div className="w-full px-5">
           <ul className="space-y-2">
-            {menuItems.map((item) => {
+            {adminMenuItems.map((item) => {
               const ItemIcon = item.icon;
               const hasChildren = !!item.children;
               const isActiveParent = activeTab === item.label;

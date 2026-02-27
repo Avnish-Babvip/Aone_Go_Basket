@@ -1,20 +1,10 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { HiX } from "react-icons/hi";
-import { useDispatch, useSelector } from "react-redux";
-import { getSingleOrder } from "../../../features/actions/order";
 
-export const ViewOrderModal = ({ isOpen, onClose, id }) => {
-  const dispatch = useDispatch();
-  const { orderDetails } = useSelector((state) => state.order);
-
-  const billing = orderDetails?.address_snapshot?.billing || {};
-  const shipping = orderDetails?.address_snapshot?.shipping || {};
-  const estimatedDelivery =
-    orderDetails?.address_snapshot?.estimatedDelivery || {};
-
-  useEffect(() => {
-    if (id) dispatch(getSingleOrder(id));
-  }, [id]);
+export const ViewAssignedOrderModal = ({ isOpen, onClose, order }) => {
+  const billing = order?.address_snapshot?.billing || {};
+  const shipping = order?.address_snapshot?.shipping || {};
+  const estimatedDelivery = order?.address_snapshot?.estimatedDelivery || {};
 
   if (!isOpen) return null;
 
@@ -36,7 +26,7 @@ export const ViewOrderModal = ({ isOpen, onClose, id }) => {
             Order Details
           </h2>
           <p className="text-center text-gray-500 mt-1">
-            #{orderDetails?.order_number}
+            #{order?.order_number}
           </p>
         </div>
 
@@ -46,10 +36,8 @@ export const ViewOrderModal = ({ isOpen, onClose, id }) => {
           <section>
             <h4 className="font-semibold text-gray-700 mb-3">Customer Info</h4>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <Info label="Name" value={orderDetails?.customer?.name} />
-              <Info label="Email" value={orderDetails?.customer?.email} />
-              <Info label="Mobile" value={orderDetails?.customer?.mobile} />
-              <Info label="Status" value={orderDetails?.customer?.status} />
+              <Info label="Name" value={order?.customer?.name} />
+              <Info label="Mobile" value={order?.customer?.mobile} />
             </div>
           </section>
 
@@ -61,11 +49,11 @@ export const ViewOrderModal = ({ isOpen, onClose, id }) => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <Info
                 label="Billing Address"
-                value={`${billing.address_line_1}, ${billing.address_line_2}, ${billing.city?.name}, ${billing.state?.name}, ${billing.country?.name}, ${billing.pincode}`}
+                value={`${billing?.address_line_1}, ${billing?.address_line_2}, ${billing?.city?.name}, ${billing?.state?.name}, ${billing?.country?.name}, ${billing?.pincode}`}
               />
               <Info
                 label="Shipping Address"
-                value={`${shipping.address_line_1}, ${shipping.address_line_2}, ${shipping.city?.name}, ${shipping.state?.name}, ${shipping.country?.name}, ${shipping.pincode}`}
+                value={`${shipping?.address_line_1}, ${shipping?.address_line_2}, ${shipping?.city?.name}, ${shipping?.state?.name}, ${shipping?.country?.name}, ${shipping?.pincode}`}
               />
               <Info
                 label="Estimated Delivery"
@@ -79,7 +67,7 @@ export const ViewOrderModal = ({ isOpen, onClose, id }) => {
           <section>
             <h4 className="font-semibold text-gray-700 mb-3">Order Items</h4>
             <div className="space-y-2">
-              {orderDetails?.items?.map((item) => (
+              {order?.items?.map((item) => (
                 <div key={item.id} className="border-b pb-2">
                   {/* ITEM NAME & QTY/PRICE */}
                   <div className="flex justify-between">
@@ -113,19 +101,13 @@ export const ViewOrderModal = ({ isOpen, onClose, id }) => {
               Payment & Totals
             </h4>
             <div className="grid grid-cols-2 gap-4">
-              <Info
-                label="Payment Method"
-                value={orderDetails?.payment_method}
-              />
-              <Info
-                label="Payment Status"
-                value={orderDetails?.payment_status}
-              />
-              <Info label="Order Status" value={orderDetails?.status} />
-              <Info label="Subtotal" value={`₹${orderDetails?.subtotal}`} />
-              <Info label="Discount" value={`₹${orderDetails?.discount}`} />
-              <Info label="Tax" value={`₹${orderDetails?.tax}`} />
-              <Info label="Total" value={`₹${orderDetails?.total}`} />
+              <Info label="Payment Method" value={order?.payment_method} />
+              <Info label="Payment Status" value={order?.payment_status} />
+              <Info label="Order Status" value={order?.status} />
+              <Info label="Subtotal" value={`₹${order?.subtotal}`} />
+              <Info label="Discount" value={`₹${order?.discount}`} />
+              <Info label="Tax" value={`₹${order?.tax}`} />
+              <Info label="Total" value={`₹${order?.total}`} />
             </div>
           </section>
 
@@ -133,7 +115,7 @@ export const ViewOrderModal = ({ isOpen, onClose, id }) => {
           <section>
             <Info
               label="Order Date"
-              value={new Date(orderDetails?.created_at).toLocaleString()}
+              value={new Date(order?.created_at).toLocaleString()}
             />
           </section>
         </div>

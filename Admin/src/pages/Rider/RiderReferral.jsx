@@ -85,7 +85,7 @@ const RiderReferral = () => {
                 <th className="text-left px-3 py-3 w-[260px]">Total Earned </th>
                 <th className="text-left px-3 py-3 w-[260px]">Referral Code</th>
                 <th className="text-left px-3 py-3 w-[120px]">Status</th>
-                <th className="text-center px-3 py-3 w-[120px]">Action</th>
+                <th className="text-center px-3 py-3 w-[160px]">Action</th>
               </tr>
             </thead>
 

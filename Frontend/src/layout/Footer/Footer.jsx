@@ -2,6 +2,7 @@ import { Link, NavLink } from "react-router-dom";
 import { FaFacebookF, FaTwitter, FaInstagram, FaYoutube } from "react-icons/fa";
 import { BiSolidSend } from "react-icons/bi";
 import { useSelector } from "react-redux";
+import { useState } from "react";
 
 function Footer() {
   const { categoryData } = useSelector((state) => state.category);
@@ -62,24 +63,7 @@ function Footer() {
               </li>
             </ul>
           </div>
-          <div>
-            <h3 className="text-black font-bold text-base mb-6">
-              Shop Categories
-            </h3>
-            <ul className="space-y-4 text-gray-500 text-[14px]">
-              {Array.isArray(categoryData) &&
-                categoryData.map((cat, idx) => (
-                  <li>
-                    <Link
-                      to={`/category?category_slug=${cat?.slug}`}
-                      className="hover:text-brand-green transition-colors"
-                    >
-                      {cat?.name}
-                    </Link>
-                  </li>
-                ))}
-            </ul>
-          </div>
+      <CategoryList categoryData={categoryData}/>
 
           <div>
             <h3 className="text-black font-bold text-base mb-6">
@@ -92,6 +76,22 @@ function Footer() {
                   className="hover:text-brand-green transition-colors"
                 >
                   Privacy policy
+                </Link>
+              </li>
+              <li>
+                <Link
+                  to="/terms-conditions"
+                  className="hover:text-brand-green transition-colors"
+                >
+                  Terms & conditions
+                </Link>
+              </li>
+              <li>
+                <Link
+                  to="/return-policy"
+                  className="hover:text-brand-green transition-colors"
+                >
+                  Return policy
                 </Link>
               </li>
             </ul>
@@ -152,5 +152,47 @@ function SocialBtn({ icon, bg }) {
     </a>
   );
 }
+
+const  CategoryList = ({ categoryData }) => {
+  const [showAll, setShowAll] = useState(false);
+
+  if (!Array.isArray(categoryData) || categoryData.length === 0) {
+    return <p className="text-gray-400 text-sm">No categories found.</p>;
+  }
+
+  const displayedCategories = showAll
+    ? categoryData
+    : categoryData.slice(0, 5);
+
+  return (
+    <div>
+      <h3 className="text-black font-bold text-base mb-6">Shop Categories</h3>
+
+      <ul className="space-y-4 text-gray-500 text-[14px]">
+        {displayedCategories.map((cat) => (
+          <li key={cat.id}>
+            <Link
+              to={`/category?category_slug=${cat?.slug}`}
+              className="hover:text-brand-green transition-colors"
+            >
+              {cat?.name}
+            </Link>
+          </li>
+        ))}
+      </ul>
+
+      {categoryData.length > 5 && (
+        <button
+          onClick={() => setShowAll(!showAll)}
+          className="mt-4 text-sm text-brand-green font-semibold hover:underline"
+        >
+          {showAll ? "Show Less" : "Show More"}
+        </button>
+      )}
+    </div>
+  );
+};
+
+
 
 export default Footer;

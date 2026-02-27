@@ -141,6 +141,7 @@ const cartSlice = createSlice({
             padding: "16px",
             fontWeight: "600",
           },
+          duration: 500,
         });
       })
       .addCase(addToCart.rejected, (state, action) => {
@@ -167,6 +168,7 @@ const cartSlice = createSlice({
             padding: "16px",
             fontWeight: "600",
           },
+          duration: 500,
         });
       })
       .addCase(updateCartCharges.rejected, (state, action) => {
@@ -199,6 +201,7 @@ const cartSlice = createSlice({
             padding: "16px",
             fontWeight: "600",
           },
+          duration: 500,
         });
       })
       .addCase(deleteCart.rejected, (state, action) => {

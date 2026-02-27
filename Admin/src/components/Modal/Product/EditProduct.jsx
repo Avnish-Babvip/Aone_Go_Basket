@@ -2,7 +2,7 @@ import { useFieldArray, useForm } from "react-hook-form";
 import { useDispatch, useSelector } from "react-redux";
 import { HiX } from "react-icons/hi";
 import { Input, SelectWithId, Textarea } from "../../ReusableInputs";
-import { editProduct } from "../../../features/actions/product";
+import { deleteImage, editProduct } from "../../../features/actions/product";
 import { Spinner } from "../../Loader/Spinner";
 import { FiTrash2 } from "react-icons/fi";
 import MultiPhotoUpload from "../MultipleUploadPhoto";
@@ -114,8 +114,8 @@ export const EditProductModal = ({
   ========================= */
     if (data.images?.length) {
       data.images.forEach((img, index) => {
-        if (img instanceof File) {
-          formData.append(`images[${index}]`, img);
+        if (img.file) {
+          formData.append("images[]", img.file);
         }
       });
     }
@@ -181,9 +181,11 @@ export const EditProductModal = ({
     const subCategory = product.categories_data?.[1];
 
     // images (convert API images to strings)
-    const images = product.images?.map(
-      (img) => `${import.meta.env.VITE_REACT_APP_IMAGE_URL}/${img.image}`,
-    );
+    const images = product.images?.map((img) => ({
+      id: img.id,
+      url: `${import.meta.env.VITE_REACT_APP_IMAGE_URL}/${img.image}`,
+      file: null,
+    }));
 
     // variations
     const variations =
@@ -258,18 +260,13 @@ export const EditProductModal = ({
                 value={images}
                 primaryIndex={primaryIndex}
                 onPrimaryChange={setPrimaryIndex}
+                onDeleteApiImage={(imageId) => dispatch(deleteImage(imageId))}
                 onChange={(files) => {
                   setValue("images", files, {
                     shouldValidate: true,
                     shouldDirty: true,
                   });
-
-                  // reset primary if images shrink
-                  if (primaryIndex >= files.length) {
-                    setPrimaryIndex(0);
-                  }
                 }}
-                error={errors.images?.message}
               />
             </div>
 
@@ -460,6 +457,7 @@ export const EditProductModal = ({
                     control={control}
                     register={register}
                     watch={watch}
+                    setValue={setValue} // 👈 ADD THIS
                     errors={errors}
                     attributes={attributes}
                     vIndex={vIndex}

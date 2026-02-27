@@ -1,7 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 
-const PrivacyPolicy = () => {
+const TermsAndConditions = () => {
   const sections = [
     {
       id: "personal-info",
@@ -94,27 +94,27 @@ const PrivacyPolicy = () => {
   };
 
   return (
-    <div className="min-h-screen bg-white mt-20 text-gray-700">
+    <div className="min-h-screen bg-white mt-15 text-gray-700">
       {/* HEADER */}
       <div className="relative w-full h-44 md:h-56 overflow-hidden flex flex-col items-center justify-center border-b border-gray-100">
         <img
-          src="/images/privacy-policy.webp"
+          src="/images/Banner-bg-2.jpg"
           alt="Privacy Background"
           className="absolute inset-0 w-full h-full object-cover"
         />
-        <div className="absolute inset-0 bg-black/10"></div>
+        <div className="absolute inset-0 bg-white/70"></div>
 
         <div className="relative z-10 text-center">
           <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-2">
-            Privacy Policy
+            Terms & Conditions
           </h1>
-          {/* <div className="flex items-center justify-center text-sm text-gray-500">
+          <div className="flex items-center justify-center text-sm text-gray-500">
             <Link to={"/"} className="hover:text-brand-green">
               Home
             </Link>
             <span className="mx-2 text-gray-400">/</span>
             <span className="text-gray-900 font-medium">Privacy</span>
-          </div> */}
+          </div>
         </div>
       </div>
 
@@ -180,4 +180,4 @@ const PrivacyPolicy = () => {
   );
 };
 
-export default PrivacyPolicy;
+export default TermsAndConditions;

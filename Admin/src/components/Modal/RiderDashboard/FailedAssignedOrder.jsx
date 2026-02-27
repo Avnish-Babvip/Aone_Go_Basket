@@ -1,32 +1,14 @@
-import React from "react";
 import { useForm } from "react-hook-form";
-import { useDispatch, useSelector } from "react-redux";
-import { SelectWithId } from "../../ReusableInputs";
 import { HiX } from "react-icons/hi";
-import { Spinner } from "../../Loader/Spinner";
-import { editOrderStatus } from "../../../features/actions/order";
+import { Textarea } from "../../ReusableInputs";
 
-export const EditOrderStatusModal = ({ isOpen, onClose, user }) => {
+export const FailedAssignedOrderModal = ({ isOpen, onClose, onSubmit }) => {
   if (!isOpen) return null;
-  const dispatch = useDispatch();
-  const { orderLoading } = useSelector((state) => state.order);
   const {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm({
-    defaultValues: {
-      status: user?.status,
-    },
-  });
-
-  const onSubmit = (data) => {
-    dispatch(editOrderStatus({ payload: data, id: user?.id }))
-      .unwrap()
-      .then(() => {
-        onClose();
-      });
-  };
+  } = useForm();
 
   return (
     <form
@@ -36,7 +18,7 @@ export const EditOrderStatusModal = ({ isOpen, onClose, user }) => {
       <div
         className="
           bg-[#f9f7f7]
-          w-[95%] sm:w-[600px]   /* wider modal */
+          w-[95%] sm:w-[900px]   /* wider modal */
           max-h-[85vh]
           rounded-xl shadow-xl relative
           flex flex-col
@@ -54,30 +36,30 @@ export const EditOrderStatusModal = ({ isOpen, onClose, user }) => {
         {/* HEADER */}
         <div className="px-8 pt-8">
           <h2 className="text-center text-black text-xl font-semibold mb-6">
-            Edit Order Status
+            Failed Order Request
           </h2>
         </div>
 
         {/* FORM BODY */}
-        <div className="flex-1 overflow-y-auto px-8 pb-6">
-          <SelectWithId
-            label="Order Status"
-            name="status"
-            options={[
-              { label: "Placed", value: "placed" },
-              { label: "Confirmed", value: "confirmed" },
-              { label: "Shipped", value: "shipped" },
-            ]}
-            register={register}
-            required
-            errors={errors}
-          />
+        <div className="flex-1 overflow-y-auto px-8 pb-6 space-y-2">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+            {/* ✅ FULL WIDTH FIELD */}
+            <div className="md:col-span-2">
+              <Textarea
+                label="Reason"
+                name="reason"
+                placeholder="Write Reason Here ..."
+                register={register}
+                required
+                errors={errors}
+              />
+            </div>
+          </div>
         </div>
 
         {/* FOOTER */}
         <div className="px-8 py-6 border-t border-gray-300">
           <button
-            disabled={orderLoading}
             type="submit"
             className="
               w-full py-2.5 rounded-lg font-semibold
@@ -86,7 +68,7 @@ export const EditOrderStatusModal = ({ isOpen, onClose, user }) => {
               text-white transition
             "
           >
-            {orderLoading ? <Spinner /> : "Submit"}
+            Submit
           </button>
         </div>
       </div>

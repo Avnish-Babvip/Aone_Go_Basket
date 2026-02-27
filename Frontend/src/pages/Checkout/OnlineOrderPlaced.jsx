@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { paymentStatus } from "../../features/actions/order";
+import { BsCheck2Circle } from "react-icons/bs";
 
 export default function OnlineOrderPlaced() {
   const [searchParams] = useSearchParams();
@@ -66,14 +67,16 @@ export default function OnlineOrderPlaced() {
     <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4 py-10">
       <div className="bg-white shadow-2xl rounded-3xl p-10 max-w-xl w-full">
         <div className="text-center">
-          <div className="text-5xl mb-4">🎉</div>
+          <div className="text-5xl flex justify-center text-brand-green mb-4">
+            <BsCheck2Circle />
+          </div>
           <h1 className="text-2xl font-black text-brand-green">
-            Order Placed Successfully!
+            Your Order is Placed.
           </h1>
           <p className="text-gray-500 mt-2">Thank you for shopping with us.</p>
         </div>
 
-        <div className="mt-8 space-y-3 text-sm border-t pt-6">
+        <div className="mt-8 space-y-3 text-sm border-t border-gray-200 pt-6">
           <div className="flex justify-between">
             <span className="text-gray-500">Order Number</span>
             <span className="font-semibold">{order.order_number}</span>
@@ -105,7 +108,7 @@ export default function OnlineOrderPlaced() {
           <div className="flex justify-between">
             <span className="text-gray-500">Payment Status</span>
             <span
-              className={`font-semibold capitalize ${
+              className={`font-semibold uppercase ${
                 order.payment_status === "paid"
                   ? "text-green-600"
                   : "text-orange-500"

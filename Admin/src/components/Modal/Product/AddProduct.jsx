@@ -85,8 +85,6 @@ const AddProductModal = ({
       return;
     }
 
-    clearErrors("variations");
-
     const formData = new FormData();
 
     // Parent category always exists
@@ -97,10 +95,10 @@ const AddProductModal = ({
       formData.append("category_ids[1]", data.subcategory_id);
     }
 
-    if (data.images) {
-      data.images.forEach((file, index) => {
-        if (file instanceof File) {
-          formData.append(`images[${index}]`, file);
+    if (data.images?.length) {
+      data.images.forEach((img, index) => {
+        if (img.file) {
+          formData.append("images[]", img.file);
         }
       });
     }
@@ -196,18 +194,13 @@ const AddProductModal = ({
                 value={images}
                 primaryIndex={primaryIndex}
                 onPrimaryChange={setPrimaryIndex}
+                onDeleteApiImage={(imageId) => dispatch(deleteImage(imageId))}
                 onChange={(files) => {
                   setValue("images", files, {
                     shouldValidate: true,
                     shouldDirty: true,
                   });
-
-                  // reset primary if images shrink
-                  if (primaryIndex >= files.length) {
-                    setPrimaryIndex(0);
-                  }
                 }}
-                error={errors.images?.message}
               />
             </div>
 
@@ -335,7 +328,6 @@ const AddProductModal = ({
                     label="Low Stock Alert"
                     name="low_stock_alert"
                     register={register}
-                    required
                     errors={errors}
                   />
                 </div>
@@ -404,7 +396,6 @@ const AddProductModal = ({
                       label="Low Stock Alert"
                       name={`variations.${vIndex}.low_stock_alert`}
                       register={register}
-                      required
                       errors={errors}
                     />
                   </div>

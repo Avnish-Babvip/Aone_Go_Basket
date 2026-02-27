@@ -20,15 +20,9 @@ const sliderData = [
     title: "Healthy vegetable that you deserve to eat fresh",
     subtitle:
       "We source and sell the very best beef, lamb and pork, sourced with the greatest care from farmers.",
-    bgImage: "/images/Banner-bg-1.jpg",
-  },
-  {
-    id: 3,
-    title: "Organic Fruits delivered to your doorstep",
-    subtitle:
-      "Freshness guaranteed from our local farms to your dining table every single day.",
     bgImage: "/images/Banner-bg-2.jpg",
   },
+
 ];
 
 function HeroBanner() {

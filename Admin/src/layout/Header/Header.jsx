@@ -1,7 +1,9 @@
+import { useRef } from "react";
 import { useEffect, useState } from "react";
 import { FaSearch } from "react-icons/fa";
 import { TiThMenuOutline } from "react-icons/ti";
-import { useLocation, useSearchParams } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { NavLink, useLocation, useSearchParams } from "react-router-dom";
 
 export const Header = ({ setSidebarOpen }) => {
   const PAGE_CONFIG = {
@@ -44,9 +46,17 @@ export const Header = ({ setSidebarOpen }) => {
       title: "Order List",
       placeholder: "Search name or order number ",
     },
-
+    "/admin/order/assign": {
+      title: "Assign Order List",
+      placeholder: "Search order number ",
+    },
     "/admin/settings": {
       title: "Settings",
+    },
+
+    "/rider/order/assigned": {
+      title: "Assigned Orders",
+      placeholder: "Search name or order number ",
     },
   };
 
@@ -147,3 +157,128 @@ export const Header = ({ setSidebarOpen }) => {
     </header>
   );
 };
+
+// function AccountSection({}) {
+//   const [open, setOpen] = useState(false);
+//   const dropdownRef = useRef(null);
+//   const { profileData } = useSelector((state) => state.customer);
+//   const { customerData, isCustomerLoggedIn } = useSelector(
+//     (state) => state.authentication,
+//   );
+//   const customer = customerData?.customer;
+//   const dispatch = useDispatch();
+
+//   const handleLogout = () => {
+//     dispatch(customerLogout());
+//     setOpen(false);
+//   };
+
+//   useEffect(() => {
+//     const handleClickOutside = (event) => {
+//       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+//         setOpen(false);
+//       }
+//     };
+
+//     document.addEventListener("click", handleClickOutside, true);
+
+//     return () => {
+//       document.removeEventListener("click", handleClickOutside, true);
+//     };
+//   }, []);
+
+//   useEffect(() => {
+//     dispatch(getCustomerDetails());
+//   }, []);
+
+//   return (
+//     <div ref={dropdownRef} className="relative">
+//       {/* ================= BUTTON ================= */}
+//       <button
+//         onClick={() => setOpen((p) => !p)}
+//         className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-semibold text-gray-700 hover:bg-gray-100 hover:text-brand-green transition-all duration-200"
+//       >
+//         <div className="w-8 h-8 flex items-center justify-center rounded-full text-brand-green">
+//           {profileData?.profile_image || customer?.profile_image ? (
+//             <img
+//               className="rounded-full"
+//               src={
+//                 profileData?.profile_image
+//                   ? profileData?.profile_image
+//                   : `${import.meta.env.VITE_REACT_APP_IMAGE_URL}/${customer?.profile_image}`
+//               }
+//             />
+//           ) : (
+//             <PiUserCircleLight size={24} className="text-lg" />
+//           )}
+//         </div>
+
+//         <span className="hidden md:block">
+//           Hi, {customer?.name?.split(" ")[0] || "User"}
+//         </span>
+
+//         <FiChevronDown
+//           className={`transition-transform duration-300 ${
+//             open ? "rotate-180 text-brand-green" : ""
+//           }`}
+//         />
+//       </button>
+
+//       {/* ================= DROPDOWN ================= */}
+//       <div
+//         className={`absolute right-0 mt-3 w-56 bg-white rounded-2xl shadow-2xl border border-gray-100 overflow-hidden transition-all duration-300 origin-top ${
+//           open
+//             ? "opacity-100 scale-100 visible"
+//             : "opacity-0 scale-95 invisible"
+//         }`}
+//       >
+//         {/* USER HEADER */}
+//         <div className="px-5 py-4 bg-gray-50 border-b border-gray-100">
+//           <p className="text-sm font-semibold text-gray-800">
+//             {customer?.name}
+//           </p>
+//           <p className="text-xs text-gray-500 truncate">{customer?.email}</p>
+//         </div>
+
+//         {/* MENU ITEMS */}
+//         <div className="py-2">
+//           <NavLink
+//             to="/account/my-profile"
+//             onClick={() => setOpen(false)}
+//             className={({ isActive }) =>
+//               `flex items-center px-5 py-2.5 text-sm transition-all ${
+//                 isActive
+//                   ? "bg-emerald-50 text-brand-green font-medium"
+//                   : "text-gray-700 hover:bg-gray-50"
+//               }`
+//             }
+//           >
+//             My Profile
+//           </NavLink>
+//           <NavLink
+//             to="/account/change-password"
+//             onClick={() => setOpen(false)}
+//             className={({ isActive }) =>
+//               `flex items-center px-5 py-2.5 text-sm transition-all ${
+//                 isActive
+//                   ? "bg-emerald-50 text-brand-green font-medium"
+//                   : "text-gray-700 hover:bg-gray-50"
+//               }`
+//             }
+//           >
+//             Change Password
+//           </NavLink>
+
+//           <div className="my-2 border-t border-gray-100" />
+
+//           <button
+//             onClick={handleLogout}
+//             className="w-full text-left px-5 py-2.5 text-sm text-red-500 hover:bg-red-50 transition"
+//           >
+//             Logout
+//           </button>
+//         </div>
+//       </div>
+//     </div>
+//   );
+// }
