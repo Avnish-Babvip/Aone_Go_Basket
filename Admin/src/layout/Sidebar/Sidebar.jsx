@@ -78,7 +78,7 @@ const Sidebar = ({ closeSidebar }) => {
       ],
     },
     {
-      label: "Customer Profile",
+      label: "Customer Management",
       icon: FaRegUser,
       children: [
         {
@@ -87,7 +87,25 @@ const Sidebar = ({ closeSidebar }) => {
         },
         {
           name: "KYC Approval",
-          url: "/admin/customer",
+          url: "/admin/customer/kyc",
+        },
+      ],
+    },
+        {
+      label: "Rider Management",
+      icon: FaUnlockAlt,
+      children: [
+        {
+          name: "All Riders",
+          url: `/admin/rider`,
+        },
+        {
+          name: "Riders Referrals",
+          url: "/admin/rider/referral",
+        },
+         {
+          name: "KYC Approval",
+          url: "/admin/rider/kyc",
         },
       ],
     },
@@ -179,26 +197,12 @@ const Sidebar = ({ closeSidebar }) => {
       ],
     },
     {
-      label: "Rider Management",
-      icon: FaUnlockAlt,
-      children: [
-        {
-          name: "All Riders",
-          url: `/admin/rider`,
-        },
-        {
-          name: "Riders Referrals",
-          url: "/admin/rider/referral",
-        },
-      ],
-    },
-    {
       label: "Settings",
       icon: TbSettingsFilled,
       url: "/admin/settings",
     },
     {
-      label: "Order rider",
+      label: "Order Rider",
       icon: FaUnlockAlt,
       children: [
         {
@@ -206,6 +210,11 @@ const Sidebar = ({ closeSidebar }) => {
           url: `/rider/order/assigned`,
         },
       ],
+    },
+    {
+      label: "Profile",
+      icon: FaUnlockAlt,
+      url: "/rider/profile",
     },
   ];
 
@@ -228,15 +237,21 @@ const Sidebar = ({ closeSidebar }) => {
   ];
 
   return (
-    <div className="flex flex-col justify-between h-screen tracking-tight  py-6 relative overflow-hidden shadow-xl">
-      {/* Logo */}
-      <div className="flex flex-col items-center">
-        <Link to="/" className="">
-          <div className="mb-8 font-extrabold text-xl">AONE GO BASKET</div>
-        </Link>
+   <div className="flex flex-col h-screen bg-[#111827] text-gray-400 shadow-xl">
+
+      {/* Scrollable Section */}
+      <div className="flex-1 overflow-y-auto px-3 py-6 scrollbar-thin  scrollbar-thumb-gray-700">
+
+        {/* Logo */}
+        <div className="flex justify-center mb-8">
+          <Link to="/">
+            <div className="font-extrabold text-xl text-white">
+              AONE GO BASKET
+            </div>
+          </Link>
+        </div>
 
         {/* Main Menu */}
-        <div className="w-full px-5">
           <ul className="space-y-2">
             {adminMenuItems.map((item) => {
               const ItemIcon = item.icon;
@@ -252,7 +267,7 @@ const Sidebar = ({ closeSidebar }) => {
                         ? handleDropdown(item.label)
                         : handleNavigate(item.url, item.label)
                     }
-                    className={`flex items-center justify-between px-4 py-2 rounded-lg cursor-pointer transition-all ${
+                    className={`flex items-center justify-between px-2 py-2 rounded-lg cursor-pointer transition-all ${
                       isActiveParent
                         ? "bg-gradient-to-r from-blue-600 to-blue-900 text-white"
                         : "text-gray-400 hover:text-white hover:bg-[#1A1A40]"
@@ -322,21 +337,17 @@ const Sidebar = ({ closeSidebar }) => {
               );
             })}
           </ul>
-        </div>
       </div>
 
       <div>
-        {/* Footer */}
-        <div className="absolute bottom-2 left-0 w-full text-center text-gray-500 text-xs">
-          Aone Go Black Dashboard
-        </div>
+     
 
+      </div>
         {/* Logout */}
+  <div className="px-10 py-4 border-t border-gray-700">
         <div
-          onClick={() => {
-            dispatch(adminLogout(adminData?.token));
-          }}
-          className="flex items-center gap-3 px-6 py-3 mt-6 cursor-pointer text-red-400 hover:text-red-500"
+          onClick={() => dispatch(adminLogout(adminData?.token))}
+          className="flex items-center gap-3 cursor-pointer text-red-400 hover:text-red-500"
         >
           <LuLogOut className="text-lg" />
           <span className="font-medium">Log Out</span>

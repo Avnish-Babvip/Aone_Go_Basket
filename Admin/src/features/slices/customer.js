@@ -1,6 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { toast } from "sonner";
-import { editCustomerStatus, getAllCustomers } from "../actions/customer";
+import { editCustomerKycStatus, editCustomerStatus, getAllCustomers, getAllKycDocument } from "../actions/customer";
 
 const formattedDate = new Date().toLocaleString("en-US", {
   weekday: "long",
@@ -16,6 +16,7 @@ const initialState = {
   errorMessage: "",
   customerLoading: false,
   customerData: {},
+  kycData: {},
 };
 
 // ---------------------------------------------------------------------------------------
@@ -42,6 +43,22 @@ const customerSlice = createSlice({
           description: formattedDate,
         });
       })
+      .addCase(getAllKycDocument.pending, (state) => {
+        state.errorMessage = "";
+        state.customerLoading = true;
+      })
+      .addCase(getAllKycDocument.fulfilled, (state, action) => {
+        state.errorMessage = "";
+        state.customerLoading = false;
+        state.kycData = action.payload.data;
+      })
+      .addCase(getAllKycDocument.rejected, (state, action) => {
+        state.errorMessage = action.payload || "Failed";
+        state.customerLoading = false;
+        toast(action.payload, {
+          description: formattedDate,
+        });
+      })
       .addCase(editCustomerStatus.pending, (state) => {
         state.errorMessage = "";
         state.customerLoading = true;
@@ -54,6 +71,24 @@ const customerSlice = createSlice({
         });
       })
       .addCase(editCustomerStatus.rejected, (state, action) => {
+        state.errorMessage = action.payload || "Failed";
+        state.customerLoading = false;
+        toast(action.payload, {
+          description: formattedDate,
+        });
+      })
+      .addCase(editCustomerKycStatus.pending, (state) => {
+        state.errorMessage = "";
+        state.customerLoading = true;
+      })
+      .addCase(editCustomerKycStatus.fulfilled, (state, action) => {
+        state.errorMessage = "";
+        state.customerLoading = false;
+        toast("Customer kyc status updated successfully.", {
+          description: formattedDate,
+        });
+      })
+      .addCase(editCustomerKycStatus.rejected, (state, action) => {
         state.errorMessage = action.payload || "Failed";
         state.customerLoading = false;
         toast(action.payload, {

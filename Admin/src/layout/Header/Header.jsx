@@ -18,6 +18,10 @@ export const Header = ({ setSidebarOpen }) => {
       title: "Customers List",
       placeholder: "Search name, username or email...",
     },
+    "/admin/customer/kyc": {
+      title: "Customers Kyc Document List",
+      placeholder: "Search name",
+    },
     "/admin/role": {
       title: "Role List",
     },
@@ -42,13 +46,20 @@ export const Header = ({ setSidebarOpen }) => {
     "/admin/rider/referral": {
       title: "Rider Referral List",
     },
+    "/admin/rider/kyc": {
+      title: "Rider Kyc Approval List",
+    },
     "/admin/order": {
       title: "Order List",
-      placeholder: "Search name or order number ",
+      placeholder: "Search customer or order number ",
     },
-    "/admin/order/assign": {
-      title: "Assign Order List",
-      placeholder: "Search order number ",
+    "/admin/order/assigned": {
+      title: "Assigned Order List",
+      placeholder: "Search rider or order number ",
+    },
+    "/admin/order/unassigned": {
+      title: "Unassigned Order List",
+      placeholder: "Search customer or order number ",
     },
     "/admin/settings": {
       title: "Settings",
@@ -57,6 +68,9 @@ export const Header = ({ setSidebarOpen }) => {
     "/rider/order/assigned": {
       title: "Assigned Orders",
       placeholder: "Search name or order number ",
+    },
+    "/rider/profile": {
+      title: "Your Rider Profile",
     },
   };
 

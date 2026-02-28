@@ -1,6 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { toast } from "sonner";
-import { assignOrder, editOrderStatus, getAllOrders, getSingleOrder } from "../actions/order";
+import { assignOrder, editOrderStatus, getAllAssignOrders, getAllNotAssignOrders, getAllOrders, getSingleOrder } from "../actions/order";
 
 const formattedDate = new Date().toLocaleString("en-US", {
   weekday: "long",
@@ -16,6 +16,8 @@ const initialState = {
   errorMessage: "",
   orderLoading: false,
   orderData: {},
+  assignedOrderData: {},
+  unassignedOrderData: {},
     orderDetails: {},
 };
 
@@ -37,6 +39,38 @@ const orderSlice = createSlice({
         state.orderData = action.payload.data;
       })
       .addCase(getAllOrders.rejected, (state, action) => {
+        state.errorMessage = action.payload || "Failed";
+        state.orderLoading = false;
+        toast(action.payload, {
+          description: formattedDate,
+        });
+      })
+      .addCase(getAllAssignOrders.pending, (state) => {
+        state.errorMessage = "";
+        state.orderLoading = true;
+      })
+      .addCase(getAllAssignOrders.fulfilled, (state, action) => {
+        state.errorMessage = "";
+        state.orderLoading = false;
+        state.assignedOrderData = action.payload.data;
+      })
+      .addCase(getAllAssignOrders.rejected, (state, action) => {
+        state.errorMessage = action.payload || "Failed";
+        state.orderLoading = false;
+        toast(action.payload, {
+          description: formattedDate,
+        });
+      })
+      .addCase(getAllNotAssignOrders.pending, (state) => {
+        state.errorMessage = "";
+        state.orderLoading = true;
+      })
+      .addCase(getAllNotAssignOrders.fulfilled, (state, action) => {
+        state.errorMessage = "";
+        state.orderLoading = false;
+        state.unassignedOrderData = action.payload.data;
+      })
+      .addCase(getAllNotAssignOrders.rejected, (state, action) => {
         state.errorMessage = action.payload || "Failed";
         state.orderLoading = false;
         toast(action.payload, {

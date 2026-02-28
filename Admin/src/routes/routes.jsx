@@ -25,6 +25,9 @@ import Order from "../pages/Order/Order";
 import AssignOrder from "../pages/Order/AssignOrder";
 import RiderAssignOrder from "../pages/RiderDashboard/RiderAssignOrder";
 import UnassignOrder from "../pages/Order/UnAssignOrder";
+import RiderKyc from "../pages/Rider/RiderKyc";
+import CustomerKyc from "../pages/Customer/CustomerKyc";
+import RiderProfile from "../pages/RiderDashboard/RiderProfile";
 
 export const appRouter = createBrowserRouter([
   /* ---------------- PUBLIC ROUTES ---------------- */
@@ -48,6 +51,7 @@ export const appRouter = createBrowserRouter([
       { path: "dashboard", element: <Dashboard /> },
       { path: "user", element: <AdminUser /> },
       { path: "customer", element: <Customer /> },
+      { path: "customer/kyc", element: <CustomerKyc /> },
       { path: "role", element: <Role /> },
       { path: "permission", element: <Permission /> },
       { path: "role/:id", element: <RolePermission /> },
@@ -63,6 +67,7 @@ export const appRouter = createBrowserRouter([
       { path: "order/unassigned", element: <UnassignOrder /> },
       { path: "rider", element: <Rider /> },
       { path: "rider/referral", element: <RiderReferral /> },
+      { path: "rider/kyc", element: <RiderKyc /> },
     ],
   },
   {
@@ -71,6 +76,7 @@ export const appRouter = createBrowserRouter([
     children: [
       { path: "dashboard", element: <Dashboard /> },
       { path: "order/assigned", element: <RiderAssignOrder /> },
+      { path: "profile", element: <RiderProfile /> },
     ],
   },
 

@@ -8,8 +8,7 @@ import { EditOrderStatusModal } from "../../components/Modal/Order/EditOrderStat
 import { getAllOrders } from "../../features/actions/order";
 import FilterSelect from "../../components/FilterSelect";
 import { ViewOrderModal } from "../../components/Modal/Order/ViewOrder";
-import { AssignOrderModal } from "../../components/Modal/Order/AssignOrder";
-import { TbTruckDelivery } from "react-icons/tb";
+
 
 const Order = () => {
   const { state } = useLocation();
@@ -72,19 +71,6 @@ const Order = () => {
         return "bg-purple-100 text-purple-700 ring-1 ring-purple-200";
       case "cod":
         return "bg-gray-100 text-gray-700 ring-1 ring-gray-200";
-      default:
-        return "bg-gray-100 text-gray-600 ring-1 ring-gray-200";
-    }
-  };
-
-  const getPaymentStatusStyle = (status) => {
-    switch (status?.toLowerCase()) {
-      case "paid":
-        return "bg-emerald-100 text-emerald-700 ring-1 ring-emerald-200";
-      case "pending":
-        return "bg-yellow-100 text-yellow-700 ring-1 ring-yellow-200";
-      case "failed":
-        return "bg-red-100 text-red-600 ring-1 ring-red-200";
       default:
         return "bg-gray-100 text-gray-600 ring-1 ring-gray-200";
     }
@@ -217,7 +203,7 @@ const Order = () => {
                     { width: "w-24 h-4" }, // Status
                   ]}
                   actionColumn
-                  actionCount={3}
+                  actionCount={2}
                   actionWidth="w-12 h-8"
                 />
               ) : !hasData ? (
@@ -290,18 +276,7 @@ const Order = () => {
                         >
                           <FiEye />
                         </button>
-                        {item?.is_assigned && (
-                          <button
-                            onClick={() => {
-                              setOpenAssignModal(true);
-                              setSelectedUser(item?.id);
-                            }}
-                            className="p-2 px-3 flex items-center gap-2 bg-indigo-100 text-indigo-500 rounded-lg hover:bg-indigo-200"
-                          >
-                            <TbTruckDelivery />
-                            <span>Assign Rider</span>
-                          </button>
-                        )}
+                
                         <button
                           onClick={() => {
                             setOpenEditModal(true);
@@ -331,7 +306,7 @@ const Order = () => {
             page={page}
             label="orders"
             onPageChange={updateParams}
-            extraParams={{ search: searchQuery, status }}
+            extraParams={{ search: searchQuery, status ,payment_method,payment_status}}
           />
         )}
       </div>
@@ -339,11 +314,6 @@ const Order = () => {
         isOpen={openEditModal}
         onClose={() => setOpenEditModal(false)}
         user={selectedUser}
-      />
-      <AssignOrderModal
-        isOpen={openAssignModal}
-        onClose={() => setOpenAssignModal(false)}
-        id={selectedUser}
       />
       <ViewOrderModal
         isOpen={openViewModal}

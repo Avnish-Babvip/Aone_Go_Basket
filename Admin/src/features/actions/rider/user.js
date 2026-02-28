@@ -21,3 +21,44 @@ export const getRiderProfile = createAsyncThunk(
     }
   },
 );
+
+export const updateRiderProfile = createAsyncThunk(
+  "/rider/profile/update",
+  async (payload, { getState, rejectWithValue }) => {
+    try {
+      // ✅ Get token directly from store
+      const loginToken = getState().authentication?.adminData?.token;
+
+      const { data } = await instance.put(`/rider/profile`,payload, {
+        headers: {
+          "Content-type": "application/json",
+          Authorization: `Bearer ${loginToken}`,
+        },
+      });
+
+      return data;
+    } catch (error) {
+      return rejectWithValue(error.response.data.message || "Failed ");
+    }
+  },
+);
+
+export const submitKyc = createAsyncThunk(
+  "/rider/kyc",
+  async (payload, { getState, rejectWithValue }) => {
+    try {
+      // ✅ Get token directly from store
+      const loginToken = getState().authentication?.adminData?.token;
+
+      const { data } = await instance.post(`/rider/kyc`,payload, {
+        headers: {
+          Authorization: `Bearer ${loginToken}`,
+        },
+      });
+
+      return data;
+    } catch (error) {
+      return rejectWithValue(error.response.data.message || "Failed ");
+    }
+  },
+);

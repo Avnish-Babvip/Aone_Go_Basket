@@ -14,8 +14,9 @@ import attribute from "./slices/attribute";
 import product from "./slices/product";
 import rider from "./slices/rider";
 import order from "./slices/order";
+import location from "./slices/location";
 import rider_order from "./slices/rider/order";
-import rider_profile from "./slices/rider/user";
+import rider_user from "./slices/rider/user";
 
 const rootReducer = combineReducers({
   references,
@@ -29,8 +30,9 @@ const rootReducer = combineReducers({
   product,
   rider,
   order,
+  location,
   rider_order,
-  rider_profile,
+  rider_user,
 });
 
 // Redux-persist configuration

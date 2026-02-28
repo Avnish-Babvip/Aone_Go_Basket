@@ -1,50 +1,46 @@
 import { useEffect, useState } from "react";
-import { FiEye, FiEdit2, FiTrash2 } from "react-icons/fi";
+import { FiEye, FiEdit2 } from "react-icons/fi";
 import { useDispatch, useSelector } from "react-redux";
-import { useLocation, useSearchParams } from "react-router-dom";
+import { useSearchParams } from "react-router-dom";
 import Pagination from "../../components/Pagination";
 import TableSkeleton from "../../components/TableSkeleton";
 import { EditOrderStatusModal } from "../../components/Modal/Order/EditOrderStatus";
-import { getAllAssignOrders, getAllOrders } from "../../features/actions/order";
-import FilterSelect from "../../components/FilterSelect";
-import { ViewOrderModal } from "../../components/Modal/Order/ViewOrder";
+import { getAllNotAssignOrders } from "../../features/actions/order";
+import { ViewUnassignedOrderModal } from "../../components/Modal/Order/ViewUnassignOrder";
+import { AssignOrderModal } from "../../components/Modal/Order/AssignOrder";
+import { TbTruckDelivery } from "react-icons/tb";
 
 const UnassignOrder = () => {
-  const { state } = useLocation();
   const dispatch = useDispatch();
   const [searchParams, setSearchParams] = useSearchParams();
-  const { orderData, orderLoading } = useSelector((state) => state.order);
+  const { unassignedOrderData, orderLoading } = useSelector((state) => state.order);
   const [selectedUser, setSelectedUser] = useState({});
-  const [openModal, setOpenModal] = useState(false);
   const [openViewModal, setOpenViewModal] = useState(false);
+    const [openAssignModal, setOpenAssignModal] = useState(false);
   const [openEditModal, setOpenEditModal] = useState(false);
   const page = Number(searchParams.get("page")) || 1;
   const searchQuery = searchParams.get("search") || "";
-  const status = searchParams.get("status") || "";
-  const payment_status = searchParams.get("payment_status") || "";
-  const payment_method = searchParams.get("payment_method") || "";
+  const from_date = searchParams.get("from_date") || "";
+const to_date = searchParams.get("to_date") || "";
 
-  const users = orderData?.data || [];
+  const users = unassignedOrderData?.data || [];
   const hasData = Array.isArray(users) && users.length > 0;
   const updateParams = ({
     page,
     search,
-    status,
-    payment_status,
-    payment_method,
+     from_date,
+  to_date,
   }) => {
     const params = {};
     if (page) params.page = page;
     if (search) params.search = search;
-    if (status !== undefined && status !== "") params.status = status;
-    if (payment_status !== undefined && payment_status !== "")
-      params.payment_status = payment_status;
-    if (payment_method !== undefined && payment_method !== "")
-      params.payment_method = payment_method;
+     if (from_date) params.from_date = from_date;
+  if (to_date) params.to_date = to_date;
     setSearchParams(params);
+
   };
 
-  const getOrderStatusStyle = (status) => {
+   const getOrderStatusStyle = (status) => {
     switch (status?.toLowerCase()) {
       case "placed":
         return "bg-yellow-100 text-yellow-700 ring-1 ring-yellow-200";
@@ -75,98 +71,75 @@ const UnassignOrder = () => {
   };
 
   useEffect(() => {
-    if (!openEditModal && !openModal) {
+    if (!openEditModal) {
       dispatch(
-        getAllAssignOrders({
+        getAllNotAssignOrders({
           search: searchQuery,
           page,
-          status,
-          payment_status,
-          payment_method,
+           from_date,
+  to_date,
         }),
       );
     }
   }, [
-    openModal,
     openEditModal,
     page,
     searchQuery,
-    status,
-    payment_status,
-    payment_method,
+     from_date,
+  to_date,
   ]);
-
-  useEffect(() => {
-    if (state?.openModal) {
-      setOpenModal(true);
-    }
-  }, [state]);
 
   return (
     <>
       <div className="bg-white rounded-xl shadow-sm overflow-hidden">
         {/* HEADER */}
         <div className="flex items-center justify-between px-6 py-4 border-b">
-          <h2 className="font-semibold text-gray-800">All Assign Orders</h2>
+          <h2 className="font-semibold text-gray-800">All Unassigned Orders</h2>
 
-          <div className="flex items-center gap-2">
-            <FilterSelect
-              label="Payment Method"
-              value={payment_method || "All"}
-              options={[
-                { label: "Online", value: "online" },
-                { label: "Cod", value: "cod" },
-              ]}
-              onChange={(val) =>
-                updateParams({
-                  payment_method: val,
-                  payment_status,
-                  status,
-                  page: 1,
-                  search: searchQuery,
-                })
-              }
-            />
-            <FilterSelect
-              label="Payment Status"
-              value={payment_status || "All"}
-              options={[
-                { label: "Paid", value: "paid" },
-                { label: "Pending", value: "pending" },
-                { label: "Failed", value: "failed" },
-              ]}
-              onChange={(val) =>
-                updateParams({
-                  payment_status: val,
-                  payment_method,
-                  status,
-                  page: 1,
-                  search: searchQuery,
-                })
-              }
-            />
-            <FilterSelect
-              label="Order Status"
-              value={status || "All"}
-              options={[
-                { label: "Placed", value: "placed" },
-                { label: "Confirmed", value: "confirmed" },
-                { label: "Shipped", value: "shipped" },
-                { label: "Delivered", value: "delivered" },
-                { label: "Cancelled", value: "cancelled" },
-                { label: "Failed", value: "failed" },
-              ]}
-              onChange={(val) =>
-                updateParams({
-                  status: val,
-                  payment_status,
-                  payment_method,
-                  page: 1,
-                  search: searchQuery,
-                })
-              }
-            />
-          </div>
+<div className="flex items-end gap-4">
+
+  {/* From Date */}
+  <div className="flex flex-col">
+    <label className="text-xs font-medium text-gray-500 mb-1">
+      From Date
+    </label>
+    <input
+      type="date"
+      value={from_date}
+      onChange={(e) =>
+        updateParams({
+          page: 1,
+          search: searchQuery,
+          from_date: e.target.value,
+          to_date,
+        })
+      }
+      className="border border-gray-300 rounded-lg px-3 py-2 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+    />
+  </div>
+
+  {/* To Date */}
+  <div className="flex flex-col">
+    <label className="text-xs font-medium text-gray-500 mb-1">
+      To Date
+    </label>
+    <input
+      type="date"
+      value={to_date}
+      min={from_date}
+      onChange={(e) =>
+        updateParams({
+          page: 1,
+          search: searchQuery,
+          from_date,
+          to_date: e.target.value,
+        })
+      }
+      className="border border-gray-300 rounded-lg px-3 py-2 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+    />
+  </div>
+
+</div>
         </div>
 
         {/* TABLE */}
@@ -177,8 +150,8 @@ const UnassignOrder = () => {
                 <th className="text-left  ps-5  px-3 py-3 w-[160px]">
                   Order Number
                 </th>
-                <th className="text-left px-3 py-3 w-[160px]">Name</th>
-                <th className="text-left px-3 py-3 w-[120px]">
+                <th className="text-left px-3 py-3 w-[160px]">Customer Name</th>
+                     <th className="text-left px-3 py-3 w-[120px]">
                   Payment Method
                 </th>
                 <th className="text-left px-3 py-3 w-[120px]">Order Status</th>
@@ -197,7 +170,6 @@ const UnassignOrder = () => {
                     { width: "w-24 h-4" }, // Username
                     { width: "w-24 h-4" }, // Email
                     { width: "w-24 h-4" }, // Mobile
-                    { width: "w-24 h-4" }, // Status
                     { width: "w-24 h-4" }, // Status
                   ]}
                   actionColumn
@@ -227,7 +199,7 @@ const UnassignOrder = () => {
                 /* ================= DATA ROWS ================= */
                 users.map((item) => (
                   <tr
-                    key={item?.admin?.id}
+                    key={item?.id}
                     className="border-b border-gray-100 hover:bg-gray-50 transition"
                   >
                     <td className="ps-5 px-3 py-5 text-gray-700">
@@ -236,7 +208,7 @@ const UnassignOrder = () => {
                     <td className="px-3 py-5 text-gray-700">
                       {item?.customer?.name || "—"}
                     </td>
-
+                  
                     <td className="px-3 py-5">
                       <span
                         className={`inline-flex items-center gap-2 text-xs font-semibold px-3 py-1.5 rounded-full shadow-sm capitalize ${getPaymentMethodStyle(
@@ -259,6 +231,7 @@ const UnassignOrder = () => {
                       </span>
                     </td>
 
+
                     <td className="px-3 py-5 text-gray-700 whitespace-nowrap">
                       ₹{item?.total || "—"}
                     </td>
@@ -274,6 +247,20 @@ const UnassignOrder = () => {
                         >
                           <FiEye />
                         </button>
+
+                          <button
+                                                    onClick={() => {
+                                                      setOpenAssignModal(true);
+                                                      setSelectedUser({
+                              id: item?.id,
+                            });
+                                                    }}
+                                                    className="p-2 px-3 flex items-center gap-2 bg-indigo-100 text-indigo-500 rounded-lg hover:bg-indigo-200"
+                                                  >
+                                                    <TbTruckDelivery />
+                                                    <span>Assign Rider</span>
+                                                  </button>
+
                         <button
                           onClick={() => {
                             setOpenEditModal(true);
@@ -299,11 +286,11 @@ const UnassignOrder = () => {
         {/* PAGINATION */}
         {!orderLoading && hasData && (
           <Pagination
-            data={orderData}
+            data={unassignedOrderData}
             page={page}
             label="orders"
             onPageChange={updateParams}
-            extraParams={{ search: searchQuery, status }}
+            extraParams={{ search: searchQuery }}
           />
         )}
       </div>
@@ -312,12 +299,17 @@ const UnassignOrder = () => {
         onClose={() => setOpenEditModal(false)}
         user={selectedUser}
       />
-      <ViewOrderModal
+        <AssignOrderModal
+              isOpen={openAssignModal}
+              onClose={() => setOpenAssignModal(false)}
+              id={selectedUser?.id}
+            />
+      <ViewUnassignedOrderModal
         isOpen={openViewModal}
         onClose={() => {
           setOpenViewModal(false);
         }}
-        id={selectedUser.id}
+        data={selectedUser}
       />
     </>
   );

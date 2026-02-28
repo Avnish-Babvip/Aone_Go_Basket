@@ -1,127 +1,78 @@
 import { useEffect, useState } from "react";
-import { FiEye, FiEdit2 } from "react-icons/fi";
+import { FiEye, FiEdit2, FiTrash2 } from "react-icons/fi";
 import { useDispatch, useSelector } from "react-redux";
-import { useSearchParams } from "react-router-dom";
+import { useLocation, useSearchParams } from "react-router-dom";
 import Pagination from "../../components/Pagination";
 import TableSkeleton from "../../components/TableSkeleton";
-import { EditOrderStatusModal } from "../../components/Modal/Order/EditOrderStatus";
-import { getAllAssignOrders } from "../../features/actions/order";
-import { ViewAssignOrder } from "../../components/Modal/Order/ViewAssignOrder";
+import { EditRiderStatusModal } from "../../components/Modal/Rider/EditRiderStatus";
+import { getAllRiders } from "../../features/actions/rider";
+import FilterSelect from "../../components/FilterSelect";
+import { ViewRiderModal } from "../../components/Modal/Rider/ViewRider";
 
-const AssignOrder = () => {
+const RiderKyc = () => {
+  const { state } = useLocation();
   const dispatch = useDispatch();
   const [searchParams, setSearchParams] = useSearchParams();
-  const { assignedOrderData, orderLoading } = useSelector((state) => state.order);
+  const { riderData, riderLoading } = useSelector((state) => state.rider);
   const [selectedUser, setSelectedUser] = useState({});
+  const [openModal, setOpenModal] = useState(false);
   const [openViewModal, setOpenViewModal] = useState(false);
   const [openEditModal, setOpenEditModal] = useState(false);
   const page = Number(searchParams.get("page")) || 1;
   const searchQuery = searchParams.get("search") || "";
-  const from_date = searchParams.get("from_date") || "";
-const to_date = searchParams.get("to_date") || "";
+  const status = searchParams.get("status") || "";
 
-  const users = assignedOrderData?.data || [];
+  const users = riderData?.data || [];
   const hasData = Array.isArray(users) && users.length > 0;
-  const updateParams = ({
-    page,
-    search,
-     from_date,
-  to_date,
-  }) => {
+
+  const updateParams = ({ page, search, status }) => {
     const params = {};
     if (page) params.page = page;
     if (search) params.search = search;
-     if (from_date) params.from_date = from_date;
-  if (to_date) params.to_date = to_date;
+    if (status !== undefined && status !== "") params.status = status;
     setSearchParams(params);
-
   };
-const formatDate = (dateString) => {
-  if (!dateString) return "";
-
-  const date = new Date(dateString);
-
-  return date.toLocaleString("en-IN", {
-    day: "2-digit",
-    month: "short",
-    year: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-    second: "2-digit", // optional
-    hour12: true, // true = 12hr (AM/PM), false = 24hr
-  });
-};
 
   useEffect(() => {
-    if (!openEditModal) {
+    if (!openEditModal && !openModal) {
       dispatch(
-        getAllAssignOrders({
+        getAllRiders({
           search: searchQuery,
           page,
-           from_date,
-  to_date,
+          status,
         }),
       );
     }
-  }, [
-    openEditModal,
-    page,
-    searchQuery,
-     from_date,
-  to_date,
-  ]);
+  }, [openModal, openEditModal, page, searchQuery, status]);
+
+  useEffect(() => {
+    if (state?.openModal) {
+      setOpenModal(true);
+    }
+  }, [state]);
 
   return (
     <>
       <div className="bg-white rounded-xl shadow-sm overflow-hidden">
         {/* HEADER */}
         <div className="flex items-center justify-between px-6 py-4 border-b">
-          <h2 className="font-semibold text-gray-800">All Assigned Orders</h2>
+          <h2 className="font-semibold text-gray-800">All Riders</h2>
 
-<div className="flex items-end gap-4">
-
-  {/* From Date */}
-  <div className="flex flex-col">
-    <label className="text-xs font-medium text-gray-500 mb-1">
-      From Date
-    </label>
-    <input
-      type="date"
-      value={from_date}
-      onChange={(e) =>
-        updateParams({
-          page: 1,
-          search: searchQuery,
-          from_date: e.target.value,
-          to_date,
-        })
-      }
-      className="border border-gray-300 rounded-lg px-3 py-2 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
-    />
-  </div>
-
-  {/* To Date */}
-  <div className="flex flex-col">
-    <label className="text-xs font-medium text-gray-500 mb-1">
-      To Date
-    </label>
-    <input
-      type="date"
-      value={to_date}
-      min={from_date}
-      onChange={(e) =>
-        updateParams({
-          page: 1,
-          search: searchQuery,
-          from_date,
-          to_date: e.target.value,
-        })
-      }
-      className="border border-gray-300 rounded-lg px-3 py-2 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
-    />
-  </div>
-
-</div>
+          <FilterSelect
+            label="Status"
+            value={status || "All"}
+            options={[
+              { label: "Active", value: "active" },
+              { label: "Inactive", value: "inactive" },
+            ]}
+            onChange={(val) =>
+              updateParams({
+                status: val,
+                page: 1,
+                search: searchQuery,
+              })
+            }
+          />
         </div>
 
         {/* TABLE */}
@@ -129,34 +80,26 @@ const formatDate = (dateString) => {
           <table className="min-w-[900px] w-full text-sm table-fixed">
             <thead className="bg-gray-50 text-gray-500">
               <tr>
-                <th className="text-left  ps-5  px-3 py-3 w-[160px]">
-                  Order Number
-                </th>
-                <th className="text-left px-3 py-3 w-[160px]">Rider Name</th>
-                <th className="text-left px-3 py-3 w-[120px]">
-                 Assigned At
-                </th>
-                <th className="text-left px-3 py-3 w-[120px]">
-                 Delivered At
-                </th>
-                <th className="text-left px-3 py-3 w-[120px]">Delivery Status</th>
-                <th className="text-left px-3 py-3 w-[120px]">Price</th>
-                <th className="text-center px-3 py-3 w-[250px]">Action</th>
+                <th className="text-left ps-5 px-3 py-3 w-[160px]">Name</th>
+                <th className="text-left px-3 py-3 w-[160px]">Username</th>
+                <th className="text-left px-3 py-3 w-[260px]">Email</th>
+                <th className="text-left px-3 py-3 w-[140px]">Mobile</th>
+                <th className="text-left px-3 py-3 w-[120px]">Status</th>
+                <th className="text-center px-3 py-3 w-[160px]">Action</th>
               </tr>
             </thead>
 
             <tbody className="divide-y">
-              {orderLoading ? (
+              {riderLoading ? (
                 /* ================= SKELETON ================= */
                 <TableSkeleton
                   rows={5}
                   columns={[
-                    { width: "w-24 h-4" }, // Name
-                    { width: "w-24 h-4" }, // Username
-                    { width: "w-24 h-4" }, // Email
+                    { width: "w-32 h-4" }, // Name
+                    { width: "w-32 h-4" }, // Username
+                    { width: "w-56 h-4" }, // Email
                     { width: "w-24 h-4" }, // Mobile
-                    { width: "w-24 h-4" }, // Status
-                    { width: "w-24 h-4" }, // Status
+                    { width: "w-20 h-4" }, // Status
                   ]}
                   actionColumn
                   actionCount={2}
@@ -172,11 +115,11 @@ const formatDate = (dateString) => {
                       </div>
 
                       <p className="text-gray-600 font-medium">
-                        No orders found
+                        No riders found
                       </p>
 
                       <p className="text-sm text-gray-400 mt-1">
-                        Try adjusting filters
+                        Try adjusting filters or add a new rider
                       </p>
                     </div>
                   </td>
@@ -185,28 +128,37 @@ const formatDate = (dateString) => {
                 /* ================= DATA ROWS ================= */
                 users.map((item) => (
                   <tr
-                    key={item?.id}
+                    key={item?.admin?.id}
                     className="border-b border-gray-100 hover:bg-gray-50 transition"
                   >
                     <td className="ps-5 px-3 py-5 text-gray-700">
-                      {item?.order?.order_number || "—"}
-                    </td>
-                    <td className="px-3 py-5 text-gray-700">
-                      {item?.rider?.name || "—"}
-                    </td>
-                    <td className="px-3 py-5 text-gray-700">
-                      {formatDate(item?.assigned_at) || "—"}
-                    </td>
-                    <td className="px-3 py-5 text-gray-700">
-                               {formatDate(item?.delivered_at) || "—"}
-                    </td>
-                    <td className="px-3 py-5 capitalize text-gray-700">
-                      {item?.delivery_status || "—"}
+                      {item?.admin?.name || "—"}
                     </td>
 
+                    <td className="px-3 py-5 text-gray-700">
+                      {item?.admin?.username || "—"}
+                    </td>
+
+                    <td className="px-3 py-5 text-gray-700 truncate max-w-[260px]">
+                      <span title={item?.admin?.email}>
+                        {item?.admin?.email || "—"}
+                      </span>
+                    </td>
 
                     <td className="px-3 py-5 text-gray-700 whitespace-nowrap">
-                      ₹{item?.order?.total || "—"}
+                      {item?.admin?.mobile || "—"}
+                    </td>
+
+                    <td className="px-3 py-5">
+                      <span
+                        className={`px-3 py-1 rounded-full text-xs font-medium capitalize ${
+                          item?.admin?.status === "active"
+                            ? "bg-green-100 text-green-600"
+                            : "bg-red-100 text-red-600"
+                        }`}
+                      >
+                        {item?.admin?.status || "inactive"}
+                      </span>
                     </td>
 
                     <td className="px-3 py-5">
@@ -224,8 +176,8 @@ const formatDate = (dateString) => {
                           onClick={() => {
                             setOpenEditModal(true);
                             setSelectedUser({
-                              id: item?.id,
-                              status: item?.status,
+                              id: item?.admin?.id,
+                              status: item?.admin?.status,
                             });
                           }}
                           className="p-2 px-3 flex items-center gap-2  bg-orange-100 text-orange-500 rounded-lg hover:bg-orange-200"
@@ -233,6 +185,9 @@ const formatDate = (dateString) => {
                           <FiEdit2 />
                           <span>Change Status</span>
                         </button>
+                        {/* <button className="p-2 px-3  bg-red-100 text-red-500 rounded-lg hover:bg-red-200">
+                          <FiTrash2 />
+                        </button> */}
                       </div>
                     </td>
                   </tr>
@@ -243,30 +198,30 @@ const formatDate = (dateString) => {
         </div>
 
         {/* PAGINATION */}
-        {!orderLoading && hasData && (
+        {!riderLoading && hasData && (
           <Pagination
-            data={assignedOrderData}
+            data={riderData}
             page={page}
-            label="orders"
+            label="riders"
             onPageChange={updateParams}
-            extraParams={{ search: searchQuery }}
+            extraParams={{ search: searchQuery, status }}
           />
         )}
       </div>
-      <EditOrderStatusModal
+      <EditRiderStatusModal
         isOpen={openEditModal}
         onClose={() => setOpenEditModal(false)}
         user={selectedUser}
       />
-      <ViewAssignOrder
+      <ViewRiderModal
         isOpen={openViewModal}
         onClose={() => {
           setOpenViewModal(false);
         }}
-        data={selectedUser}
+        rider={selectedUser}
       />
     </>
   );
 };
 
-export default AssignOrder;
+export default RiderKyc;

@@ -1,6 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { toast } from "sonner";
-import { getRiderProfile } from "../../actions/rider/user";
+import { getRiderProfile, submitKyc, updateRiderProfile } from "../../actions/rider/user";
 
 const formattedDate = new Date().toLocaleString("en-US", {
   weekday: "long",
@@ -15,12 +15,14 @@ const formattedDate = new Date().toLocaleString("en-US", {
 const initialState = {
   errorMessage: "",
   profileData: {},
+  profileLoading: false,
+  kycLoading: false,
 };
 
 // ---------------------------------------------------------------------------------------
 
-const rider_profileSlice = createSlice({
-  name: "rider_OrderSlice",
+const rider_userSlice = createSlice({
+  name: "rider_userSlice",
   initialState,
   reducers: {},
   extraReducers: (builder) => {
@@ -37,6 +39,42 @@ const rider_profileSlice = createSlice({
         toast(action.payload, {
           description: formattedDate,
         });
+      })
+      .addCase(updateRiderProfile.pending, (state) => {
+        state.errorMessage = "";
+        state.profileLoading = true;
+      })
+      .addCase(updateRiderProfile.fulfilled, (state, action) => {
+        state.errorMessage = "";
+        state.profileLoading = false;
+           toast("Details updated successfully.", {
+                  description: formattedDate,
+                });
+      })
+      .addCase(updateRiderProfile.rejected, (state, action) => {
+        state.errorMessage = action.payload || "Failed";
+        state.profileLoading = false;
+        toast(action.payload, {
+          description: formattedDate,
+        });
+      })
+      .addCase(submitKyc.pending, (state) => {
+        state.errorMessage = "";
+        state.kycLoading = true;
+      })
+      .addCase(submitKyc.fulfilled, (state, action) => {
+        state.errorMessage = "";
+        state.kycLoading = false;
+           toast("Kyc submitted.", {
+                  description: formattedDate,
+                });
+      })
+      .addCase(submitKyc.rejected, (state, action) => {
+        state.errorMessage = action.payload || "Failed";
+        state.kycLoading = false;
+        toast(action.payload, {
+          description: formattedDate,
+        });
       });
   },
 });
@@ -44,5 +82,5 @@ const rider_profileSlice = createSlice({
 // -------------------------------------------------------------------------
 
 // Action creators are generated for each case reducer function
-export const {} = rider_profileSlice.actions;
-export default rider_profileSlice.reducer;
+export const {} = rider_userSlice.actions;
+export default rider_userSlice.reducer;
