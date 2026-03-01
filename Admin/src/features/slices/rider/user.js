@@ -1,6 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { toast } from "sonner";
-import { getRiderProfile, submitKyc, updateRiderProfile } from "../../actions/rider/user";
+import { getRiderDashboard, getRiderProfile, submitKyc, updateRiderProfile } from "../../actions/rider/user";
 
 const formattedDate = new Date().toLocaleString("en-US", {
   weekday: "long",
@@ -16,6 +16,7 @@ const initialState = {
   errorMessage: "",
   profileData: {},
   profileLoading: false,
+  dashboardData: {},
   kycLoading: false,
 };
 
@@ -35,6 +36,19 @@ const rider_userSlice = createSlice({
         state.profileData = action.payload.data;
       })
       .addCase(getRiderProfile.rejected, (state, action) => {
+        state.errorMessage = action.payload || "Failed";
+        toast(action.payload, {
+          description: formattedDate,
+        });
+      })
+      .addCase(getRiderDashboard.pending, (state) => {
+        state.errorMessage = "";
+      })
+      .addCase(getRiderDashboard.fulfilled, (state, action) => {
+        state.errorMessage = "";
+        state.dashboardData = action.payload.data;
+      })
+      .addCase(getRiderDashboard.rejected, (state, action) => {
         state.errorMessage = action.payload || "Failed";
         toast(action.payload, {
           description: formattedDate,

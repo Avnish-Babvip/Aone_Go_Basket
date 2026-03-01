@@ -71,7 +71,7 @@ const to_date = searchParams.get("to_date") || "";
   };
 
   useEffect(() => {
-    if (!openEditModal) {
+    if (!openEditModal && !openAssignModal) {
       dispatch(
         getAllNotAssignOrders({
           search: searchQuery,
@@ -83,6 +83,7 @@ const to_date = searchParams.get("to_date") || "";
     }
   }, [
     openEditModal,
+    openAssignModal,
     page,
     searchQuery,
      from_date,
@@ -253,6 +254,7 @@ const to_date = searchParams.get("to_date") || "";
                                                       setOpenAssignModal(true);
                                                       setSelectedUser({
                               id: item?.id,
+                              city:item?.address_snapshot?.shipping?.city
                             });
                                                     }}
                                                     className="p-2 px-3 flex items-center gap-2 bg-indigo-100 text-indigo-500 rounded-lg hover:bg-indigo-200"
@@ -303,6 +305,7 @@ const to_date = searchParams.get("to_date") || "";
               isOpen={openAssignModal}
               onClose={() => setOpenAssignModal(false)}
               id={selectedUser?.id}
+              city={selectedUser?.city}
             />
       <ViewUnassignedOrderModal
         isOpen={openViewModal}

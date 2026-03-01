@@ -21,6 +21,26 @@ export const getRiderProfile = createAsyncThunk(
     }
   },
 );
+export const getRiderDashboard = createAsyncThunk(
+  "/rider/dashboard",
+  async (_, { getState, rejectWithValue }) => {
+    try {
+      // ✅ Get token directly from store
+      const loginToken = getState().authentication?.adminData?.token;
+
+      const { data } = await instance.get(`/rider/dashboard`, {
+        headers: {
+          "Content-type": "application/json",
+          Authorization: `Bearer ${loginToken}`,
+        },
+      });
+
+      return data;
+    } catch (error) {
+      return rejectWithValue(error.response.data.message || "Failed ");
+    }
+  },
+);
 
 export const updateRiderProfile = createAsyncThunk(
   "/rider/profile/update",

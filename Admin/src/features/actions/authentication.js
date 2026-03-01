@@ -90,3 +90,30 @@ export const adminLogout = createAsyncThunk(
     }
   },
 );
+
+
+export const updateAdminProfile = createAsyncThunk(
+  "admin/profile",
+  async (payload, { getState,rejectWithValue }) => {
+    try {
+       // ✅ Get token directly from store
+      const loginToken = getState().authentication?.adminData?.token;
+
+      const { data } = await instance.put(
+        `/admin/profile`,
+        payload,
+        {
+          headers: {
+            "Content-type": "application/json",
+            Authorization: `Bearer ${loginToken}`,
+          },
+        },
+      );
+      return data;
+    } catch (error) {
+      return rejectWithValue(
+        error.response.data.message || "Failed to logout admin",
+      );
+    }
+  },
+);

@@ -3,13 +3,13 @@ import { useForm } from "react-hook-form";
 import { useDispatch, useSelector } from "react-redux";
 import { SelectWithId, Textarea } from "../../ReusableInputs";
 import { HiX } from "react-icons/hi";
-import { editCustomerKycStatus, editCustomerStatus } from "../../../features/actions/customer";
 import { Spinner } from "../../Loader/Spinner";
+import { editRiderKycStatus } from "../../../features/actions/rider";
 
-export const EditCustomerKycStatusModal = ({ isOpen, onClose, user }) => {
+export const EditRiderKycStatusModal = ({ isOpen, onClose, user }) => {
   if (!isOpen) return null;
   const dispatch = useDispatch();
-  const { customerLoading } = useSelector((state) => state.customer);
+  const { riderLoading } = useSelector((state) => state.rider);
   const {
     register,
     handleSubmit,
@@ -17,13 +17,13 @@ export const EditCustomerKycStatusModal = ({ isOpen, onClose, user }) => {
     formState: { errors },
   } = useForm({
     defaultValues: {
-      action: user?.status,
+      kyc_status: user?.kyc_status,
     },
   });
-   const selectedStatus = watch("action");
+  const selectedStatus = watch("kyc_status");
 
   const onSubmit = (data) => {
-    dispatch(editCustomerKycStatus({ payload: data, id: user?.id }))
+    dispatch(editRiderKycStatus({ payload: data, id: user?.id }))
       .unwrap()
       .then(() => {
         onClose();
@@ -56,40 +56,41 @@ export const EditCustomerKycStatusModal = ({ isOpen, onClose, user }) => {
         {/* HEADER */}
         <div className="px-8 pt-8">
           <h2 className="text-center text-black text-xl font-semibold mb-6">
-            Edit Customer Kyc Status
+            Edit Rider Kyc Status
           </h2>
         </div>
 
         {/* FORM BODY */}
-         <div className="flex-1 overflow-y-auto space-y-3 px-8 pb-6">
-                 <SelectWithId
-                   label="Status"
-                   name="action"
-                   options={[
-                     { label: "Pending", value: "pending" },
-                     { label: "Approved", value: "approved" },
-                     { label: "Rejected", value: "rejected" },
-                   ]}
-                   register={register}
-                   required
-                   errors={errors}
-                 />
-                  {selectedStatus === "rejected" && (
-         <Textarea
-           label="Reason"
-           name="reason"
-           placeholder="Write Reason Here ..."
-           register={register}
-           required
-           errors={errors}
-         />
-       )}
-               </div>
+        <div className="flex-1 overflow-y-auto space-y-3 px-8 pb-6">
+          <SelectWithId
+            label="Status"
+            name="kyc_status"
+            options={[
+              { label: "Pending", value: "pending" },
+              { label: "Approved", value: "approved" },
+              { label: "Rejected", value: "rejected" },
+            ]}
+            register={register}
+            required
+            errors={errors}
+          />
+           {selectedStatus === "rejected" && (
+  <Textarea
+    label="Reason"
+    name="rejection_reason"
+    placeholder="Write Reason Here ..."
+    register={register}
+    required
+    errors={errors}
+  />
+)}
+        </div>
+        
 
         {/* FOOTER */}
         <div className="px-8 py-6 border-t border-gray-300">
           <button
-            disabled={customerLoading}
+            disabled={riderLoading}
             type="submit"
             className="
               w-full py-2.5 rounded-lg font-semibold
@@ -98,7 +99,7 @@ export const EditCustomerKycStatusModal = ({ isOpen, onClose, user }) => {
               text-white transition
             "
           >
-            {customerLoading ? <Spinner /> : "Submit"}
+            {riderLoading ? <Spinner /> : "Submit"}
           </button>
         </div>
       </div>

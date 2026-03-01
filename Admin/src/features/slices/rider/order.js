@@ -1,6 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { toast } from "sonner";
 import {
+  getAllOrderHistory,
   getAssignedOrders,
   markedDelivered,
   markedFailed,
@@ -24,6 +25,7 @@ const initialState = {
   deliveredLoading: false,
   failedLoading: false,
   orderData: {},
+  orderHistoryData: {},
 };
 
 // ---------------------------------------------------------------------------------------
@@ -44,6 +46,22 @@ const rider_orderSlice = createSlice({
         state.orderData = action.payload.data;
       })
       .addCase(getAssignedOrders.rejected, (state, action) => {
+        state.errorMessage = action.payload || "Failed";
+        state.orderLoading = false;
+        toast(action.payload, {
+          description: formattedDate,
+        });
+      })
+      .addCase(getAllOrderHistory.pending, (state) => {
+        state.errorMessage = "";
+        state.orderLoading = true;
+      })
+      .addCase(getAllOrderHistory.fulfilled, (state, action) => {
+        state.errorMessage = "";
+        state.orderLoading = false;
+        state.orderHistoryData = action.payload.data;
+      })
+      .addCase(getAllOrderHistory.rejected, (state, action) => {
         state.errorMessage = action.payload || "Failed";
         state.orderLoading = false;
         toast(action.payload, {

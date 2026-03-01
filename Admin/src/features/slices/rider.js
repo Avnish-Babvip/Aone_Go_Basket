@@ -1,7 +1,9 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { toast } from "sonner";
 import {
+  editRiderKycStatus,
   editRiderStatus,
+  getAllRiderKyc,
   getAllRiderReferrals,
   getAllRiders,
 } from "../actions/rider";
@@ -21,6 +23,7 @@ const initialState = {
   riderLoading: false,
   riderData: {},
   referralData: {},
+  kycData: {},
 };
 
 // ---------------------------------------------------------------------------------------
@@ -63,6 +66,22 @@ const riderSlice = createSlice({
           description: formattedDate,
         });
       })
+      .addCase(getAllRiderKyc.pending, (state) => {
+        state.errorMessage = "";
+        state.riderLoading = true;
+      })
+      .addCase(getAllRiderKyc.fulfilled, (state, action) => {
+        state.errorMessage = "";
+        state.riderLoading = false;
+        state.kycData = action.payload.data;
+      })
+      .addCase(getAllRiderKyc.rejected, (state, action) => {
+        state.errorMessage = action.payload || "Failed";
+        state.riderLoading = false;
+        toast(action.payload, {
+          description: formattedDate,
+        });
+      })
       .addCase(editRiderStatus.pending, (state) => {
         state.errorMessage = "";
         state.riderLoading = true;
@@ -75,6 +94,24 @@ const riderSlice = createSlice({
         });
       })
       .addCase(editRiderStatus.rejected, (state, action) => {
+        state.errorMessage = action.payload || "Failed";
+        state.riderLoading = false;
+        toast(action.payload, {
+          description: formattedDate,
+        });
+      })
+      .addCase(editRiderKycStatus.pending, (state) => {
+        state.errorMessage = "";
+        state.riderLoading = true;
+      })
+      .addCase(editRiderKycStatus.fulfilled, (state, action) => {
+        state.errorMessage = "";
+        state.riderLoading = false;
+        toast("Rider kyc status updated successfully.", {
+          description: formattedDate,
+        });
+      })
+      .addCase(editRiderKycStatus.rejected, (state, action) => {
         state.errorMessage = action.payload || "Failed";
         state.riderLoading = false;
         toast(action.payload, {

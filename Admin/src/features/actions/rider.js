@@ -70,6 +70,44 @@ export const getAllRiderReferrals = createAsyncThunk(
   },
 );
 
+export const getAllRiderKyc = createAsyncThunk(
+  "admin/rider-kyc",
+  async ({ search, status, page ,city_id }, { getState, rejectWithValue }) => {
+    try {
+      // ✅ Get token directly from store
+      const loginToken = getState().authentication?.adminData?.token;
+
+      const params = new URLSearchParams();
+
+      params.append("page", page);
+      params.append("per_page", 1);
+
+      if (search) params.append("search", search);
+
+      // // ✅ Add status filter
+      if (status !== "" && status !== undefined) {
+        params.append("status", status);
+      }
+      if (status !== "" && status !== undefined) {
+        params.append("city_id", city_id);
+      }
+
+      const link = `/admin/rider-kyc?${params.toString()}`;
+
+      const { data } = await instance.get(link, {
+        headers: {
+          "Content-type": "application/json",
+          Authorization: `Bearer ${loginToken}`,
+        },
+      });
+
+      return data;
+    } catch (error) {
+      return rejectWithValue(error.response.data.message || "Failed ");
+    }
+  },
+);
+
 export const editRiderStatus = createAsyncThunk(
   "/admin/riders/2/status",
   async ({ payload, id }, { getState, rejectWithValue }) => {
@@ -78,6 +116,29 @@ export const editRiderStatus = createAsyncThunk(
       const loginToken = getState().authentication?.adminData?.token;
       const { data } = await instance.put(
         `/admin/riders/${id}/status`,
+        payload,
+        {
+          headers: {
+            "Content-type": "application/json",
+            Authorization: `Bearer ${loginToken}`,
+          },
+        },
+      );
+      return data;
+    } catch (error) {
+      return rejectWithValue(error.response.data.message || "Failed ");
+    }
+  },
+);
+
+export const editRiderKycStatus = createAsyncThunk(
+  "/admin/riders/2/kyc-status",
+  async ({ payload, id }, { getState, rejectWithValue }) => {
+    try {
+      // ✅ Get token directly from store
+      const loginToken = getState().authentication?.adminData?.token;
+      const { data } = await instance.put(
+        `/admin/riders/${id}/kyc-status`,
         payload,
         {
           headers: {

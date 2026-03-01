@@ -1,32 +1,30 @@
 import { useEffect, useState } from "react";
-import { FiEye, FiEdit2, FiTrash2 } from "react-icons/fi";
+import { FiEye } from "react-icons/fi";
 import { useDispatch, useSelector } from "react-redux";
-import { useLocation, useSearchParams } from "react-router-dom";
-import Pagination from "../../components/Pagination";
+import {  useSearchParams } from "react-router-dom";
 import TableSkeleton from "../../components/TableSkeleton";
-import { EditOrderStatusModal } from "../../components/Modal/Order/EditOrderStatus";
-import { getAllOrders } from "../../features/actions/order";
 import FilterSelect from "../../components/FilterSelect";
-import { ViewOrderModal } from "../../components/Modal/Order/ViewOrder";
+import Pagination from "../../components/Pagination";
+import { ViewAssignedOrderModal } from "../../components/Modal/RiderDashboard/ViewAssignedOrder";
+import { getAllOrderHistory } from "../../features/actions/rider/order";
 
 
-const Order = () => {
-  const { state } = useLocation();
+const RiderOrderHistory = () => {
   const dispatch = useDispatch();
   const [searchParams, setSearchParams] = useSearchParams();
-  const { orderData, orderLoading } = useSelector((state) => state.order);
-  const [selectedUser, setSelectedUser] = useState({});
-  const [openModal, setOpenModal] = useState(false);
+  const {
+    orderHistoryData,
+    orderLoading
+  } = useSelector((state) => state.rider_order);
+  const [selected, setSelected] = useState({});
   const [openViewModal, setOpenViewModal] = useState(false);
-  const [openEditModal, setOpenEditModal] = useState(false);
-  const [openAssignModal, setOpenAssignModal] = useState(false);
   const page = Number(searchParams.get("page")) || 1;
   const searchQuery = searchParams.get("search") || "";
   const status = searchParams.get("status") || "";
   const payment_status = searchParams.get("payment_status") || "";
   const payment_method = searchParams.get("payment_method") || "";
 
-  const users = orderData?.data || [];
+  const users = orderHistoryData?.data || [];
   const hasData = Array.isArray(users) && users.length > 0;
   const updateParams = ({
     page,
@@ -48,8 +46,6 @@ const Order = () => {
 
   const getOrderStatusStyle = (status) => {
     switch (status?.toLowerCase()) {
-      case "placed":
-        return "bg-yellow-100 text-yellow-700 ring-1 ring-yellow-200";
       case "confirmed":
         return "bg-blue-100 text-blue-700 ring-1 ring-blue-200";
       case "shipped":
@@ -77,39 +73,23 @@ const Order = () => {
   };
 
   useEffect(() => {
-    if (!openEditModal && !openModal && !openAssignModal) {
-      dispatch(
-        getAllOrders({
-          search: searchQuery,
-          page,
-          status,
-          payment_status,
-          payment_method,
-        }),
-      );
-    }
-  }, [
-    openModal,
-    openEditModal,
-    page,
-    searchQuery,
-    status,
-    payment_status,
-    payment_method,
-  ]);
-
-  useEffect(() => {
-    if (state?.openModal) {
-      setOpenModal(true);
-    }
-  }, [state]);
+    dispatch(
+      getAllOrderHistory({
+        search: searchQuery,
+        page,
+        status,
+        payment_status,
+        payment_method,
+      }),
+    );
+  }, [page, searchQuery, status, payment_status, payment_method]);
 
   return (
     <>
       <div className="bg-white rounded-xl shadow-sm overflow-hidden">
         {/* HEADER */}
         <div className="flex items-center justify-between px-6 py-4 border-b">
-          <h2 className="font-semibold text-gray-800">All Orders</h2>
+          <h2 className="font-semibold text-gray-800">Your Orders History</h2>
 
           <div className="flex items-center gap-2">
             <FilterSelect
@@ -151,8 +131,6 @@ const Order = () => {
               label="Order Status"
               value={status || "All"}
               options={[
-                { label: "Placed", value: "placed" },
-                { label: "Confirmed", value: "confirmed" },
                 { label: "Shipped", value: "shipped" },
                 { label: "Delivered", value: "delivered" },
                 { label: "Cancelled", value: "cancelled" },
@@ -199,7 +177,7 @@ const Order = () => {
                     { width: "w-24 h-4" }, // Username
                     { width: "w-24 h-4" }, // Email
                     { width: "w-24 h-4" }, // Mobile
-                    { width: "w-20 h-4" }, // Status
+                    { width: "w-24 h-4" }, // Status
                   ]}
                   actionColumn
                   actionCount={2}
@@ -269,26 +247,13 @@ const Order = () => {
                         <button
                           onClick={() => {
                             setOpenViewModal(true);
-                            setSelectedUser(item);
+                            setSelected(item);
                           }}
                           className="p-2 px-3 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200"
                         >
                           <FiEye />
                         </button>
-                {item?.status !== "failed" && item?.status !== "delivered" && 
-                        <button
-                          onClick={() => {
-                            setOpenEditModal(true);
-                            setSelectedUser({
-                              id: item?.id,
-                              status: item?.status,
-                            });
-                          }}
-                          className="p-2 px-3 flex items-center gap-2  bg-orange-100 text-orange-500 rounded-lg hover:bg-orange-200"
-                        >
-                          <FiEdit2 />
-                          <span>Change Status</span>
-                        </button>}
+                  
                       </div>
                     </td>
                   </tr>
@@ -301,28 +266,24 @@ const Order = () => {
         {/* PAGINATION */}
         {!orderLoading && hasData && (
           <Pagination
-            data={orderData}
+            data={orderHistoryData}
             page={page}
             label="orders"
             onPageChange={updateParams}
-            extraParams={{ search: searchQuery, status ,payment_method,payment_status}}
+            extraParams={{ search: searchQuery, status }}
           />
         )}
       </div>
-      <EditOrderStatusModal
-        isOpen={openEditModal}
-        onClose={() => setOpenEditModal(false)}
-        user={selectedUser}
-      />
-      <ViewOrderModal
+
+      <ViewAssignedOrderModal
         isOpen={openViewModal}
         onClose={() => {
           setOpenViewModal(false);
         }}
-        id={selectedUser.id}
+        order={selected}
       />
     </>
   );
 };
 
-export default Order;
+export default RiderOrderHistory;

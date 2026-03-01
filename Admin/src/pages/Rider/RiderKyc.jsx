@@ -1,29 +1,29 @@
 import { useEffect, useState } from "react";
-import { FiEye, FiEdit2, FiTrash2 } from "react-icons/fi";
+import { FiEye, FiEdit2, FiAlertCircle } from "react-icons/fi";
 import { useDispatch, useSelector } from "react-redux";
-import { useLocation, useSearchParams } from "react-router-dom";
+import { useSearchParams } from "react-router-dom";
 import Pagination from "../../components/Pagination";
 import TableSkeleton from "../../components/TableSkeleton";
-import { EditRiderStatusModal } from "../../components/Modal/Rider/EditRiderStatus";
-import { getAllRiders } from "../../features/actions/rider";
 import FilterSelect from "../../components/FilterSelect";
-import { ViewRiderModal } from "../../components/Modal/Rider/ViewRider";
+import { EditCustomerKycStatusModal } from "../../components/Modal/Customer/EditCustomerKycStatusModal";
+import { getAllRiderKyc } from "../../features/actions/rider";
+import { EditRiderKycStatusModal } from "../../components/Modal/Rider/EditRiderKycStatusModal";
 
 const RiderKyc = () => {
-  const { state } = useLocation();
   const dispatch = useDispatch();
   const [searchParams, setSearchParams] = useSearchParams();
-  const { riderData, riderLoading } = useSelector((state) => state.rider);
+  const { kycData, riderLoading } = useSelector(
+    (state) => state.rider,
+  );
+  const users = kycData?.data || [];
+  const hasData = Array.isArray(users) && users.length > 0;
+
   const [selectedUser, setSelectedUser] = useState({});
-  const [openModal, setOpenModal] = useState(false);
-  const [openViewModal, setOpenViewModal] = useState(false);
   const [openEditModal, setOpenEditModal] = useState(false);
+
   const page = Number(searchParams.get("page")) || 1;
   const searchQuery = searchParams.get("search") || "";
   const status = searchParams.get("status") || "";
-
-  const users = riderData?.data || [];
-  const hasData = Array.isArray(users) && users.length > 0;
 
   const updateParams = ({ page, search, status }) => {
     const params = {};
@@ -34,60 +34,57 @@ const RiderKyc = () => {
   };
 
   useEffect(() => {
-    if (!openEditModal && !openModal) {
+    if (!openEditModal) {
       dispatch(
-        getAllRiders({
+        getAllRiderKyc({
           search: searchQuery,
           page,
           status,
         }),
       );
     }
-  }, [openModal, openEditModal, page, searchQuery, status]);
-
-  useEffect(() => {
-    if (state?.openModal) {
-      setOpenModal(true);
-    }
-  }, [state]);
+  }, [openEditModal, page, searchQuery, status]);
 
   return (
     <>
       <div className="bg-white rounded-xl shadow-sm overflow-hidden">
         {/* HEADER */}
         <div className="flex items-center justify-between px-6 py-4 border-b">
-          <h2 className="font-semibold text-gray-800">All Riders</h2>
+          <h2 className="font-semibold text-gray-800">All Riders Kyc Document</h2>
 
-          <FilterSelect
-            label="Status"
-            value={status || "All"}
-            options={[
-              { label: "Active", value: "active" },
-              { label: "Inactive", value: "inactive" },
-            ]}
-            onChange={(val) =>
-              updateParams({
-                status: val,
-                page: 1,
-                search: searchQuery,
-              })
-            }
-          />
+          <div className="flex gap-3">
+            <FilterSelect
+              label="Status"
+              value={status || "All"}
+              options={[
+                { label: "Pending", value: "pending" },
+                { label: "Approved", value: "approved" },
+                { label: "Rejected", value: "rejected" },
+              ]}
+              onChange={(val) =>
+                updateParams({
+                  status: val,
+                  page: 1,
+                  search: searchQuery,
+                })
+              }
+            />
+          </div>
         </div>
 
         {/* TABLE */}
         <div className="relative overflow-x-auto">
           <table className="min-w-[900px] w-full text-sm table-fixed">
-            <thead className="bg-gray-50 text-gray-500">
-              <tr>
-                <th className="text-left ps-5 px-3 py-3 w-[160px]">Name</th>
-                <th className="text-left px-3 py-3 w-[160px]">Username</th>
-                <th className="text-left px-3 py-3 w-[260px]">Email</th>
-                <th className="text-left px-3 py-3 w-[140px]">Mobile</th>
-                <th className="text-left px-3 py-3 w-[120px]">Status</th>
-                <th className="text-center px-3 py-3 w-[160px]">Action</th>
-              </tr>
-            </thead>
+          <thead className="bg-gray-50 text-gray-500">
+  <tr>
+    <th className="text-left ps-5 px-3 py-3 w-[160px]">Name</th>
+    <th className="text-left px-3 py-3 w-[140px]">Aadhaar Number</th>
+    <th className="text-left px-3 py-3 w-[180px]">Pan Number</th>
+    <th className="text-left px-3 py-3 w-[220px]">Documents</th>
+    <th className="text-left px-3 py-3 w-[120px]">Status</th>
+    <th className="text-center px-3 py-3 w-[160px]">Action</th>
+  </tr>
+</thead>
 
             <tbody className="divide-y">
               {riderLoading ? (
@@ -97,18 +94,18 @@ const RiderKyc = () => {
                   columns={[
                     { width: "w-32 h-4" }, // Name
                     { width: "w-32 h-4" }, // Username
-                    { width: "w-56 h-4" }, // Email
+                    { width: "w-32 h-4" }, // Email
                     { width: "w-24 h-4" }, // Mobile
                     { width: "w-20 h-4" }, // Status
                   ]}
                   actionColumn
-                  actionCount={2}
-                  actionWidth="w-12 h-8"
+                  actionCount={1}
+                  actionWidth="w-32 h-8"
                 />
               ) : !hasData ? (
                 /* ================= EMPTY STATE ================= */
                 <tr>
-                  <td colSpan={6} className="py-28">
+                  <td colSpan={7} className="py-28">
                     <div className="w-full flex flex-col items-center justify-center text-center">
                       <div className="w-14 h-14 flex items-center justify-center rounded-full bg-gray-100 mb-4">
                         <FiEye className="text-gray-400 text-xl" />
@@ -119,88 +116,185 @@ const RiderKyc = () => {
                       </p>
 
                       <p className="text-sm text-gray-400 mt-1">
-                        Try adjusting filters or add a new rider
+                        Try adjusting filters
                       </p>
                     </div>
                   </td>
                 </tr>
               ) : (
                 /* ================= DATA ROWS ================= */
-                users.map((item) => (
-                  <tr
-                    key={item?.admin?.id}
-                    className="border-b border-gray-100 hover:bg-gray-50 transition"
-                  >
-                    <td className="ps-5 px-3 py-5 text-gray-700">
-                      {item?.admin?.name || "—"}
-                    </td>
+               users.map((item) => (
+    <tr
+      key={item.id}
+      className="border-b border-gray-100 hover:bg-gray-50 transition"
+    >
+      {/* Name */}
+      <td className="ps-5 px-3 py-5 text-gray-700">
+        {item?.rider?.admin?.name || "—"}
+      </td>
 
-                    <td className="px-3 py-5 text-gray-700">
-                      {item?.admin?.username || "—"}
-                    </td>
+      {/* Document Type */}
+      <td className="px-3 py-5 capitalize text-gray-700">
+        {item.aadhaar_number}
+      </td>
 
-                    <td className="px-3 py-5 text-gray-700 truncate max-w-[260px]">
-                      <span title={item?.admin?.email}>
-                        {item?.admin?.email || "—"}
-                      </span>
-                    </td>
+      {/* Document Number */}
+      <td className="px-3 py-5 text-gray-700">
+        {item.pan_number}
+      </td>
 
-                    <td className="px-3 py-5 text-gray-700 whitespace-nowrap">
-                      {item?.admin?.mobile || "—"}
-                    </td>
+      {/* Documents */}
+      <td className="px-3 py-5">
+   <div className="flex gap-3 items-center">
 
-                    <td className="px-3 py-5">
-                      <span
-                        className={`px-3 py-1 rounded-full text-xs font-medium capitalize ${
-                          item?.admin?.status === "active"
-                            ? "bg-green-100 text-green-600"
-                            : "bg-red-100 text-red-600"
-                        }`}
-                      >
-                        {item?.admin?.status || "inactive"}
-                      </span>
-                    </td>
+  {/* Aadhaar Front */}
+  {item.aadhaar_front && (
+    <div className="relative group">
+      <a
+        href={item.aadhaar_front}
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        <img
+          src={item.aadhaar_front}
+          alt="Front Aadhaar Card"
+          className="w-14 h-10 object-cover rounded border hover:scale-105 transition"
+        />
+      </a>
 
-                    <td className="px-3 py-5">
-                      <div className="flex justify-center gap-2">
-                        <button
-                          onClick={() => {
-                            setOpenViewModal(true);
-                            setSelectedUser(item);
-                          }}
-                          className="p-2 px-3 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200"
-                        >
-                          <FiEye />
-                        </button>
-                        <button
-                          onClick={() => {
-                            setOpenEditModal(true);
-                            setSelectedUser({
-                              id: item?.admin?.id,
-                              status: item?.admin?.status,
-                            });
-                          }}
-                          className="p-2 px-3 flex items-center gap-2  bg-orange-100 text-orange-500 rounded-lg hover:bg-orange-200"
-                        >
-                          <FiEdit2 />
-                          <span>Change Status</span>
-                        </button>
-                        {/* <button className="p-2 px-3  bg-red-100 text-red-500 rounded-lg hover:bg-red-200">
-                          <FiTrash2 />
-                        </button> */}
-                      </div>
-                    </td>
-                  </tr>
-                ))
+      <div className="absolute -top-8 left-1/2 -translate-x-1/2 
+                      bg-gray-900 text-white text-xs px-2 py-1 rounded 
+                      opacity-0 group-hover:opacity-100 transition 
+                      whitespace-nowrap z-10">
+        Aadhaar Front
+      </div>
+    </div>
+  )}
+
+  {/* Aadhaar Back */}
+  {item.aadhaar_back && (
+    <div className="relative group">
+      <a
+        href={item.aadhaar_back}
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        <img
+          src={item.aadhaar_back}
+          alt="Back Aadhaar Card"
+          className="w-14 h-10 object-cover rounded border hover:scale-105 transition"
+        />
+      </a>
+
+      <div className="absolute -top-8 left-1/2 -translate-x-1/2 
+                      bg-gray-900 text-white text-xs px-2 py-1 rounded 
+                      opacity-0 group-hover:opacity-100 transition 
+                      whitespace-nowrap z-10">
+        Aadhaar Back
+      </div>
+    </div>
+  )}
+
+  {/* PAN Card */}
+  {item.pan_image && (
+    <div className="relative group">
+      <a
+        href={item.pan_image}
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        <img
+          src={item.pan_image}
+          alt="PAN Card"
+          className="w-14 h-10 object-cover rounded border hover:scale-105 transition"
+        />
+      </a>
+
+      <div className="absolute -top-8 left-1/2 -translate-x-1/2 
+                      bg-gray-900 text-white text-xs px-2 py-1 rounded 
+                      opacity-0 group-hover:opacity-100 transition 
+                      whitespace-nowrap z-10">
+        PAN Card
+      </div>
+    </div>
+  )}
+
+</div>
+      </td>
+
+      {/* Status */}
+<td className="px-3 py-5">
+  <div className="flex items-center gap-2">
+    
+    {/* Status Badge */}
+    <span
+      className={`px-3 py-1 rounded-full text-xs font-medium capitalize ${
+        item.kyc_status === "approved"
+          ? "bg-green-100 text-green-600"
+          : item.kyc_status === "pending"
+          ? "bg-yellow-100 text-yellow-600"
+          : "bg-red-100 text-red-600"
+      }`}
+    >
+      {item.kyc_status}
+    </span>
+
+    {/* Show Reason Icon Only If Rejected */}
+   {item.kyc_status === "rejected" && item.rejection_reason && (
+  <div className="relative group flex items-center">
+
+    <FiAlertCircle className="text-red-500 text-sm cursor-pointer" />
+
+    {/* Tooltip ABOVE */}
+    <div className="absolute bottom-7 left-1/2 -translate-x-1/2 
+                    w-64 p-3 bg-gray-900 text-white text-xs rounded-lg 
+                    shadow-xl opacity-0 group-hover:opacity-100 
+                    transition duration-200 z-50 pointer-events-none">
+
+      <p className="font-semibold mb-1">Reject Reason</p>
+      <p className="leading-relaxed break-words">
+        {item.rejection_reason}
+      </p>
+
+      {/* Arrow */}
+      <div className="absolute top-full left-1/2 -translate-x-1/2 
+                      w-3 h-3 bg-gray-900 rotate-45"></div>
+    </div>
+  </div>
+)}
+
+  </div>
+</td>
+
+      {/* Action */}
+      <td className="px-3 py-5">
+        <div className="flex justify-center gap-2">
+          <button
+            onClick={() => {
+              setOpenEditModal(true);
+              setSelectedUser({
+                id: item?.rider_id,
+                kyc_status: item?.kyc_status,
+              });
+            }}
+            className="p-2 px-3 flex items-center gap-2 bg-orange-100 text-orange-500 rounded-lg hover:bg-orange-200"
+          >
+            <FiEdit2 />
+            <span>Change Status</span>
+          </button>
+        </div>
+      </td>
+    </tr>
+  ))
               )}
             </tbody>
           </table>
         </div>
 
         {/* PAGINATION */}
-        {!riderLoading && hasData && (
+        {!riderLoading && hasData && kycData && (
           <Pagination
-            data={riderData}
+            data={kycData}
             page={page}
             label="riders"
             onPageChange={updateParams}
@@ -208,17 +302,11 @@ const RiderKyc = () => {
           />
         )}
       </div>
-      <EditRiderStatusModal
+
+      <EditRiderKycStatusModal 
         isOpen={openEditModal}
         onClose={() => setOpenEditModal(false)}
         user={selectedUser}
-      />
-      <ViewRiderModal
-        isOpen={openViewModal}
-        onClose={() => {
-          setOpenViewModal(false);
-        }}
-        rider={selectedUser}
       />
     </>
   );

@@ -3,14 +3,12 @@ import { Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { FaRegUser } from "react-icons/fa";
 import { TbSettingsFilled } from "react-icons/tb";
-import { LuLogOut } from "react-icons/lu";
 import { TbDashboardFilled } from "react-icons/tb";
 import { IoChevronDownSharp } from "react-icons/io5";
 import {
   setActiveAccountCenterTab,
   setActiveSubTab,
 } from "../../features/slices/references";
-import { adminLogout } from "../../features/actions/authentication";
 import { FaUnlockAlt } from "react-icons/fa";
 
 const Sidebar = ({ closeSidebar }) => {
@@ -19,7 +17,6 @@ const Sidebar = ({ closeSidebar }) => {
   const { activeTab, activeSub } = useSelector((state) => state.references);
   const [openDropdown, setOpenDropdown] = useState(null);
   const { adminData } = useSelector((state) => state.authentication);
-
   const handleDropdown = (label) => {
     setOpenDropdown(openDropdown === label ? null : label);
   };
@@ -42,7 +39,7 @@ const Sidebar = ({ closeSidebar }) => {
     {
       label: "Dashboard",
       icon: TbDashboardFilled,
-      url: "/admin/dashboard",
+      url: "/admin",
     },
     {
       label: "Order Management",
@@ -86,7 +83,7 @@ const Sidebar = ({ closeSidebar }) => {
           url: "/admin/customer",
         },
         {
-          name: "KYC Approval",
+          name: "Customer KYC Approval",
           url: "/admin/customer/kyc",
         },
       ],
@@ -104,7 +101,7 @@ const Sidebar = ({ closeSidebar }) => {
           url: "/admin/rider/referral",
         },
          {
-          name: "KYC Approval",
+          name: "Rider KYC Approval",
           url: "/admin/rider/kyc",
         },
       ],
@@ -200,41 +197,33 @@ const Sidebar = ({ closeSidebar }) => {
       label: "Settings",
       icon: TbSettingsFilled,
       url: "/admin/settings",
-    },
-    {
-      label: "Order Rider",
-      icon: FaUnlockAlt,
-      children: [
-        {
-          name: "Assigned Orders",
-          url: `/rider/order/assigned`,
-        },
-      ],
-    },
-    {
-      label: "Profile",
-      icon: FaUnlockAlt,
-      url: "/rider/profile",
-    },
+    }
   ];
 
   const riderMenuItems = [
     {
       label: "Dashboard",
       icon: TbDashboardFilled,
-      url: "/admin/dashboard",
+      url: "/rider",
     },
     {
-      label: "Order Management",
+      label: "Assigned Orders",
       icon: FaUnlockAlt,
-      children: [
-        {
-          name: "Assigned Orders",
-          url: `/rider/order/assigned`,
-        },
-      ],
+      url: `/rider/order/assigned`,
+    },
+    {
+      label: "Order History",
+      icon: FaUnlockAlt,
+        url: "/rider/order/history"
+    },
+    {
+      label: "KYC & Rider Profile",
+      icon: FaUnlockAlt,
+      url: "/rider/profile",
     },
   ];
+
+  const menuItems = adminData?.admin?.role_id === 1 && adminMenuItems ||  adminData?.admin?.role_id === 6 && riderMenuItems
 
   return (
    <div className="flex flex-col h-screen bg-[#111827] text-gray-400 shadow-xl">
@@ -253,7 +242,7 @@ const Sidebar = ({ closeSidebar }) => {
 
         {/* Main Menu */}
           <ul className="space-y-2">
-            {adminMenuItems.map((item) => {
+            {menuItems.map((item) => {
               const ItemIcon = item.icon;
               const hasChildren = !!item.children;
               const isActiveParent = activeTab === item.label;
@@ -343,16 +332,7 @@ const Sidebar = ({ closeSidebar }) => {
      
 
       </div>
-        {/* Logout */}
-  <div className="px-10 py-4 border-t border-gray-700">
-        <div
-          onClick={() => dispatch(adminLogout(adminData?.token))}
-          className="flex items-center gap-3 cursor-pointer text-red-400 hover:text-red-500"
-        >
-          <LuLogOut className="text-lg" />
-          <span className="font-medium">Log Out</span>
-        </div>
-      </div>
+
     </div>
   );
 };

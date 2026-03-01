@@ -28,6 +28,10 @@ import UnassignOrder from "../pages/Order/UnAssignOrder";
 import RiderKyc from "../pages/Rider/RiderKyc";
 import CustomerKyc from "../pages/Customer/CustomerKyc";
 import RiderProfile from "../pages/RiderDashboard/RiderProfile";
+import ProtectedRoute from "../components/ProtectedRoutes";
+import RiderOrderHistory from "../pages/RiderDashboard/RiderOrderHistory";
+import Profile from "../pages/Profile/Profile";
+import { RiderDashboard } from "../pages/RiderDashboard/RiderDashboard";
 
 export const appRouter = createBrowserRouter([
   /* ---------------- PUBLIC ROUTES ---------------- */
@@ -44,41 +48,53 @@ export const appRouter = createBrowserRouter([
   },
 
   /* ---------------- PROTECTED ROUTES ---------------- */
-  {
-    path: "/admin",
-    element: <AdminDefaultLayout />, // Protected layout
-    children: [
-      { path: "dashboard", element: <Dashboard /> },
-      { path: "user", element: <AdminUser /> },
-      { path: "customer", element: <Customer /> },
-      { path: "customer/kyc", element: <CustomerKyc /> },
-      { path: "role", element: <Role /> },
-      { path: "permission", element: <Permission /> },
-      { path: "role/:id", element: <RolePermission /> },
-      { path: "category", element: <Category /> },
-      { path: "category/:id", element: <SubCategory /> },
-      { path: "attribute", element: <Attribute /> },
-      { path: "attribute/:id", element: <AttributeValue /> },
-      { path: "product", element: <Product /> },
-      { path: "product/bulk-products", element: <AddBulkProduct /> },
-      { path: "product/bulk-images", element: <AddZipImages /> },
-      { path: "order", element: <Order /> },
-      { path: "order/assigned", element: <AssignOrder /> },
-      { path: "order/unassigned", element: <UnassignOrder /> },
-      { path: "rider", element: <Rider /> },
-      { path: "rider/referral", element: <RiderReferral /> },
-      { path: "rider/kyc", element: <RiderKyc /> },
-    ],
-  },
-  {
-    path: "/rider",
-    element: <AdminDefaultLayout />, // Protected layout
-    children: [
-      { path: "dashboard", element: <Dashboard /> },
-      { path: "order/assigned", element: <RiderAssignOrder /> },
-      { path: "profile", element: <RiderProfile /> },
-    ],
-  },
+{
+  path: "/admin",
+  element: <ProtectedRoute allowedRoles={[1]} />,
+  children: [
+    {
+      element: <AdminDefaultLayout />,
+      children: [
+          { index: true, element: <Dashboard /> }, // 👈 this is "/admin"
+        { path: "user", element: <AdminUser /> },
+        { path: "profile", element: <Profile /> },
+        { path: "customer", element: <Customer /> },
+        { path: "customer/kyc", element: <CustomerKyc /> },
+        { path: "role", element: <Role /> },
+        { path: "permission", element: <Permission /> },
+        { path: "role/:id", element: <RolePermission /> },
+        { path: "category", element: <Category /> },
+        { path: "category/:id", element: <SubCategory /> },
+        { path: "attribute", element: <Attribute /> },
+        { path: "attribute/:id", element: <AttributeValue /> },
+        { path: "product", element: <Product /> },
+        { path: "product/bulk-products", element: <AddBulkProduct /> },
+        { path: "product/bulk-images", element: <AddZipImages /> },
+        { path: "order", element: <Order /> },
+        { path: "order/assigned", element: <AssignOrder /> },
+        { path: "order/unassigned", element: <UnassignOrder /> },
+        { path: "rider", element: <Rider /> },
+        { path: "rider/referral", element: <RiderReferral /> },
+        { path: "rider/kyc", element: <RiderKyc /> },
+      ],
+    },
+  ],
+},
+{
+  path: "/rider",
+  element: <ProtectedRoute allowedRoles={[6]} />,
+  children: [
+    {
+      element: <AdminDefaultLayout />,
+      children: [
+          { index: true, element: <RiderDashboard /> }, // 👈 this is "/rider"
+        { path: "order/assigned", element: <RiderAssignOrder /> },
+        { path: "order/history", element: <RiderOrderHistory /> },
+        { path: "profile", element: <RiderProfile /> },
+      ],
+    },
+  ],
+},
 
   /* ---------------- FALLBACK ---------------- */
   {

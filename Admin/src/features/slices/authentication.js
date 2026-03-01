@@ -5,6 +5,7 @@ import {
   adminLogout,
   forgotPassword,
   resetForgotPassword,
+  updateAdminProfile,
   verifyAdmin,
 } from "../actions/authentication";
 
@@ -152,6 +153,21 @@ const authSlice = createSlice({
       .addCase(adminLogout.rejected, (state, action) => {
         state.errorMessage = action.payload || "Failed to logout API.";
         toast("Logout failed. Please try again", {
+          description: formattedDate,
+        });
+      })
+      .addCase(updateAdminProfile.pending, (state) => {
+        state.errorMessage = "";
+      })
+      .addCase(updateAdminProfile.fulfilled, (state, action) => {
+        state.errorMessage = "";
+        toast("Profile updated successfully.", {
+          description: formattedDate,
+        });
+      })
+      .addCase(updateAdminProfile.rejected, (state, action) => {
+        state.errorMessage = action.payload || "Failed";
+        toast(action.payload, {
           description: formattedDate,
         });
       });
