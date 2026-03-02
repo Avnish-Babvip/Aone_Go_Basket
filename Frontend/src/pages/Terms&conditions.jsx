@@ -5,71 +5,71 @@ const TermsAndConditions = () => {
   const sections = [
     {
       id: "personal-info",
-      title: "Personal Information",
+      title: "Order Acceptance",
       content: (
         <div className="space-y-4">
           <p>
-            "A One Go Basket" is a trademark of A One Go Basket Private Limited
-            ("Company")...
-          </p>
-          <p>
-            If you are a California resident, the information below also applies
-            to you (CCPA).
+            Most big orders through Aone Go Basket depend on what's actually in
+            stock - nothing moves without a green light. Our team checks each
+            request first, then signs off before anything gets packed. Only
+            after that does processing begin.
           </p>
         </div>
       ),
     },
     {
       id: "snap",
-      title: "Snap",
+      title: "Pricing & Payment",
       content: (
         <div className="space-y-4">
           <p>
-            Customer are advised to read and understand our Privacy Policy
-            carefully...
+            Because orders are large, prices shift with supply trends. Before
+            items ship, payment needs to go through official channels or be
+            settled according to company agreements - unless something else was
+            set earlier.
           </p>
         </div>
       ),
     },
     {
       id: "other-info",
-      title: "Other Information",
+      title: "Dispatch & Delivery",
       content: (
         <div className="space-y-4">
           <p>
-            We may automatically track certain information about you based upon
-            your behavior on the website...
-          </p>
-          <p className="font-semibold text-gray-900 bg-gray-50 p-3 border-l-4 border-brand-green">
-            We may also share your Mobile IP/Device IP with third party(ies)...
+            Packed fresh each morning, the warehouse crew prepares every order
+            with care. Once ready, a trusted rider takes it out for delivery.
+            Timing shifts based on where you are, how big the order is, or what
+            day it lands in the system.
           </p>
         </div>
       ),
     },
     {
       id: "links",
-      title: "Links",
+      title: "Risk & Responsibility",
       content: (
         <div className="space-y-4">
           <p>
-            Our website/app may link to other websites that may collect
-            personally identifiable information...
+            After delivery happens, whoever gets the items - store staff or an
+            approved person - takes charge. The moment they confirm receipt,
+            control shifts their way.
           </p>
         </div>
       ),
     },
     {
       id: "security",
-      title: "Security",
+      title: "Limitation of Liability",
       content: (
         <div className="space-y-4">
           <p>
-            To protect against the loss, misuse and alteration of the
-            information under its control...
-          </p>
-          <p className="text-brand-green font-medium">
-            Please note that the Company will not ask you to share any sensitive
-            data via email or telephone.
+            Aone Go Basket isn’t responsible when things take longer because of
+            problems they can’t manage - shipping hiccups, for instance, or
+            items running out. When outside forces interfere, accountability
+            doesn’t apply. Unpredictable events shift outcomes, yet blame stays
+            elsewhere. Delays happen. They just do. Not every snag comes from
+            within.
           </p>
         </div>
       ),
@@ -94,27 +94,26 @@ const TermsAndConditions = () => {
   };
 
   return (
-    <div className="min-h-screen bg-white mt-15 text-gray-700">
+    <div className="min-h-screen bg-white mt-20 text-gray-700">
       {/* HEADER */}
-      <div className="relative w-full h-44 md:h-56 overflow-hidden flex flex-col items-center justify-center border-b border-gray-100">
+      <div className="relative w-full h-16 sm:h-24 md:h-32 lg:h-50 xl:h-56 overflow-hidden flex flex-col items-center justify-center border-b border-gray-100">
         <img
-          src="/images/Banner-bg-2.jpg"
+          src="/images/terms-conditions.webp"
           alt="Privacy Background"
           className="absolute inset-0 w-full h-full object-cover"
         />
-        <div className="absolute inset-0 bg-white/70"></div>
 
         <div className="relative z-10 text-center">
-          <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-2">
+          <h1 className="text-xl md:text-3xl font-bold text-gray-900 mb-2">
             Terms & Conditions
           </h1>
-          <div className="flex items-center justify-center text-sm text-gray-500">
+          {/* <div className="flex items-center justify-center text-sm text-gray-500">
             <Link to={"/"} className="hover:text-brand-green">
               Home
             </Link>
             <span className="mx-2 text-gray-400">/</span>
             <span className="text-gray-900 font-medium">Privacy</span>
-          </div>
+          </div> */}
         </div>
       </div>
 
@@ -158,14 +157,15 @@ const TermsAndConditions = () => {
           {/* FOOTER */}
           <div className="mt-20 pt-12 border-t border-gray-100 text-center">
             <h3 className="text-xl md:text-2xl font-bold text-gray-900 mb-4">
-              Be safe, be secure!!
+              Be Safe, Be Secure
             </h3>
             <p className="text-sm text-gray-600 max-w-3xl mx-auto mb-8">
-              A One Go Basket is leading the charge in transforming India's
-              vast, unorganized grocery landscape.
+              Aone Go Basket strives to have a secure, transparent, and
+              professionally controlled wholesale grocery distribution channel
+              backed by responsible technology and credible working procedures.
             </p>
             <p className="text-base md:text-lg font-semibold">
-              Media enquiries:{" "}
+              Media contacts:{" "}
               <a
                 href="mailto:info@aonegobasket.com"
                 className="text-brand-green hover:underline"

@@ -1,60 +1,66 @@
 import { React, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useForm } from "react-hook-form";
-import { getRiderProfile, submitKyc, updateRiderProfile } from "../../features/actions/rider/user";
-import { Spinner } from "../../components/Loader/Spinner";
-import { getCities, getCountries, getStates } from "../../features/actions/location";
 
+import {
+  getRiderProfile,
+  getRiderReferralCode,
+  submitKyc,
+  updateRiderProfile,
+} from "../../features/actions/rider/user";
+import { Spinner } from "../../components/Loader/Spinner";
+import {
+  getCities,
+  getCountries,
+  getStates,
+} from "../../features/actions/location";
 
 export default function RiderProfile() {
-const { profileData } = useSelector((state) => state.rider_user);
-const kyc = profileData?.rider_profile?.kyc
+  const { profileData } = useSelector((state) => state.rider_user);
+  const kyc = profileData?.rider_profile?.kyc;
+
   return (
     <>
-    <div className="min-h-screen py-5 px-4  space-y-10">
-      {/* ================= PROFILE FORM ================= */}
-      <div className="max-w-5xl mx-auto bg-white rounded-3xl shadow-sm  p-8 md:p-12">
-        <ProfileForm/>
+      <div className="min-h-screen py-5 px-4  space-y-10">
+        {/* ================= PROFILE FORM ================= */}
+
+        <div className="max-w-5xl mx-auto bg-white rounded-3xl shadow-sm  p-8 md:p-12">
+          <ProfileForm />
+        </div>
+
+        {/* ================= KYC SECTION ================= */}
+        <div className="max-w-5xl mx-auto bg-white rounded-3xl shadow-sm p-8 md:p-12">
+          <h2 className="text-xl font-bold text-gray-800 mb-6">
+            KYC Information
+          </h2>
+
+          {/* No KYC → Show Form */}
+          {!kyc && <KycUploadSection />}
+
+          {/* Approved / Pending → Only Show Status */}
+          {kyc && kyc.kyc_status !== "rejected" && <KycStatusCard kyc={kyc} />}
+
+          {/* Rejected → Show Status + Form */}
+          {kyc && kyc.kyc_status === "rejected" && (
+            <>
+              <KycStatusCard kyc={kyc} />
+              <div className="mt-6 border-t pt-6">
+                <KycUploadSection />
+              </div>
+            </>
+          )}
+        </div>
       </div>
-
-
-      {/* ================= KYC SECTION ================= */}
-<div className="max-w-5xl mx-auto bg-white rounded-3xl shadow-sm p-8 md:p-12">
-  <h2 className="text-xl font-bold text-gray-800 mb-6">
-    KYC Information
-  </h2>
-
-  {/* No KYC → Show Form */}
-  {!kyc && <KycUploadSection />}
-
-  {/* Approved / Pending → Only Show Status */}
-  {kyc && kyc.kyc_status !== "rejected" && (
-    <KycStatusCard kyc={kyc} />
-  )}
-
-  {/* Rejected → Show Status + Form */}
-  {kyc && kyc.kyc_status === "rejected" && (
-    <>
-      <KycStatusCard kyc={kyc} />
-      <div className="mt-6 border-t pt-6">
-        <KycUploadSection />
-      </div>
-    </>
-  )}
-</div>
-    </div>
-
     </>
   );
 }
-
 
 function ProfileForm() {
   const dispatch = useDispatch();
   const { profileData } = useSelector((state) => state.rider_user);
   const { profileLoading } = useSelector((state) => state.rider_user);
   const { countryData, stateData, cityData } = useSelector(
-    (state) => state.location
+    (state) => state.location,
   );
 
   const {
@@ -66,75 +72,72 @@ function ProfileForm() {
     formState: { errors },
   } = useForm();
 
-
   /* ================= SUBMIT ================= */
- const onSubmit = async (data) => {
-  const payload = {
-    address_line_1: data.address_line_1,
-    address_line_2: data.address_line_2,
-    country_id: data.country_id,
-    state_id: data.state_id,
-    city_id: data.city_id,
-    pincode: data.pincode,
-    vehicle_type: data.vehicle_type,
-    vehicle_number: data.vehicle_number,
-    license_number: data.license_number,
+  const onSubmit = async (data) => {
+    const payload = {
+      address_line_1: data.address_line_1,
+      address_line_2: data.address_line_2,
+      country_id: data.country_id,
+      state_id: data.state_id,
+      city_id: data.city_id,
+      pincode: data.pincode,
+      vehicle_type: data.vehicle_type,
+      vehicle_number: data.vehicle_number,
+      license_number: data.license_number,
+    };
+
+    await dispatch(updateRiderProfile(payload)).unwrap();
+
+    // 🔥 Refresh profile after update
+    dispatch(getRiderProfile());
   };
-
-  await dispatch(updateRiderProfile(payload)).unwrap();
-
-  // 🔥 Refresh profile after update
-  dispatch(getRiderProfile());
-};
   /* ================= LOAD COUNTRIES ================= */
   useEffect(() => {
     dispatch(getCountries());
   }, []);
 
   /* ================= LOAD PROFILE DATA ================= */
-useEffect(() => {
-  const loadProfile = async () => {
-    if (!profileData) return;
+  useEffect(() => {
+    const loadProfile = async () => {
+      if (!profileData) return;
 
-    const rider = profileData?.rider_profile;
+      const rider = profileData?.rider_profile;
 
-    const countryId = rider?.country?.id || "";
-    const stateId = rider?.state?.id || "";
-    const cityId = rider?.city?.id || "";
+      const countryId = rider?.country?.id || "";
+      const stateId = rider?.state?.id || "";
+      const cityId = rider?.city?.id || "";
 
-    // 1️⃣ First reset basic values
-    reset({
-      address_line_1: rider?.address_line_1 || "",
-      address_line_2: rider?.address_line_2 || "",
-      pincode: rider?.pincode || "",
-      vehicle_type: rider?.vehicle_type || "",
-      vehicle_number: rider?.vehicle_number || "",
-      license_number: rider?.license_number || "",
-      country_id: countryId,
-      state_id: stateId,
-      city_id: cityId,
-    });
+      // 1️⃣ First reset basic values
+      reset({
+        address_line_1: rider?.address_line_1 || "",
+        address_line_2: rider?.address_line_2 || "",
+        pincode: rider?.pincode || "",
+        vehicle_type: rider?.vehicle_type || "",
+        vehicle_number: rider?.vehicle_number || "",
+        license_number: rider?.license_number || "",
+        country_id: countryId,
+        state_id: stateId,
+        city_id: cityId,
+      });
 
-    // 2️⃣ Then load states
-    if (countryId) {
-      await dispatch(getStates(countryId)).unwrap();
-    }
+      // 2️⃣ Then load states
+      if (countryId) {
+        await dispatch(getStates(countryId)).unwrap();
+      }
 
-    // 3️⃣ Then load cities
-    if (stateId) {
-      await dispatch(getCities(stateId)).unwrap();
-    }
+      // 3️⃣ Then load cities
+      if (stateId) {
+        await dispatch(getCities(stateId)).unwrap();
+      }
 
-    // 4️⃣ Set values again after dropdown data loaded
-    setValue("country_id", countryId);
-    setValue("state_id", stateId);
-    setValue("city_id", cityId);
-  };
+      // 4️⃣ Set values again after dropdown data loaded
+      setValue("country_id", countryId);
+      setValue("state_id", stateId);
+      setValue("city_id", cityId);
+    };
 
-  loadProfile();
-}, [profileData]);
-
-
+    loadProfile();
+  }, [profileData]);
 
   useEffect(() => {
     dispatch(getRiderProfile());
@@ -147,9 +150,11 @@ useEffect(() => {
         Rider Profile Information
       </h2>
 
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-8 text-gray-700">
+      <form
+        onSubmit={handleSubmit(onSubmit)}
+        className="space-y-8 text-gray-700"
+      >
         <div className="grid md:grid-cols-2 gap-6">
-
           {/* ADDRESS LINE 1 */}
           <InputField
             label="Address Line 1"
@@ -166,42 +171,42 @@ useEffect(() => {
           />
 
           {/* COUNTRY */}
-       <SelectField
-  label="Country"
-  register={register("country_id", {
-    required: "Country is required",
-  })}
-  error={errors.country_id}
-  onChange={(e) => {
-    const value = e.target.value;
+          <SelectField
+            label="Country"
+            register={register("country_id", {
+              required: "Country is required",
+            })}
+            error={errors.country_id}
+            onChange={(e) => {
+              const value = e.target.value;
 
-    setValue("country_id", value);
-    setValue("state_id", "");
-    setValue("city_id", "");
+              setValue("country_id", value);
+              setValue("state_id", "");
+              setValue("city_id", "");
 
-    dispatch(getStates(value));
-  }}
-  options={countryData}
-/>
+              dispatch(getStates(value));
+            }}
+            options={countryData}
+          />
 
           {/* STATE */}
-        <SelectField
-  label="State"
-  register={register("state_id", {
-    required: "State is required",
-  })}
-  error={errors.state_id}
-  disabled={!watch("country_id")}
-  onChange={(e) => {
-    const value = e.target.value;
+          <SelectField
+            label="State"
+            register={register("state_id", {
+              required: "State is required",
+            })}
+            error={errors.state_id}
+            disabled={!watch("country_id")}
+            onChange={(e) => {
+              const value = e.target.value;
 
-    setValue("state_id", value);
-    setValue("city_id", "");
+              setValue("state_id", value);
+              setValue("city_id", "");
 
-    dispatch(getCities(value));
-  }}
-  options={stateData}
-/>
+              dispatch(getCities(value));
+            }}
+            options={stateData}
+          />
 
           {/* CITY */}
           <SelectField
@@ -230,7 +235,7 @@ useEffect(() => {
               required: "Vehicle type is required",
             })}
             error={errors.vehicle_type}
-              options={[{id:"bike",name:"Bike"}]}
+            options={[{ id: "bike", name: "Bike" }]}
           />
 
           {/* VEHICLE NUMBER */}
@@ -275,9 +280,7 @@ const InputField = ({ label, register, error }) => (
       {...register}
       className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-emerald-500 outline-none"
     />
-    {error && (
-      <p className="text-red-500 text-xs mt-1">{error.message}</p>
-    )}
+    {error && <p className="text-red-500 text-xs mt-1">{error.message}</p>}
   </div>
 );
 
@@ -305,9 +308,7 @@ const SelectField = ({
         </option>
       ))}
     </select>
-    {error && (
-      <p className="text-red-500 text-xs mt-1">{error.message}</p>
-    )}
+    {error && <p className="text-red-500 text-xs mt-1">{error.message}</p>}
   </div>
 );
 
@@ -340,9 +341,11 @@ function KycUploadSection() {
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-8 text-gray-700
-    ">
-
+    <form
+      onSubmit={handleSubmit(onSubmit)}
+      className="space-y-8 text-gray-700
+    "
+    >
       {/* ================= AADHAAR NUMBER ================= */}
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -493,4 +496,3 @@ function KycStatusCard({ kyc }) {
     </div>
   );
 }
-

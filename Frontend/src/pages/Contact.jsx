@@ -1,43 +1,110 @@
-import React from "react";
-
 export default function ContactUs() {
   return (
-    <div className="w-full bg-white mt-15">
+    <div className="w-full bg-white mt-20">
       {/* ===== HERO SECTION ===== */}
-      <div className="relative h-[300px] w-full">
+      <div className="relative w-full h-16 sm:h-24 md:h-32 lg:h-50 xl:h-56 overflow-hidden flex flex-col items-center justify-center border-b border-gray-100">
         <img
           src="/images/contact-us.webp"
-          alt="Contact"
-          className="h-full w-full object-cover"
+          alt="Privacy Background"
+          className="absolute inset-0 w-full h-full object-cover"
         />
-        <div className="absolute inset-0 bg-black/40 flex flex-col items-center justify-center text-white">
-          <h1 className="text-4xl font-bold">Contact Us</h1>
-          {/* <p className="text-sm mt-2">Home / Contact</p> */}
+        {/* <div className="absolute inset-0 bg-white/70"></div> */}
+
+        <div className="relative z-10 text-center">
+          <h1 className="text-xl md:text-4xl font-bold text-gray-900 mb-2">
+            Contact Us
+          </h1>
         </div>
       </div>
 
       {/* ===== MAIN CONTENT ===== */}
       <div className="max-w-6xl mx-auto px-4 py-16 grid md:grid-cols-2 gap-10">
         {/* LEFT SIDE */}
-        <div>
-          <h2 className="text-2xl font-semibold mb-4">
+        <div className="">
+          <h2 className="text-3xl md:text-4xl font-semibold mb-4">
             Support is our main priority
           </h2>
           <p className="text-gray-600 mb-6">
-            We create reusable React components and modern UI layouts so you can
-            build fast and scalable applications. Our team is always ready to
-            help you.
+            We ensure reliable assistance and responsive service so your
+            wholesale grocery orders remain smooth and hassle-free. Our team is
+            always ready to help you.
           </p>
 
-          <div className="flex items-center gap-3">
-            {[1, 2, 3, 4].map((i) => (
-              <img
-                key={i}
-                src={`https://i.pravatar.cc/40?img=${i}`}
-                alt="user"
-                className="w-10 h-10 rounded-full border border-gray-200"
-              />
-            ))}
+          {/* Content Wrapper */}
+          <div className="space-y-10 mt-10 text-gray-600">
+            {/* Section Block */}
+            <div className="space-y-4">
+              <h3 className="text-2xl md:text-3xl font-semibold text-gray-900">
+                CONTACT US
+              </h3>
+              <p className="text-sm md:text-base leading-relaxed">
+                Aone Go Basket keeps things open and honest when talking with
+                stores and big buyers. Got questions about large shipments, when
+                items go out, what's in stock, how payments work, or teaming up?
+                The crew there knows how to help. Reaching out brings answers
+                straight from those who manage the details every day.
+              </p>
+            </div>
+            <div className="space-y-4">
+              <h3 className="text-xl md:text-2xl font-semibold text-gray-900">
+                Wholesale Support
+              </h3>
+              <p className="text-sm md:text-base leading-relaxed">
+                Got questions about your order, shipping status, stock levels,
+                or account details? Reach out to support using the approved
+                methods. Official channels are the way to go when you need help
+                with deliveries, confirmation receipts, product availability, or
+                personal account matters. Always connect through verified lines
+                for any assistance tied to purchases or system access.
+              </p>
+              <p className="text-base md:text-lg font-medium text-gray-900">
+                Phone{" "}
+                <a
+                  href="mailto:info@aonegobasket.com"
+                  className="text-teal-600 font-bold hover:underline"
+                >
+                  +91 XXXXX XXXXX
+                </a>
+              </p>
+              <p className="text-base md:text-lg font-medium text-gray-900">
+                Email:{" "}
+                <a
+                  href="mailto:info@aonegobasket.com"
+                  className="text-teal-600 font-bold hover:underline"
+                >
+                  info@aonegobasket.com
+                </a>
+              </p>
+              <p className="text-sm md:text-base leading-relaxed">
+                From opening bell to close, team members stand ready. Smooth
+                operations? That’s the goal each day. Supply flows without pause
+                thanks to daily oversight. Help arrives when needed, nothing
+                held back.
+              </p>
+            </div>
+            <div className="space-y-4">
+              <h3 className="text-xl md:text-2xl font-semibold text-gray-900">
+                Business and Vendor Inquiries
+              </h3>
+              <p className="text-sm md:text-base leading-relaxed">
+                Got a proposal for Aone Go Basket? Reach out by email or call -
+                we’re ready to look it over. Suppliers, plus those handling
+                distribution or logistics, are welcome to connect. Someone from
+                our team will get back to you without delay. Smooth coordination
+                happens every step of the way.
+              </p>
+              <div className="pt-8 border-t border-gray-100">
+                <p className="text-base md:text-lg font-medium text-gray-900">
+                  Reach out for press questions at{" "}
+                  <a
+                    href="mailto:info@aonegobasket.com"
+                    className="text-teal-600 font-bold hover:underline"
+                  >
+                    info@aonegobasket.com
+                  </a>
+                </p>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -119,7 +186,7 @@ export default function ContactUs() {
               ✉️
             </div>
             <h4 className="font-semibold">Send Mail</h4>
-            <p className="text-sm text-gray-600">support@domain.com</p>
+            <p className="text-sm text-gray-600">info@aonegobasket.com</p>
           </div>
         </div>
       </div>

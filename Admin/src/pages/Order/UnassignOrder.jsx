@@ -13,34 +13,30 @@ import { TbTruckDelivery } from "react-icons/tb";
 const UnassignOrder = () => {
   const dispatch = useDispatch();
   const [searchParams, setSearchParams] = useSearchParams();
-  const { unassignedOrderData, orderLoading } = useSelector((state) => state.order);
+  const { unassignedOrderData, orderLoading } = useSelector(
+    (state) => state.order,
+  );
   const [selectedUser, setSelectedUser] = useState({});
   const [openViewModal, setOpenViewModal] = useState(false);
-    const [openAssignModal, setOpenAssignModal] = useState(false);
+  const [openAssignModal, setOpenAssignModal] = useState(false);
   const [openEditModal, setOpenEditModal] = useState(false);
   const page = Number(searchParams.get("page")) || 1;
   const searchQuery = searchParams.get("search") || "";
   const from_date = searchParams.get("from_date") || "";
-const to_date = searchParams.get("to_date") || "";
+  const to_date = searchParams.get("to_date") || "";
 
   const users = unassignedOrderData?.data || [];
   const hasData = Array.isArray(users) && users.length > 0;
-  const updateParams = ({
-    page,
-    search,
-     from_date,
-  to_date,
-  }) => {
+  const updateParams = ({ page, search, from_date, to_date }) => {
     const params = {};
     if (page) params.page = page;
     if (search) params.search = search;
-     if (from_date) params.from_date = from_date;
-  if (to_date) params.to_date = to_date;
+    if (from_date) params.from_date = from_date;
+    if (to_date) params.to_date = to_date;
     setSearchParams(params);
-
   };
 
-   const getOrderStatusStyle = (status) => {
+  const getOrderStatusStyle = (status) => {
     switch (status?.toLowerCase()) {
       case "placed":
         return "bg-yellow-100 text-yellow-700 ring-1 ring-yellow-200";
@@ -76,19 +72,12 @@ const to_date = searchParams.get("to_date") || "";
         getAllNotAssignOrders({
           search: searchQuery,
           page,
-           from_date,
-  to_date,
+          from_date,
+          to_date,
         }),
       );
     }
-  }, [
-    openEditModal,
-    openAssignModal,
-    page,
-    searchQuery,
-     from_date,
-  to_date,
-  ]);
+  }, [openEditModal, openAssignModal, page, searchQuery, from_date, to_date]);
 
   return (
     <>
@@ -97,50 +86,48 @@ const to_date = searchParams.get("to_date") || "";
         <div className="flex items-center justify-between px-6 py-4 border-b">
           <h2 className="font-semibold text-gray-800">All Unassigned Orders</h2>
 
-<div className="flex items-end gap-4">
+          <div className="flex items-end gap-4">
+            {/* From Date */}
+            <div className="flex flex-col">
+              <label className="text-xs font-medium text-gray-500 mb-1">
+                From Date
+              </label>
+              <input
+                type="date"
+                value={from_date}
+                onChange={(e) =>
+                  updateParams({
+                    page: 1,
+                    search: searchQuery,
+                    from_date: e.target.value,
+                    to_date,
+                  })
+                }
+                className="border border-gray-300 rounded-lg px-3 py-2 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+              />
+            </div>
 
-  {/* From Date */}
-  <div className="flex flex-col">
-    <label className="text-xs font-medium text-gray-500 mb-1">
-      From Date
-    </label>
-    <input
-      type="date"
-      value={from_date}
-      onChange={(e) =>
-        updateParams({
-          page: 1,
-          search: searchQuery,
-          from_date: e.target.value,
-          to_date,
-        })
-      }
-      className="border border-gray-300 rounded-lg px-3 py-2 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
-    />
-  </div>
-
-  {/* To Date */}
-  <div className="flex flex-col">
-    <label className="text-xs font-medium text-gray-500 mb-1">
-      To Date
-    </label>
-    <input
-      type="date"
-      value={to_date}
-      min={from_date}
-      onChange={(e) =>
-        updateParams({
-          page: 1,
-          search: searchQuery,
-          from_date,
-          to_date: e.target.value,
-        })
-      }
-      className="border border-gray-300 rounded-lg px-3 py-2 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
-    />
-  </div>
-
-</div>
+            {/* To Date */}
+            <div className="flex flex-col">
+              <label className="text-xs font-medium text-gray-500 mb-1">
+                To Date
+              </label>
+              <input
+                type="date"
+                value={to_date}
+                min={from_date}
+                onChange={(e) =>
+                  updateParams({
+                    page: 1,
+                    search: searchQuery,
+                    from_date,
+                    to_date: e.target.value,
+                  })
+                }
+                className="border border-gray-300 rounded-lg px-3 py-2 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+              />
+            </div>
+          </div>
         </div>
 
         {/* TABLE */}
@@ -152,7 +139,7 @@ const to_date = searchParams.get("to_date") || "";
                   Order Number
                 </th>
                 <th className="text-left px-3 py-3 w-[160px]">Customer Name</th>
-                     <th className="text-left px-3 py-3 w-[120px]">
+                <th className="text-left px-3 py-3 w-[120px]">
                   Payment Method
                 </th>
                 <th className="text-left px-3 py-3 w-[120px]">Order Status</th>
@@ -209,7 +196,7 @@ const to_date = searchParams.get("to_date") || "";
                     <td className="px-3 py-5 text-gray-700">
                       {item?.customer?.name || "—"}
                     </td>
-                  
+
                     <td className="px-3 py-5">
                       <span
                         className={`inline-flex items-center gap-2 text-xs font-semibold px-3 py-1.5 rounded-full shadow-sm capitalize ${getPaymentMethodStyle(
@@ -232,7 +219,6 @@ const to_date = searchParams.get("to_date") || "";
                       </span>
                     </td>
 
-
                     <td className="px-3 py-5 text-gray-700 whitespace-nowrap">
                       ₹{item?.total || "—"}
                     </td>
@@ -249,19 +235,19 @@ const to_date = searchParams.get("to_date") || "";
                           <FiEye />
                         </button>
 
-                          <button
-                                                    onClick={() => {
-                                                      setOpenAssignModal(true);
-                                                      setSelectedUser({
+                        <button
+                          onClick={() => {
+                            setOpenAssignModal(true);
+                            setSelectedUser({
                               id: item?.id,
-                              city:item?.address_snapshot?.shipping?.city
+                              city: item?.address_snapshot?.shipping?.city,
                             });
-                                                    }}
-                                                    className="p-2 px-3 flex items-center gap-2 bg-indigo-100 text-indigo-500 rounded-lg hover:bg-indigo-200"
-                                                  >
-                                                    <TbTruckDelivery />
-                                                    <span>Assign Rider</span>
-                                                  </button>
+                          }}
+                          className="p-2 px-3 flex items-center gap-2 bg-indigo-100 text-indigo-500 rounded-lg hover:bg-indigo-200"
+                        >
+                          <TbTruckDelivery />
+                          <span>Assign Rider</span>
+                        </button>
 
                         <button
                           onClick={() => {
@@ -301,12 +287,12 @@ const to_date = searchParams.get("to_date") || "";
         onClose={() => setOpenEditModal(false)}
         user={selectedUser}
       />
-        <AssignOrderModal
-              isOpen={openAssignModal}
-              onClose={() => setOpenAssignModal(false)}
-              id={selectedUser?.id}
-              city={selectedUser?.city}
-            />
+      <AssignOrderModal
+        isOpen={openAssignModal}
+        onClose={() => setOpenAssignModal(false)}
+        id={selectedUser?.id}
+        city={selectedUser?.city}
+      />
       <ViewUnassignedOrderModal
         isOpen={openViewModal}
         onClose={() => {

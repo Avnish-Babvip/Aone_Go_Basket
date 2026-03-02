@@ -15,8 +15,10 @@ import product from "./slices/product";
 import rider from "./slices/rider";
 import order from "./slices/order";
 import location from "./slices/location";
+import commission from "./slices/commission";
 import rider_order from "./slices/rider/order";
 import rider_user from "./slices/rider/user";
+import rider_wallet from "./slices/rider/wallet";
 
 const rootReducer = combineReducers({
   references,
@@ -31,8 +33,10 @@ const rootReducer = combineReducers({
   rider,
   order,
   location,
+  commission,
   rider_order,
   rider_user,
+  rider_wallet,
 });
 
 // Redux-persist configuration

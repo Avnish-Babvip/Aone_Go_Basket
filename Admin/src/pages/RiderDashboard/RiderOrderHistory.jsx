@@ -1,21 +1,19 @@
 import { useEffect, useState } from "react";
 import { FiEye } from "react-icons/fi";
 import { useDispatch, useSelector } from "react-redux";
-import {  useSearchParams } from "react-router-dom";
+import { useSearchParams } from "react-router-dom";
 import TableSkeleton from "../../components/TableSkeleton";
 import FilterSelect from "../../components/FilterSelect";
 import Pagination from "../../components/Pagination";
 import { ViewAssignedOrderModal } from "../../components/Modal/RiderDashboard/ViewAssignedOrder";
 import { getAllOrderHistory } from "../../features/actions/rider/order";
 
-
 const RiderOrderHistory = () => {
   const dispatch = useDispatch();
   const [searchParams, setSearchParams] = useSearchParams();
-  const {
-    orderHistoryData,
-    orderLoading
-  } = useSelector((state) => state.rider_order);
+  const { orderHistoryData, orderLoading } = useSelector(
+    (state) => state.rider_order,
+  );
   const [selected, setSelected] = useState({});
   const [openViewModal, setOpenViewModal] = useState(false);
   const page = Number(searchParams.get("page")) || 1;
@@ -253,7 +251,6 @@ const RiderOrderHistory = () => {
                         >
                           <FiEye />
                         </button>
-                  
                       </div>
                     </td>
                   </tr>

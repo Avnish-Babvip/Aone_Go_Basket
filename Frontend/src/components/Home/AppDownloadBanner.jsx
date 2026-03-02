@@ -46,7 +46,7 @@ const AppDownloadBanner = () => {
         {/* Right Image Section */}
         <div className="hidden md:flex w-full md:w-1/2 justify-center md:justify-end order-1 md:order-2 p-8 md:p-0">
           <img
-            src="images/delevery.webp"
+            src="images/home/App.webp"
             alt="Delivery man holding grocery bag"
             className="w-full max-w-md md:max-w-full h-100 object-contain"
           />

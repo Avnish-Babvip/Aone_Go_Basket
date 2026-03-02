@@ -51,7 +51,7 @@ export const Header = ({ setSidebarOpen }) => {
     },
     "/admin/rider/kyc": {
       title: "Rider Kyc Approval List",
-            placeholder: "Search rider",
+      placeholder: "Search rider",
     },
     "/admin/order": {
       title: "Order List",
@@ -75,6 +75,10 @@ export const Header = ({ setSidebarOpen }) => {
     },
     "/rider/profile": {
       title: "Your Rider Profile",
+    },
+    "/rider/referral/history": {
+      title: "Rider History",
+      placeholder: "Search name",
     },
   };
 
@@ -153,7 +157,6 @@ export const Header = ({ setSidebarOpen }) => {
         </div>
       )}
       <div className="flex items-center  ">
-         
         {/* 🔍 SEARCH BAR */}
         {enableSearch && (
           <div className="relative hidden md:flex items-center w-full ms-6 md:w-[260px] bg-[#eae8e8] rounded-full px-4 py-2.5">
@@ -168,7 +171,7 @@ export const Header = ({ setSidebarOpen }) => {
           </div>
         )}
 
-         <AccountSection />
+        <AccountSection />
       </div>
     </header>
   );
@@ -178,9 +181,7 @@ function AccountSection({}) {
   const [open, setOpen] = useState(false);
   const dropdownRef = useRef(null);
   // const { profileData } = useSelector((state) => state.customer);
-  const { adminData } = useSelector(
-    (state) => state.authentication,
-  );
+  const { adminData } = useSelector((state) => state.authentication);
   const admin = adminData?.admin;
   const dispatch = useDispatch();
 
@@ -215,7 +216,7 @@ function AccountSection({}) {
         className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-semibold text-gray-700 hover:bg-gray-100 hover:text-brand-green transition-all duration-200"
       >
         <div className="w-8 h-8 flex items-center justify-center rounded-full text-brand-green">
-            <PiUserCircle size={24} className="text-lg" />
+          <PiUserCircle size={24} className="text-lg" />
         </div>
 
         <span className="hidden md:block">
@@ -239,9 +240,7 @@ function AccountSection({}) {
       >
         {/* USER HEADER */}
         <div className="px-5 py-4 bg-gray-50 border-b border-gray-100">
-          <p className="text-sm font-semibold text-gray-800">
-            {admin?.name}
-          </p>
+          <p className="text-sm font-semibold text-gray-800">{admin?.name}</p>
           <p className="text-xs text-gray-500 truncate">{admin?.email}</p>
         </div>
 

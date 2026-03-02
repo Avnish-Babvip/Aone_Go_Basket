@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { NavLink, useNavigate, useSearchParams } from "react-router-dom";
+import { Link, NavLink, useNavigate, useSearchParams } from "react-router-dom";
 import {
   FiChevronDown,
   FiX,
@@ -243,9 +243,15 @@ function MainNavbar({
           <NavLink to="/" className={linkClass}>
             Home
           </NavLink>
-          <MenuItem title="Categories" options={category} isCategory={true} />
+          <MenuItem
+            url="/categories"
+            title="Categories"
+            options={category}
+            isCategory={true}
+          />
 
           <MenuItem
+            url="/products"
             title="Products"
             options={[
               { name: "Featured", slug: "/products?sort=featured" },
@@ -331,13 +337,16 @@ function BottomNavItem({ icon, onClick, badge }) {
   );
 }
 
-function MenuItem({ title, options, isCategory }) {
+function MenuItem({ title, options, isCategory, url }) {
   return (
     <div className="relative group h-20 flex items-center">
-      <div className="flex items-center gap-1 cursor-pointer text-sm font-semibold text-gray-700 hover:text-brand-green">
+      <Link
+        to={url || "#"}
+        className="flex items-center gap-1 cursor-pointer text-sm font-semibold text-gray-700 hover:text-brand-green"
+      >
         {title}
         <FiChevronDown className="text-xs group-hover:rotate-180 transition" />
-      </div>
+      </Link>
 
       <div className="absolute top-full left-0 hidden group-hover:block border rounded-b-xl shadow-md border-gray-100  bg-white  min-w-[240px] py-2">
         {options?.map((item, i) => (
@@ -584,6 +593,7 @@ function MobileMenuSidebar({ isOpen, onClose, category }) {
         <MobileMenuItem
           title="Products"
           options={[
+            { name: "All Products", slug: "/products" },
             { name: "Featured", slug: "/products?sort=featured" },
             { name: "New Arrivals", slug: "/products?sort=new" },
             { name: "New & Featured", slug: "/products?sort=new_featured" },
@@ -597,6 +607,8 @@ function MobileMenuSidebar({ isOpen, onClose, category }) {
             { name: "FAQ", slug: "/faq" },
             { name: "Privacy Policy", slug: "/privacy-policy" },
             { name: "Contact Us", slug: "/contact-us" },
+            { name: "Return Policy", slug: "/return-policy" },
+            { name: "Terms & Conditions", slug: "/terms-conditions" },
           ]}
           onClose={onClose}
         />

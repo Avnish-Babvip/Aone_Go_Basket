@@ -7,24 +7,24 @@ const FAQPage = () => {
 
   const faqData = [
     {
-      question: "How to contact with Customer Service?",
+      question: "Ways to Reach Customer Support?",
       answer:
-        "You can contact our support team via the 'Help' section in the app, email us at support@example.com, or call our toll-free number available 24/7.",
+        "Got questions? Reach out via the Contact Us page, send an email, or call the listed phone line. When the office is open, staff help sort big shipments, share delivery news, handle money matters, plus keep things moving smoothly.",
     },
     {
-      question: "App installation failed, how to update system information?",
+      question: "How long does delivery take?",
       answer:
-        "Ensure your device meets the minimum OS requirements. Clear your app store cache and restart your device. If the problem persists, check for system updates in your device settings.",
+        "Timing changes based on how much is ordered and where it's going. Usually, bulk shipments go out when planned, arriving by set dates so supplies stay steady and work keeps moving smoothly.",
     },
     {
-      question: "Website response taking time, how to improve?",
+      question: "How do I place a bulk order?",
       answer:
-        "Try clearing your browser cookies and cache. Using a modern browser like Chrome or Firefox often improves speed. Check your internet connection or try disabling VPNs.",
+        "Now and then, retailers take a look at what’s in stock. They might need large amounts - those requests go through without using the word and. Price checks happen before anything moves forward. After approval comes packing, done by the crew who know the shelves best. Dispatch dates appear once boxes are sealed. Shipping follows only when every detail is set.",
     },
     {
-      question: "How do I create an account?",
+      question: "What payment options are available?",
       answer:
-        "Click the 'Sign Up' button on the top right of the home page. Enter your email, create a password, and verify your account via the link sent to your inbox.",
+        "Paying by bank transfer works, while UPI stands as another option. Approved digital methods come through just fine, whereas certain business arrangements may allow tailored payment setups when relevant. Security wraps every transaction, keeping wholesale activity clear and steady behind the scenes.",
     },
   ];
 
@@ -33,26 +33,20 @@ const FAQPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 mt-15">
-      <div className="relative w-full h-44 md:h-56 overflow-hidden flex flex-col items-center justify-center border-b border-gray-100">
+    <div className="min-h-screen bg-gray-50 mt-20">
+      <div className="relative w-full h-30 sm:h-48 md:h-56 lg:h-72 xl:h-96 overflow-hidden flex flex-col items-center justify-center border-b border-gray-100">
         <img
           src="/images/faq.webp"
-          alt="Privacy Background"
+          alt="FAQ"
           className="absolute inset-0 w-full h-full object-cover"
         />
-        <div className="absolute inset-0 bg-black/20"></div>
 
-        <div className="relative z-10 text-center">
-          <h1 className="text-3xl md:text-4xl font-bold text-white mb-2">
+        {/* <div className="absolute inset-0 bg-black/20"></div> */}
+
+        <div className="relative z-10 text-center px-4">
+          <h1 className="text-xl md:text-4xl font-bold text-white">
             Frequently Asked Questions
           </h1>
-          {/* <div className="flex items-center justify-center text-sm text-gray-500">
-            <Link to={"/"} className="hover:text-brand-green">
-              Home
-            </Link>
-            <span className="mx-2 text-gray-400">/</span>
-            <span className="text-white font-medium">FAQ</span>
-          </div> */}
         </div>
       </div>
 

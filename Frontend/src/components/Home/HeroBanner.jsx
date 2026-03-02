@@ -10,19 +10,25 @@ import "swiper/css/navigation";
 const sliderData = [
   {
     id: 1,
-    title: "Healthy vegetable that you deserve to eat fresh",
+    title: "Bulk Groceries, Reliable Supply. Delivered to Your Store",
     subtitle:
-      "We source and sell the very best beef, lamb and pork, sourced with the greatest care from farmers.",
-    bgImage: "/images/Banner-bg-3.jpg",
+      "From farm-fresh vegetables to daily essentials, nicely and safely delivered to your store. Aone Go Basket brings quality you can trust, right when you need it.",
+    bgImage: "/images/home/Banner-2.webp",
   },
   {
     id: 2,
-    title: "Healthy vegetable that you deserve to eat fresh",
+    title: "Naturally Fresh. Carefully Selected",
     subtitle:
-      "We source and sell the very best beef, lamb and pork, sourced with the greatest care from farmers.",
-    bgImage: "/images/Banner-bg-2.jpg",
+      "At Aone Go Basket, every product is chosen for quality, freshness, and value—because your business depends on consistent supply.",
+    bgImage: "/images/home/Banner-3.webp",
   },
-
+  // {
+  //   id: 2,
+  //   title: "Competitive Wholesale Pricing for Retail Growth",
+  //   subtitle:
+  //     "We source and sell the very best beef, lamb and pork, sourced with the greatest care from farmers.",
+  //   bgImage: "/images/home/Banner-1.webp",
+  // },
 ];
 
 function HeroBanner() {
@@ -42,7 +48,7 @@ function HeroBanner() {
               style={{ backgroundImage: `url(${slide.bgImage})` }}
             >
               {/* Soft Overlay to make text readable */}
-              <div className="absolute inset-0 bg-white/20"></div>
+              {/* <div className="absolute inset-0 bg-white/20"></div> */}
 
               {/* Content */}
               <div className="relative z-10 container mx-auto px-4 text-center max-w-4xl">

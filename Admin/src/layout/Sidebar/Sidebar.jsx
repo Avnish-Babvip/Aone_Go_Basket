@@ -88,7 +88,7 @@ const Sidebar = ({ closeSidebar }) => {
         },
       ],
     },
-        {
+    {
       label: "Rider Management",
       icon: FaUnlockAlt,
       children: [
@@ -100,9 +100,13 @@ const Sidebar = ({ closeSidebar }) => {
           name: "Riders Referrals",
           url: "/admin/rider/referral",
         },
-         {
+        {
           name: "Rider KYC Approval",
           url: "/admin/rider/kyc",
+        },
+        {
+          name: "Rider Commission",
+          url: "/admin/rider/commission",
         },
       ],
     },
@@ -196,8 +200,18 @@ const Sidebar = ({ closeSidebar }) => {
     {
       label: "Settings",
       icon: TbSettingsFilled,
-      url: "/admin/settings",
-    }
+      children: [
+        {
+          name: "Location",
+          url: "/admin/location",
+        },
+        // {
+        //   name: "Add Category",
+        //   url: "/admin/category",
+        //   state: { openModal: true },
+        // },
+      ],
+    },
   ];
 
   const riderMenuItems = [
@@ -214,23 +228,48 @@ const Sidebar = ({ closeSidebar }) => {
     {
       label: "Order History",
       icon: FaUnlockAlt,
-        url: "/rider/order/history"
+      url: "/rider/order/history",
+    },
+    {
+      label: "Your Wallet",
+      icon: FaUnlockAlt,
+      url: "/rider/wallet",
+    },
+    {
+      label: "Wallet Transactions ",
+      icon: FaUnlockAlt,
+      url: "/rider/wallet/history",
     },
     {
       label: "KYC & Rider Profile",
       icon: FaUnlockAlt,
       url: "/rider/profile",
     },
+    {
+      label: "Your Referral Code",
+      icon: FaUnlockAlt,
+      url: "/rider/referral",
+    },
+    {
+      label: "Referral History",
+      icon: FaUnlockAlt,
+      url: "/rider/referral/history",
+    },
+    {
+      label: "Your Commission",
+      icon: FaUnlockAlt,
+      url: "/rider/commission",
+    },
   ];
 
-  const menuItems = adminData?.admin?.role_id === 1 && adminMenuItems ||  adminData?.admin?.role_id === 6 && riderMenuItems
+  const menuItems =
+    (adminData?.admin?.role_id === 1 && adminMenuItems) ||
+    (adminData?.admin?.role_id === 6 && riderMenuItems);
 
   return (
-   <div className="flex flex-col h-screen bg-[#111827] text-gray-400 shadow-xl">
-
+    <div className="flex flex-col h-screen bg-[#111827] text-gray-400 shadow-xl">
       {/* Scrollable Section */}
       <div className="flex-1 overflow-y-auto px-3 py-6 scrollbar-thin  scrollbar-thumb-gray-700">
-
         {/* Logo */}
         <div className="flex justify-center mb-8">
           <Link to="/">
@@ -241,98 +280,94 @@ const Sidebar = ({ closeSidebar }) => {
         </div>
 
         {/* Main Menu */}
-          <ul className="space-y-2">
-            {menuItems.map((item) => {
-              const ItemIcon = item.icon;
-              const hasChildren = !!item.children;
-              const isActiveParent = activeTab === item.label;
+        <ul className="space-y-2">
+          {menuItems.map((item) => {
+            const ItemIcon = item.icon;
+            const hasChildren = !!item.children;
+            const isActiveParent = activeTab === item.label;
 
-              return (
-                <li key={item.label}>
-                  {/* Main Item */}
-                  <div
-                    onClick={() =>
-                      hasChildren
-                        ? handleDropdown(item.label)
-                        : handleNavigate(item.url, item.label)
-                    }
-                    className={`flex items-center justify-between px-2 py-2 rounded-lg cursor-pointer transition-all ${
-                      isActiveParent
-                        ? "bg-gradient-to-r from-blue-600 to-blue-900 text-white"
-                        : "text-gray-400 hover:text-white hover:bg-[#1A1A40]"
-                    }`}
-                  >
-                    <div className="flex items-start gap-3">
-                      <span className="w-5 flex justify-center mt-[2px]">
-                        <ItemIcon
-                          className={
-                            isActiveParent
-                              ? "text-white text-lg"
-                              : "text-gray-400 text-lg"
-                          }
-                        />
-                      </span>
-
-                      <span className="font-medium leading-tight whitespace-normal">
-                        {item.label}
-                      </span>
-                    </div>
-
-                    {hasChildren && (
-                      <IoChevronDownSharp
-                        className={`text-sm transition-transform ${
-                          openDropdown === item.label ? "rotate-180" : ""
-                        }`}
+            return (
+              <li key={item.label}>
+                {/* Main Item */}
+                <div
+                  onClick={() =>
+                    hasChildren
+                      ? handleDropdown(item.label)
+                      : handleNavigate(item.url, item.label)
+                  }
+                  className={`flex items-center justify-between px-2 py-2 rounded-lg cursor-pointer transition-all ${
+                    isActiveParent
+                      ? "bg-gradient-to-r from-blue-600 to-blue-900 text-white"
+                      : "text-gray-400 hover:text-white hover:bg-[#1A1A40]"
+                  }`}
+                >
+                  <div className="flex items-start gap-3">
+                    <span className="w-5 flex justify-center mt-[2px]">
+                      <ItemIcon
+                        className={
+                          isActiveParent
+                            ? "text-white text-lg"
+                            : "text-gray-400 text-lg"
+                        }
                       />
-                    )}
+                    </span>
+
+                    <span className="font-medium leading-tight whitespace-normal">
+                      {item.label}
+                    </span>
                   </div>
 
-                  {/* Dropdown */}
                   {hasChildren && (
-                    <ul
-                      className={`ml-10 mt-2 space-y-1 overflow-hidden transition-all duration-300 ${
-                        openDropdown === item.label
-                          ? "max-h-40 opacity-100"
-                          : "max-h-0 opacity-0"
+                    <IoChevronDownSharp
+                      className={`text-sm transition-transform ${
+                        openDropdown === item.label ? "rotate-180" : ""
                       }`}
-                    >
-                      {item.children.map((sub, i) => {
-                        const isSubActive = activeSub === sub.name;
-                        return (
-                          <li
-                            key={i}
-                            onClick={() =>
-                              handleNavigate(
-                                sub.url,
-                                item.label,
-                                item.label,
-                                sub.name,
-                                sub.state, // 👈 pass state
-                              )
-                            }
-                            className={`cursor-pointer text-sm py-1 pl-2 border-l-2 transition-all ${
-                              isSubActive
-                                ? "text-white border-blue-500 font-semibold"
-                                : "text-gray-400 border-transparent hover:text-white hover:border-blue-400"
-                            }`}
-                          >
-                            {sub.name}
-                          </li>
-                        );
-                      })}
-                    </ul>
+                    />
                   )}
-                </li>
-              );
-            })}
-          </ul>
+                </div>
+
+                {/* Dropdown */}
+                {hasChildren && (
+                  <ul
+                    className={`ml-10 mt-2 space-y-1 overflow-hidden transition-all duration-300 ${
+                      openDropdown === item.label
+                        ? "max-h-40 opacity-100"
+                        : "max-h-0 opacity-0"
+                    }`}
+                  >
+                    {item.children.map((sub, i) => {
+                      const isSubActive = activeSub === sub.name;
+                      return (
+                        <li
+                          key={i}
+                          onClick={() =>
+                            handleNavigate(
+                              sub.url,
+                              item.label,
+                              item.label,
+                              sub.name,
+                              sub.state, // 👈 pass state
+                            )
+                          }
+                          className={`cursor-pointer text-sm py-1 pl-2 border-l-2 transition-all ${
+                            isSubActive
+                              ? "text-white border-blue-500 font-semibold"
+                              : "text-gray-400 border-transparent hover:text-white hover:border-blue-400"
+                          }`}
+                        >
+                          {sub.name}
+                        </li>
+                      );
+                    })}
+                  </ul>
+                )}
+              </li>
+            );
+          })}
+        </ul>
       </div>
 
-      <div>
-     
-
-      </div>
-
+      <div></div>
     </div>
   );
 };

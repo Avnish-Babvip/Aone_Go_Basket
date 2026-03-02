@@ -1,6 +1,14 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { toast } from "sonner";
-import { getRiderDashboard, getRiderProfile, submitKyc, updateRiderProfile } from "../../actions/rider/user";
+import {
+  getRiderCommission,
+  getRiderDashboard,
+  getRiderProfile,
+  getRiderReferralCode,
+  getRiderReferralHistory,
+  submitKyc,
+  updateRiderProfile,
+} from "../../actions/rider/user";
 
 const formattedDate = new Date().toLocaleString("en-US", {
   weekday: "long",
@@ -14,6 +22,9 @@ const formattedDate = new Date().toLocaleString("en-US", {
 
 const initialState = {
   errorMessage: "",
+  commissionData: {},
+  referralData: {},
+  referralHistoryData: {},
   profileData: {},
   profileLoading: false,
   dashboardData: {},
@@ -28,6 +39,54 @@ const rider_userSlice = createSlice({
   reducers: {},
   extraReducers: (builder) => {
     builder
+      .addCase(getRiderReferralHistory.pending, (state) => {
+        state.errorMessage = "";
+        state.profileLoading = true;
+      })
+      .addCase(getRiderReferralHistory.fulfilled, (state, action) => {
+        state.errorMessage = "";
+        state.profileLoading = false;
+        state.referralHistoryData = action.payload.data;
+      })
+      .addCase(getRiderReferralHistory.rejected, (state, action) => {
+        state.errorMessage = action.payload || "Failed";
+        state.profileLoading = false;
+        toast(action.payload, {
+          description: formattedDate,
+        });
+      })
+      .addCase(getRiderCommission.pending, (state) => {
+        state.errorMessage = "";
+        state.profileLoading = true;
+      })
+      .addCase(getRiderCommission.fulfilled, (state, action) => {
+        state.errorMessage = "";
+        state.profileLoading = false;
+        state.commissionData = action.payload.data;
+      })
+      .addCase(getRiderCommission.rejected, (state, action) => {
+        state.errorMessage = action.payload || "Failed";
+        state.profileLoading = false;
+        toast(action.payload, {
+          description: formattedDate,
+        });
+      })
+      .addCase(getRiderReferralCode.pending, (state) => {
+        state.errorMessage = "";
+        state.profileLoading = true;
+      })
+      .addCase(getRiderReferralCode.fulfilled, (state, action) => {
+        state.errorMessage = "";
+        state.profileLoading = false;
+        state.referralData = action.payload.data;
+      })
+      .addCase(getRiderReferralCode.rejected, (state, action) => {
+        state.errorMessage = action.payload || "Failed";
+        state.profileLoading = false;
+        toast(action.payload, {
+          description: formattedDate,
+        });
+      })
       .addCase(getRiderProfile.pending, (state) => {
         state.errorMessage = "";
       })
@@ -42,13 +101,16 @@ const rider_userSlice = createSlice({
         });
       })
       .addCase(getRiderDashboard.pending, (state) => {
+        state.profileLoading = true;
         state.errorMessage = "";
       })
       .addCase(getRiderDashboard.fulfilled, (state, action) => {
+        state.profileLoading = false;
         state.errorMessage = "";
         state.dashboardData = action.payload.data;
       })
       .addCase(getRiderDashboard.rejected, (state, action) => {
+        state.profileLoading = false;
         state.errorMessage = action.payload || "Failed";
         toast(action.payload, {
           description: formattedDate,
@@ -61,9 +123,9 @@ const rider_userSlice = createSlice({
       .addCase(updateRiderProfile.fulfilled, (state, action) => {
         state.errorMessage = "";
         state.profileLoading = false;
-           toast("Details updated successfully.", {
-                  description: formattedDate,
-                });
+        toast("Details updated successfully.", {
+          description: formattedDate,
+        });
       })
       .addCase(updateRiderProfile.rejected, (state, action) => {
         state.errorMessage = action.payload || "Failed";
@@ -79,9 +141,9 @@ const rider_userSlice = createSlice({
       .addCase(submitKyc.fulfilled, (state, action) => {
         state.errorMessage = "";
         state.kycLoading = false;
-           toast("Kyc submitted.", {
-                  description: formattedDate,
-                });
+        toast("Kyc submitted.", {
+          description: formattedDate,
+        });
       })
       .addCase(submitKyc.rejected, (state, action) => {
         state.errorMessage = action.payload || "Failed";

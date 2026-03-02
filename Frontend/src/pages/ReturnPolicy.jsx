@@ -5,71 +5,73 @@ const ReturnPolicy = () => {
   const sections = [
     {
       id: "personal-info",
-      title: "Personal Information",
+      title: " Inspection at Delivery",
       content: (
         <div className="space-y-4">
           <p>
-            "A One Go Basket" is a trademark of A One Go Basket Private Limited
-            ("Company")...
-          </p>
-          <p>
-            If you are a California resident, the information below also applies
-            to you (CCPA).
+            Fresh off the truck, items need a quick check by store staff. Should
+            something seem off - missing pieces, dents, scratches - a note goes
+            straight to the driver on site. Mistakes caught then stay documented
+            right away. Problems left unmentioned at drop-off lose their voice
+            later. The clock starts ticking once the vehicle pulls up.
           </p>
         </div>
       ),
     },
     {
       id: "snap",
-      title: "Snap",
+      title: "Eligible Returns",
       content: (
         <div className="space-y-4">
           <p>
-            Customer are advised to read and understand our Privacy Policy
-            carefully...
+            When something arrives broken, flawed, or wrong, it might qualify
+            for return - if noticed right when delivered. Only items showing
+            issues upon arrival can be sent back. Problems must show up the
+            moment the package is opened. If it's damaged or not what was
+            ordered, there's a chance to send it back immediately. A product
+            needs clear faults visible at handover to count. Returns happen
+            solely when defects appear on delivery day.
           </p>
         </div>
       ),
     },
     {
       id: "other-info",
-      title: "Other Information",
+      title: "Non-Returnable Items",
       content: (
         <div className="space-y-4">
           <p>
-            We may automatically track certain information about you based upon
-            your behavior on the website...
-          </p>
-          <p className="font-semibold text-gray-900 bg-gray-50 p-3 border-l-4 border-brand-green">
-            We may also share your Mobile IP/Device IP with third party(ies)...
+            A fresh batch of products might head back only if problems show up
+            later. When something arrives with no note about condition, it stays
+            put unless flaws appear clear. Quality checks decide the fate of
+            groceries and similar things.
           </p>
         </div>
       ),
     },
     {
       id: "links",
-      title: "Links",
+      title: "Return Approval Process",
       content: (
         <div className="space-y-4">
           <p>
-            Our website/app may link to other websites that may collect
-            personally identifiable information...
+            Each request to send something back must pass a quick check inside
+            the system. When accepted, you might get a new item instead, an
+            account update, or your money back - depends on how things are set
+            up.
           </p>
         </div>
       ),
     },
     {
       id: "security",
-      title: "Security",
+      title: "Final Decision",
       content: (
         <div className="space-y-4">
           <p>
-            To protect against the loss, misuse and alteration of the
-            information under its control...
-          </p>
-          <p className="text-brand-green font-medium">
-            Please note that the Company will not ask you to share any sensitive
-            data via email or telephone.
+            Aone Go Basket gets to look over every return request before
+            deciding what happens next. The call on whether a return works out
+            comes solely from them after their review.
           </p>
         </div>
       ),
@@ -94,27 +96,20 @@ const ReturnPolicy = () => {
   };
 
   return (
-    <div className="min-h-screen bg-white mt-15 text-gray-700">
+    <div className="min-h-screen bg-white mt-20 text-gray-700">
       {/* HEADER */}
-      <div className="relative w-full h-44 md:h-56 overflow-hidden flex flex-col items-center justify-center border-b border-gray-100">
+      <div className="relative w-full h-16 sm:h-24 md:h-32 lg:h-50 xl:h-56 overflow-hidden flex flex-col items-center justify-center border-b border-gray-100">
         <img
-          src="/images/Banner-bg-2.jpg"
+          src="/images/return-policy.webp"
           alt="Privacy Background"
           className="absolute inset-0 w-full h-full object-cover"
         />
-        <div className="absolute inset-0 bg-white/70"></div>
+        {/* <div className="absolute inset-0 bg-white/70"></div> */}
 
         <div className="relative z-10 text-center">
-          <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-2">
+          <h1 className="text-xl md:text-4xl font-bold text-gray-900 mb-2">
             Return Policy
           </h1>
-          <div className="flex items-center justify-center text-sm text-gray-500">
-            <Link to={"/"} className="hover:text-brand-green">
-              Home
-            </Link>
-            <span className="mx-2 text-gray-400">/</span>
-            <span className="text-gray-900 font-medium">Privacy</span>
-          </div>
         </div>
       </div>
 
@@ -158,14 +153,15 @@ const ReturnPolicy = () => {
           {/* FOOTER */}
           <div className="mt-20 pt-12 border-t border-gray-100 text-center">
             <h3 className="text-xl md:text-2xl font-bold text-gray-900 mb-4">
-              Be safe, be secure!!
+              Be Safe, Be Secure
             </h3>
             <p className="text-sm text-gray-600 max-w-3xl mx-auto mb-8">
-              A One Go Basket is leading the charge in transforming India's
-              vast, unorganized grocery landscape.
+              Aone Go Basket strives to have a secure, transparent, and
+              professionally controlled wholesale grocery distribution channel
+              backed by responsible technology and credible working procedures.
             </p>
             <p className="text-base md:text-lg font-semibold">
-              Media enquiries:{" "}
+              Media contacts:{" "}
               <a
                 href="mailto:info@aonegobasket.com"
                 className="text-brand-green hover:underline"
