@@ -154,14 +154,31 @@ export default function Product() {
               }
             />
           </div>
-          <ProductList products={data} onQuickView={setSelectedProduct} />
+          <ProductList
+            products={data}
+            onQuickView={setSelectedProduct}
+            clearFilters={() => {
+              setFilters({
+                minPrice: priceData?.min_price,
+                maxPrice: priceData?.max_price,
+              });
+
+              setSearchParams({ page: 1 });
+            }}
+          />
           {/* PAGINATION */}
           {!productLoading && hasData && productData && (
             <Pagination
               data={productData}
               page={page}
               onPageChange={updateParams}
-              extraParams={{ search: searchQuery, sort }}
+              extraParams={{
+                search: searchQuery,
+                sort,
+                min_price,
+                max_price,
+                category_slug,
+              }}
             />
           )}
         </main>
@@ -178,13 +195,53 @@ export default function Product() {
 }
 
 // --- 2. PRODUCT LIST COMPONENT ---
-function ProductList({ products, onQuickView }) {
+function ProductList({ products, onQuickView, clearFilters }) {
+  const { productLoading } = useSelector((state) => state.product);
+
+  if (productLoading) {
+    return (
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-2 xl:grid-cols-3 gap-4 md:gap-8">
+        {Array.from({ length: 8 }).map((_, index) => (
+          <ProductCardSkeleton key={index} />
+        ))}
+      </div>
+    );
+  }
+
   if (products.length === 0)
-    return <div className="...">No products found...</div>;
+    return (
+      <div className="col-span-full flex flex-col items-center justify-center text-center py-24 px-6">
+        {/* Icon */}
+        <div className="w-20 h-20 flex items-center justify-center rounded-full bg-gray-100 mb-6 shadow-inner">
+          <FiShoppingCart className="text-3xl text-gray-400" />
+        </div>
+
+        {/* Heading */}
+        <h2 className="text-xl font-black text-gray-800 mb-2">
+          No Products Found
+        </h2>
+
+        {/* Subtext */}
+        <p className="text-gray-500 text-sm max-w-md mb-6">
+          We couldn't find any products matching your filters. Try adjusting
+          your search or clearing filters to explore more items.
+        </p>
+
+        {/* Action Buttons */}
+        <div className="flex gap-4">
+          <button
+            onClick={clearFilters}
+            className="px-6 py-2 rounded-xl bg-brand-green text-white font-bold text-sm hover:bg-lime-500 transition"
+          >
+            Clear Filters
+          </button>
+        </div>
+      </div>
+    );
+
   return (
     <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-2 xl:grid-cols-3 gap-4 md:gap-8">
       {products.map((product, index) => (
-        // ✅ Call your new component here!
         <ProductCard
           key={product.id}
           product={product}
@@ -192,6 +249,41 @@ function ProductList({ products, onQuickView }) {
           index={index}
         />
       ))}
+    </div>
+  );
+}
+
+function ProductCardSkeleton() {
+  return (
+    <div className="bg-white rounded-3xl p-4 border border-gray-100 animate-pulse flex flex-col h-full">
+      {/* Image Skeleton */}
+      <div className="aspect-square mb-4 bg-gray-200 rounded-2xl relative overflow-hidden" />
+
+      <div className="flex-1 space-y-3">
+        {/* Title */}
+        <div className="h-4 bg-gray-200 rounded w-3/4"></div>
+        <div className="h-4 bg-gray-200 rounded w-1/2"></div>
+
+        {/* Price */}
+        <div className="flex gap-3 mt-3">
+          <div className="h-4 w-16 bg-gray-300 rounded"></div>
+          <div className="h-4 w-12 bg-gray-200 rounded"></div>
+        </div>
+
+        {/* Variation buttons */}
+        <div className="flex gap-2 mt-3">
+          <div className="h-6 w-14 bg-gray-200 rounded"></div>
+          <div className="h-6 w-12 bg-gray-200 rounded"></div>
+        </div>
+
+        {/* Stock text */}
+        <div className="h-4 w-20 bg-gray-200 rounded mt-2"></div>
+      </div>
+
+      {/* Button Skeleton */}
+      <div className="mt-4">
+        <div className="h-10 w-full bg-gray-300 rounded-xl"></div>
+      </div>
     </div>
   );
 }
