@@ -1,20 +1,27 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { toast } from "sonner";
 import {
+  cancelOrder,
   checkout,
   checkPendingStatus,
+  downloadInvoice,
   orderDetails,
   orderHistory,
   paymentStatus,
+  retryPaymentOrder,
 } from "../actions/order";
 
 const initialState = {
   errorMessage: "",
   orderLoading: false,
+  cancelLoading: false,
+  invoiceLoading: false,
+  retryLoading: false,
   orderData: [],
   orderDetailData: {},
+  retryPaymentData: {},
   paymentData: {},
-    pendingStatus: {},
+  pendingStatus: {},
 };
 
 const orderSlice = createSlice({
@@ -49,6 +56,56 @@ const orderSlice = createSlice({
         state.orderLoading = false;
         state.errorMessage = action.payload || "Failed";
       })
+      .addCase(retryPaymentOrder.pending, (state, action) => {
+        state.errorMessage = "";
+        state.retryLoading = true;
+      })
+
+      .addCase(retryPaymentOrder.fulfilled, (state, action) => {
+        state.errorMessage = "";
+        state.retryLoading = false;
+        state.retryPaymentData = action.payload;
+      })
+
+      .addCase(retryPaymentOrder.rejected, (state, action) => {
+        state.errorMessage = "";
+        state.retryLoading = false;
+        state.errorMessage = action.payload || "Failed";
+        toast(action.payload);
+      })
+      .addCase(downloadInvoice.pending, (state, action) => {
+        state.errorMessage = "";
+        state.invoiceLoading = true;
+      })
+
+      .addCase(downloadInvoice.fulfilled, (state, action) => {
+        state.errorMessage = "";
+        state.invoiceLoading = false;
+      })
+
+      .addCase(downloadInvoice.rejected, (state, action) => {
+        state.errorMessage = "";
+        state.invoiceLoading = false;
+        state.errorMessage = action.payload || "Failed";
+        toast(action.payload);
+      })
+      .addCase(cancelOrder.pending, (state, action) => {
+        state.errorMessage = "";
+        state.cancelLoading = true;
+      })
+
+      .addCase(cancelOrder.fulfilled, (state, action) => {
+        state.errorMessage = "";
+        state.cancelLoading = false;
+        state.paymentData = action.payload.order;
+      })
+
+      .addCase(cancelOrder.rejected, (state, action) => {
+        state.errorMessage = "";
+        state.cancelLoading = false;
+        state.errorMessage = action.payload || "Failed";
+        toast(action.payload);
+      })
       .addCase(paymentStatus.pending, (state, action) => {
         state.errorMessage = "";
         state.orderLoading = true;
@@ -66,7 +123,7 @@ const orderSlice = createSlice({
         state.errorMessage = action.payload || "Failed";
         toast(action.payload);
       })
-          .addCase(checkPendingStatus.pending, (state, action) => {
+      .addCase(checkPendingStatus.pending, (state, action) => {
         state.errorMessage = "";
         state.orderLoading = true;
       })

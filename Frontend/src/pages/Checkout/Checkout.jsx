@@ -23,7 +23,7 @@ export default function Checkout() {
   const [isAddressModalOpen, setIsAddressModalOpen] = useState(false);
   const [editAddressData, setEditAddressData] = useState(null);
 
-  const { cartData } = useSelector((state) => state.cart);
+  const { cartData, chargesLoading } = useSelector((state) => state.cart);
   const { addressData } = useSelector((state) => state.customer);
   const { errorMessage, orderLoading } = useSelector((state) => state.order);
 
@@ -424,21 +424,32 @@ export default function Checkout() {
             </div>
 
             {/* ================= ESTIMATED DELIVERY ================= */}
-            {estimatedDelivery && (
-              <div className="mt-6 p-4 bg-emerald-50 rounded-xl border border-emerald-100">
-                <p className="text-sm flex items-center gap-1 font-semibold text-brand-green">
-                  <TbTruckDelivery /> {estimatedDelivery.courier_name}
-                </p>
+            {chargesLoading ? (
+              <div className="mt-6 p-4 bg-emerald-50 rounded-xl border border-emerald-100 animate-pulse">
+                <div className="h-4 w-3/4 sm:w-1/2 md:w-2/5 bg-emerald-200 rounded mb-3"></div>
 
-                <p className="text-sm text-gray-600 mt-1">
-                  {estimatedDelivery.note}
-                </p>
+                <div className="h-3 w-full sm:w-4/5 md:w-4/4 bg-emerald-100 rounded mb-2"></div>
+                <div className="h-3 w-full sm:w-2/5 md:w-2/4 bg-emerald-100 rounded mb-2"></div>
 
-                <p className="text-sm mt-1 text-brand-green font-bold">
-                  {estimatedDelivery.min_days} - {estimatedDelivery.max_days}{" "}
-                  days
-                </p>
+                <div className="h-4 w-1/2 sm:w-1/3 md:w-1/4 bg-emerald-200 rounded"></div>
               </div>
+            ) : (
+              estimatedDelivery && (
+                <div className="mt-6 p-4 bg-emerald-50 rounded-xl border border-emerald-100">
+                  <p className="text-sm flex items-center gap-1 font-semibold text-brand-green">
+                    <TbTruckDelivery /> {estimatedDelivery.courier_name}
+                  </p>
+
+                  <p className="text-sm text-gray-600 mt-1">
+                    {estimatedDelivery.note}
+                  </p>
+
+                  <p className="text-sm mt-1 text-brand-green font-bold">
+                    {estimatedDelivery.min_days} - {estimatedDelivery.max_days}{" "}
+                    days
+                  </p>
+                </div>
+              )
             )}
 
             {/* ================= PAYMENT METHOD ================= */}

@@ -745,7 +745,7 @@ function MobileSubItem({ item, parentSlug = "", onClose }) {
 }
 
 /* ================= CART ================= */
-function CartItem({ item }) {
+function CartItem({ item, failed }) {
   const dispatch = useDispatch();
   const formatAmount = (amount) => Number(parseFloat(amount || 0).toFixed(2));
 
@@ -759,8 +759,20 @@ function CartItem({ item }) {
     salePrice && parseFloat(salePrice) < parseFloat(regularPrice);
 
   const displayPrice = isOnSale ? salePrice : regularPrice;
+
   return (
-    <div className="flex gap-3 border border-gray-100 rounded-xl p-3">
+    <div
+      className={`flex gap-3 border border-gray-100 rounded-xl p-3 relative ${
+        failed ? "opacity-60 bg-gray-50" : ""
+      }`}
+    >
+      {/* OUT OF STOCK BADGE */}
+      {failed && (
+        <div className="absolute top-2 right-2 bg-red-500 text-white text-[10px] px-2 py-1 rounded-md font-semibold">
+          Out of Stock
+        </div>
+      )}
+
       {/* IMAGE */}
       <img
         src={`${import.meta.env.VITE_REACT_APP_IMAGE_URL}/${item?.product?.primary_image?.image}`}
@@ -804,9 +816,14 @@ function CartItem({ item }) {
         </div>
 
         {/* QUANTITY */}
-        <div className="flex items-center gap-2 mt-2">
+        <div
+          className={`flex items-center gap-2 mt-2 ${
+            failed ? "pointer-events-none" : ""
+          }`}
+        >
           {item.quantity > 1 ? (
             <button
+              disabled={failed}
               onClick={() =>
                 dispatch(
                   updateCart({
@@ -815,23 +832,26 @@ function CartItem({ item }) {
                   }),
                 )
               }
-              className="p-3 bg-white hover:bg-red-50 text-red-500 rounded-xl shadow"
+              className="p-3 bg-white hover:bg-red-50 text-red-500 rounded-xl shadow disabled:opacity-40"
             >
               <FiChevronDown />
             </button>
           ) : (
             <button
+              disabled={failed}
               onClick={() => dispatch(deleteCart(item.id))}
-              className="p-3 bg-white hover:bg-red-50 text-red-500 rounded-xl shadow"
+              className="p-3 bg-white hover:bg-red-50 text-red-500 rounded-xl shadow disabled:opacity-40"
             >
               <FiTrash />
             </button>
           )}
 
-          <span className="text-sm px-3 font-bold">{item.quantity}</span>
+          <span className="text-sm px-3 font-bold">
+            {failed ? "-" : item.quantity}
+          </span>
 
-          {/* INCREASE */}
           <button
+            disabled={failed}
             onClick={() =>
               dispatch(
                 updateCart({
@@ -840,15 +860,15 @@ function CartItem({ item }) {
                 }),
               )
             }
-            className="p-3 bg-white hover:bg-emerald-50 text-brand-green rounded-xl shadow"
+            className="p-3 bg-white hover:bg-emerald-50 text-brand-green rounded-xl shadow disabled:opacity-40"
           >
             <FiChevronUp />
           </button>
 
-          {/* REMOVE */}
           <button
+            disabled={failed}
             onClick={() => dispatch(deleteCart(item.id))}
-            className="text-xs ps-3 text-red-600 hover:text-red-500 font-medium"
+            className="text-xs ps-3 text-red-600 hover:text-red-500 font-medium disabled:opacity-40"
           >
             Remove
           </button>
@@ -859,7 +879,8 @@ function CartItem({ item }) {
 }
 
 function CartSidebar({ isOpen, onClose }) {
-  const { cartData } = useSelector((state) => state.cart);
+  const { cartData, failedReorderData } = useSelector((state) => state.cart);
+  const failedItems = failedReorderData?.failed_items;
   const items = cartData?.items || [];
   const total = cartData?.total;
   const navigate = useNavigate();
@@ -899,6 +920,11 @@ function CartSidebar({ isOpen, onClose }) {
             {items.map((item) => (
               <CartItem key={item.cartId} item={item} />
             ))}
+            {Array.isArray(failedItems) &&
+              failedItems.length > 0 &&
+              failedItems?.map((item) => (
+                <CartItem key={item.cartId} item={item} failed={true} />
+              ))}
           </div>
 
           {/* ================= FOOTER ================= */}

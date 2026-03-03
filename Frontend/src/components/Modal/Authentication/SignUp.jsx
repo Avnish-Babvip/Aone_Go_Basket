@@ -78,6 +78,7 @@ const SignUpModal = ({ isOpen, onClose, onSwitch }) => {
       >
         {/* Close Button */}
         <button
+          type="button"
           onClick={onClose}
           className="absolute top-5 right-5 text-gray-400 hover:text-black hover:bg-gray-100 p-2 rounded-md transition-all z-20"
         >
@@ -87,9 +88,9 @@ const SignUpModal = ({ isOpen, onClose, onSwitch }) => {
         {/* Left Side: Image - Hidden on mobile, block on md+ screens */}
         <div className="hidden md:block md:w-[55%] relative group">
           <img
-            src="https://images.unsplash.com/photo-1542838132-92c53300491e?q=80&w=1200&auto=format&fit=crop"
-            alt="Signup Background"
-            className="absolute inset-0 w-full h-full object-cover grayscale-[20%]"
+            src="/images/auth-1.webp"
+            alt="Login Background"
+            className="absolute inset-0 w-full h-full object-cover object-[center_10%] transition-transform duration-700 group-hover:scale-105"
           />
         </div>
 
@@ -112,6 +113,7 @@ const SignUpModal = ({ isOpen, onClose, onSwitch }) => {
               <p className=" text-gray-500 font-medium">
                 Already registered?{" "}
                 <button
+                  type="button"
                   onClick={onSwitch}
                   className="text-[#84BC22] font-bold hover:underline cursor-pointer ml-1"
                 >
@@ -316,7 +318,10 @@ const SignUpModal = ({ isOpen, onClose, onSwitch }) => {
                 </div>
               </div>
 
-              <button className="w-full bg-[#84BC22] hover:bg-[#74a51d] text-white h-14 rounded-md font-black text-lg uppercase tracking-wide transition-all shadow-lg active:scale-[0.98] mt-4">
+              <button
+                type="submit"
+                className="w-full bg-[#84BC22] hover:bg-[#74a51d] text-white h-14 rounded-md font-black text-lg uppercase tracking-wide transition-all shadow-lg active:scale-[0.98] mt-4"
+              >
                 {isLoading ? <Spinner /> : "Sign up"}
               </button>
             </div>

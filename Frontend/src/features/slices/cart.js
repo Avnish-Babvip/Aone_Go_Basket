@@ -22,9 +22,11 @@ const formattedDate = new Date().toLocaleString("en-US", {
 const initialState = {
   errorMessage: "",
   cartLoading: false,
+  chargesLoading: false,
   cartData: {
     items: [],
   },
+  failedReorderData: [],
 };
 
 const cartSlice = createSlice({
@@ -36,11 +38,13 @@ const cartSlice = createSlice({
       .addCase(reorderCart.pending, (state, action) => {
         state.errorMessage = "";
         state.cartLoading = true;
+        state.failedReorderData = [];
       })
 
       .addCase(reorderCart.fulfilled, (state, action) => {
         state.errorMessage = "";
         state.cartLoading = false;
+        state.failedReorderData = action.payload.data;
         toast.success("ADDED TO CART", {
           position: "top-right",
           style: {
@@ -56,6 +60,7 @@ const cartSlice = createSlice({
       .addCase(reorderCart.rejected, (state, action) => {
         state.errorMessage = "";
         state.cartLoading = false;
+        state.failedReorderData = [];
         state.errorMessage = action.payload || "Failed";
         toast(action.payload);
       })
@@ -111,6 +116,7 @@ const cartSlice = createSlice({
       })
       .addCase(addToCart.pending, (state, action) => {
         state.errorMessage = "";
+        state.failedReorderData = [];
         state.cartLoading = true;
 
         const { product_id, product_variation_id, quantity } = action.meta.arg;
@@ -130,6 +136,7 @@ const cartSlice = createSlice({
       })
       .addCase(addToCart.fulfilled, (state, action) => {
         state.errorMessage = "";
+        state.failedReorderData = [];
         state.cartLoading = false;
         state.cartData = action.payload.data;
         toast.success("ADDED TO CART.", {
@@ -146,30 +153,31 @@ const cartSlice = createSlice({
       })
       .addCase(addToCart.rejected, (state, action) => {
         state.errorMessage = action.payload || "Failed";
-        state.cartLoading = false;
+        state.chargesLoading = false;
+        state.failedReorderData = [];
         toast(action.payload, {
           description: formattedDate,
         });
       })
       .addCase(updateCartCharges.pending, (state, action) => {
         state.errorMessage = "";
-        state.cartLoading = true;
+        state.chargesLoading = true;
       })
       .addCase(updateCartCharges.fulfilled, (state, action) => {
         state.errorMessage = "";
-        state.cartLoading = false;
+        state.chargesLoading = false;
         state.cartData = action.payload.data;
-        toast.success("SELECTED ADDRESS UPDATED.", {
-          position: "top-right",
-          style: {
-            background: "#79BF28",
-            color: "#fff",
-            borderRadius: "16px",
-            padding: "16px",
-            fontWeight: "600",
-          },
-          duration: 500,
-        });
+        // toast.success("SELECTED ADDRESS UPDATED.", {
+        //   position: "top-right",
+        //   style: {
+        //     background: "#79BF28",
+        //     color: "#fff",
+        //     borderRadius: "16px",
+        //     padding: "16px",
+        //     fontWeight: "600",
+        //   },
+        //   duration: 500,
+        // });
       })
       .addCase(updateCartCharges.rejected, (state, action) => {
         state.errorMessage = action.payload || "Failed";

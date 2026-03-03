@@ -11,7 +11,7 @@ export default function OnlineOrderFailed() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const { paymentData, isLoading } = useSelector((state) => state.order);
+  const { paymentData, orderLoading } = useSelector((state) => state.order);
 
   const formatDate = (dateString) => {
     if (!dateString) return "";
@@ -33,12 +33,8 @@ export default function OnlineOrderFailed() {
 
   /* ================= LOADING ================= */
 
-  if (isLoading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin h-8 w-8 border-2 border-red-500 border-t-transparent rounded-full"></div>
-      </div>
-    );
+  if (orderLoading) {
+    return <OnlineOrderFailedSkeleton />;
   }
 
   if (!paymentData) {
@@ -128,6 +124,37 @@ export default function OnlineOrderFailed() {
           >
             Continue Shopping
           </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function OnlineOrderFailedSkeleton() {
+  return (
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4 py-10">
+      <div className="bg-white shadow-2xl rounded-3xl p-10 max-w-xl w-full animate-pulse">
+        {/* HEADER */}
+        <div className="text-center">
+          <div className="h-12 w-12 bg-gray-200 rounded-full mx-auto mb-4"></div>
+          <div className="h-6 w-40 bg-gray-300 rounded mx-auto"></div>
+          <div className="h-4 w-64 bg-gray-200 rounded mx-auto mt-3"></div>
+          <div className="h-4 w-48 bg-gray-200 rounded mx-auto mt-2"></div>
+        </div>
+
+        {/* ORDER INFO */}
+        <div className="mt-8 space-y-4 border-t border-gray-200 pt-6">
+          {[1, 2, 3, 4, 5].map((i) => (
+            <div key={i} className="flex justify-between">
+              <div className="h-4 w-24 bg-gray-200 rounded"></div>
+              <div className="h-4 w-32 bg-gray-300 rounded"></div>
+            </div>
+          ))}
+        </div>
+
+        {/* BUTTON */}
+        <div className="mt-8">
+          <div className="h-12 w-full bg-gray-300 rounded-xl"></div>
         </div>
       </div>
     </div>

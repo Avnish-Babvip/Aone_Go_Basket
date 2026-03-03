@@ -25,12 +25,14 @@ function Home() {
       <HeroBanner />
       <CategoryCards categoryData={categories} loading={homeLoading} />
       <HomeProduct
+        loading={homeLoading}
         products={latestProducts}
         viewMore={"products?sort=new"}
         heading={"Newly Added Products"}
         subheading={"Discover the latest items freshly stocked for you"}
       />
       <HomeProduct
+        loading={homeLoading}
         products={featuredProducts}
         viewMore={"products?sort=featured"}
         heading={"Featured Products"}

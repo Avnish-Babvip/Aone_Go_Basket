@@ -19,6 +19,67 @@ export const checkout = createAsyncThunk(
   },
 );
 
+export const cancelOrder = createAsyncThunk(
+  "/customer/orders/cancel/2",
+  async ({ id, payload }, { getState, rejectWithValue }) => {
+    try {
+      const loginToken = getState().authentication?.customerData?.token;
+
+      const { data } = await instance.post(
+        `/customer/orders/cancel/${id}`,
+        payload,
+        {
+          headers: {
+            Authorization: `Bearer ${loginToken}`,
+          },
+        },
+      );
+      return data;
+    } catch (error) {
+      return rejectWithValue(error.response.data.message || "Failed");
+    }
+  },
+);
+export const retryPaymentOrder = createAsyncThunk(
+  "orders/retry-payment/",
+  async (id, { getState, rejectWithValue }) => {
+    try {
+      const loginToken = getState().authentication?.customerData?.token;
+
+      const { data } = await instance.post(
+        `/customer/orders/retry-payment/${id}`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${loginToken}`,
+          },
+        },
+      );
+      return data;
+    } catch (error) {
+      return rejectWithValue(error.response.data.message || "Failed");
+    }
+  },
+);
+
+export const downloadInvoice = createAsyncThunk(
+  "orders/invoice",
+  async (id, { getState, rejectWithValue }) => {
+    try {
+      const loginToken = getState().authentication?.customerData?.token;
+
+      const { data } = await instance.get(`/customer/orders/invoice/${id}`, {
+        headers: {
+          Authorization: `Bearer ${loginToken}`,
+        },
+      });
+      return data;
+    } catch (error) {
+      return rejectWithValue(error.response.data.message || "Failed");
+    }
+  },
+);
+
 export const orderHistory = createAsyncThunk(
   "/api/customer/orders",
   async ({ page, status }, { getState, rejectWithValue }) => {

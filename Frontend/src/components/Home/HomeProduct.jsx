@@ -5,13 +5,7 @@ import { FiChevronDown, FiChevronUp, FiTrash } from "react-icons/fi";
 import { addToCart, deleteCart, updateCart } from "../../features/actions/cart";
 import { useNavigate } from "react-router-dom";
 
-const HomeProduct = ({
-  products,
-  isLoading,
-  viewMore,
-  heading,
-  subheading,
-}) => {
+const HomeProduct = ({ products, loading, viewMore, heading, subheading }) => {
   const [selectedProduct, setSelectedProduct] = useState(null);
   const navigate = useNavigate();
   return (
@@ -23,15 +17,18 @@ const HomeProduct = ({
           </h1>
           <p className="font-medium text-gray-500 mt-2">{subheading}</p>
         </div>
-
-        <div className=" grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4  gap-4">
-          {products.map((product) => (
-            <ProductCard
-              key={product.id}
-              product={product}
-              onQuickView={() => setSelectedProduct(product)}
-            />
-          ))}
+        <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4">
+          {loading
+            ? Array.from({ length: 8 }).map((_, index) => (
+                <ProductCardSkeleton key={index} />
+              ))
+            : products.map((product) => (
+                <ProductCard
+                  key={product.id}
+                  product={product}
+                  onQuickView={() => setSelectedProduct(product)}
+                />
+              ))}
         </div>
         <div className="w-full flex justify-center mt-10">
           <button
@@ -289,3 +286,37 @@ const ProductCard = ({ product, onQuickView }) => {
 };
 
 export default HomeProduct;
+
+const ProductCardSkeleton = () => {
+  return (
+    <div className="border border-gray-100 rounded-md p-4 bg-white animate-pulse flex flex-col h-full">
+      {/* Sale badge skeleton */}
+      <div className="w-14 h-4 bg-gray-200 rounded-full mb-2"></div>
+
+      {/* Image */}
+      <div className="h-36 w-full bg-gray-200 rounded-xl mb-4"></div>
+
+      {/* Price */}
+      <div className="flex gap-2 mb-2">
+        <div className="h-4 w-16 bg-gray-300 rounded"></div>
+        <div className="h-4 w-12 bg-gray-200 rounded"></div>
+      </div>
+
+      {/* Title */}
+      <div className="h-3 w-full bg-gray-200 rounded mb-1"></div>
+      <div className="h-3 w-3/4 bg-gray-200 rounded mb-3"></div>
+
+      {/* Variation buttons */}
+      <div className="flex gap-2 mb-3">
+        <div className="h-6 w-14 bg-gray-200 rounded"></div>
+        <div className="h-6 w-12 bg-gray-200 rounded"></div>
+      </div>
+
+      {/* Stock + Button */}
+      <div className="mt-auto flex justify-between items-center">
+        <div className="h-4 w-20 bg-gray-200 rounded"></div>
+        <div className="h-9 w-9 bg-gray-300 rounded-full"></div>
+      </div>
+    </div>
+  );
+};

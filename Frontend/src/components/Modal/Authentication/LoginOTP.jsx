@@ -52,12 +52,17 @@ const LoginOTP = ({ isOpen, onClose, onSwitch }) => {
         className="fixed inset-0 z-[1000] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm transition-all"
         onClick={onClose}
       >
-        <div
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            handleConfirm();
+          }}
           className="bg-white rounded-lg max-w-[1100px] w-full min-h-[500px] md:min-h-[600px] overflow-hidden flex flex-col md:flex-row relative shadow-[0_25px_50px_-12px_rgba(0,0,0,0.5)] animate-in fade-in zoom-in duration-300"
           onClick={(e) => e.stopPropagation()}
         >
           {/* Close Button */}
           <button
+            type="button"
             onClick={onClose}
             className="absolute top-5 right-5 text-gray-400 hover:text-black hover:bg-gray-100 p-2 rounded-md transition-all z-20"
           >
@@ -67,9 +72,9 @@ const LoginOTP = ({ isOpen, onClose, onSwitch }) => {
           {/* Left Side: Image - UPDATED: Added 'hidden md:block' */}
           <div className="hidden md:block md:w-[55%] relative group">
             <img
-              src="https://images.unsplash.com/photo-1542838132-92c53300491e?q=80&w=1200&auto=format&fit=crop"
+              src="/images/auth.webp"
               alt="Login Background"
-              className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+              className="absolute inset-0 w-full h-full object-cover object-[center_20%] transition-transform duration-700 group-hover:scale-105"
             />
             <div className="absolute inset-0 bg-gradient-to-r from-black/20 to-transparent" />
           </div>
@@ -82,7 +87,7 @@ const LoginOTP = ({ isOpen, onClose, onSwitch }) => {
                 <img
                   src="/images/logo.png"
                   alt="Logo"
-                  className="h-24 md:h-32 w-auto inline-block md:block"
+                  className="h-24 w-auto inline-block md:block"
                 />
               </div>
 
@@ -91,6 +96,7 @@ const LoginOTP = ({ isOpen, onClose, onSwitch }) => {
                   Enter the Login OTP
                 </h2>
                 <button
+                  type="button"
                   onClick={onSwitch}
                   className="text-[#84BC22] font-bold hover:underline cursor-pointer ml-1"
                 >
@@ -103,6 +109,7 @@ const LoginOTP = ({ isOpen, onClose, onSwitch }) => {
                   {/* OTP GRID */}
                   <OtpGrid onChange={setOtp} />
                   <button
+                    type="button"
                     onClick={handleResendOtp}
                     className="text-[#84BC22] font-bold  text-sm hover:underline"
                   >
@@ -111,7 +118,7 @@ const LoginOTP = ({ isOpen, onClose, onSwitch }) => {
                 </div>
 
                 <button
-                  onClick={handleConfirm}
+                  type="submit"
                   disabled={otp.length !== 6}
                   className="w-full bg-[#84BC22] hover:bg-[#74a51d] text-white h-16 rounded-md font-black text-lg uppercase tracking-wide transition-all shadow-lg shadow-[#84BC22]/20 active:scale-[0.98]"
                 >
@@ -120,7 +127,7 @@ const LoginOTP = ({ isOpen, onClose, onSwitch }) => {
               </div>
             </div>
           </div>
-        </div>
+        </form>
       </div>
     </>
   );
