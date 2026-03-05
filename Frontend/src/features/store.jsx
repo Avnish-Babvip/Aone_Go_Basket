@@ -11,6 +11,7 @@ import cart from "./slices/cart";
 import customer from "./slices/customer";
 import location from "./slices/location";
 import order from "./slices/order";
+import wishlist from "./slices/wishlist";
 
 // ---------------------------------------------------------
 
@@ -39,6 +40,7 @@ const reducer = combineReducers({
   customer,
   location,
   order,
+  wishlist,
 });
 
 const rootReducer = (state, action) => {

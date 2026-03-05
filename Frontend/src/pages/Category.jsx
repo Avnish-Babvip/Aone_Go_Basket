@@ -40,7 +40,7 @@ export default function Category() {
             <div key={cat.id}>
               {/* ================= PARENT CATEGORY ================= */}
               <div
-                onClick={() => navigate(`/category?category_slug=${cat.slug}`)}
+                onClick={() => navigate(`/products?category_slug=${cat.slug}`)}
                 className="flex items-center gap-6 cursor-pointer group"
               >
                 <div className="w-24 h-24 rounded-full bg-[#F3F6FA] flex items-center justify-center overflow-hidden transition group-hover:shadow-lg">
@@ -68,7 +68,7 @@ export default function Category() {
                       <div
                         key={sub.id}
                         onClick={() =>
-                          navigate(`/category?category_slug=${sub.slug}`)
+                          navigate(`/products?category_slug=${sub.slug}`)
                         }
                         className="group cursor-pointer bg-white rounded-xl p-4 text-center transition hover:shadow-md"
                       >

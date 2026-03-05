@@ -7,6 +7,8 @@ import {
   addToCart,
   updateCartCharges,
   reorderCart,
+  applyCoupon,
+  removeCoupon,
 } from "../actions/cart";
 
 const formattedDate = new Date().toLocaleString("en-US", {
@@ -23,6 +25,7 @@ const initialState = {
   errorMessage: "",
   cartLoading: false,
   chargesLoading: false,
+  couponLoading: false,
   cartData: {
     items: [],
   },
@@ -35,6 +38,60 @@ const cartSlice = createSlice({
   reducers: {},
   extraReducers: (builder) => {
     builder
+      .addCase(applyCoupon.pending, (state, action) => {
+        state.errorMessage = "";
+        state.couponLoading = true;
+      })
+
+      .addCase(applyCoupon.fulfilled, (state, action) => {
+        state.errorMessage = "";
+        state.couponLoading = false;
+        state.cartData = action.payload.data;
+        toast.success("COUPON ADDED.", {
+          position: "top-right",
+          style: {
+            background: "#79BF28",
+            color: "#fff",
+            borderRadius: "16px",
+            padding: "16px",
+            fontWeight: "600",
+          },
+          duration: 500,
+        });
+      })
+
+      .addCase(applyCoupon.rejected, (state, action) => {
+        state.errorMessage = "";
+        state.couponLoading = false;
+        state.errorMessage = action.payload || "Failed";
+      })
+      .addCase(removeCoupon.pending, (state, action) => {
+        state.errorMessage = "";
+        state.couponLoading = true;
+      })
+
+      .addCase(removeCoupon.fulfilled, (state, action) => {
+        state.errorMessage = "";
+        state.couponLoading = false;
+        state.cartData = action.payload.data;
+        toast.success("COUPON REMOVED.", {
+          position: "top-right",
+          style: {
+            background: "#fb2c36",
+            color: "#fff",
+            borderRadius: "16px",
+            padding: "16px",
+            fontWeight: "600",
+          },
+          duration: 500,
+        });
+      })
+
+      .addCase(removeCoupon.rejected, (state, action) => {
+        state.errorMessage = "";
+        state.couponLoading = false;
+        state.errorMessage = action.payload || "Failed";
+      })
       .addCase(reorderCart.pending, (state, action) => {
         state.errorMessage = "";
         state.cartLoading = true;
@@ -66,7 +123,7 @@ const cartSlice = createSlice({
       })
       .addCase(getCartData.pending, (state) => {
         state.errorMessage = "";
-        state.cartLoading = true;
+        state.cartLoading = false;
       })
       .addCase(getCartData.fulfilled, (state, action) => {
         state.errorMessage = "";
@@ -74,11 +131,8 @@ const cartSlice = createSlice({
         state.cartData = action.payload.data;
       })
       .addCase(getCartData.rejected, (state, action) => {
-        state.errorMessage = action.payload || "Failed";
         state.cartLoading = false;
-        // toast(action.payload, {
-        //   description: formattedDate,
-        // });
+        state.errorMessage = action.payload || "Failed";
       })
       .addCase(updateCart.pending, (state, action) => {
         state.errorMessage = "";

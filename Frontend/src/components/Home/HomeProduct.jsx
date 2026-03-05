@@ -1,9 +1,15 @@
 import React, { useState } from "react";
 import QuickViewModal from "../Product/QuickView";
 import { useDispatch, useSelector } from "react-redux";
-import { FiChevronDown, FiChevronUp, FiTrash } from "react-icons/fi";
+import { FiChevronDown, FiChevronUp, FiHeart, FiTrash } from "react-icons/fi";
 import { addToCart, deleteCart, updateCart } from "../../features/actions/cart";
 import { useNavigate } from "react-router-dom";
+import { FaHeart } from "react-icons/fa";
+import {
+  addToWishlist,
+  removeFromWishlist,
+} from "../../features/actions/wishlist";
+import { getHomeData } from "../../features/actions/home";
 
 const HomeProduct = ({ products, loading, viewMore, heading, subheading }) => {
   const [selectedProduct, setSelectedProduct] = useState(null);
@@ -112,9 +118,6 @@ const ProductCard = ({ product, onQuickView }) => {
 
   const showSale = product.is_on_sale && salePrice;
 
-  // useEffect(() => {
-  //   if (isOutOfStock) setQuantity(0);
-  // }, [selectedVariation]);
   return (
     <div className="relative group border border-gray-100 rounded-md p-4 bg-white hover:shadow-md transition-shadow flex flex-col h-full">
       {showSale && (
@@ -122,6 +125,29 @@ const ProductCard = ({ product, onQuickView }) => {
           On Sale
         </span>
       )}
+
+      <button
+        onClick={async () => {
+          try {
+            if (product?.is_wishlist) {
+              await dispatch(removeFromWishlist(product.id)).unwrap();
+            } else {
+              await dispatch(addToWishlist(product.id)).unwrap();
+            }
+
+            dispatch(getHomeData());
+          } catch (err) {
+            console.error(err);
+          }
+        }}
+        className="absolute top-2 right-2 z-10 w-9 h-9 flex items-center justify-center rounded-full bg-white/90 backdrop-blur border border-gray-100 shadow-sm hover:shadow-md transition-all duration-200 hover:scale-110"
+      >
+        {product?.is_wishlist ? (
+          <FaHeart className="text-red-500 text-sm transition-transform duration-200 scale-110" />
+        ) : (
+          <FiHeart className="text-gray-500 hover:text-red-500  transition-colors" />
+        )}
+      </button>
 
       {/* Image Container with Hover Eye Icon */}
       <div className="relative h-36 w-full flex items-center justify-center mb-4 cursor-pointer overflow-hidden">
@@ -211,11 +237,21 @@ const ProductCard = ({ product, onQuickView }) => {
         </div>
       )}
 
-      {/* QUANTITY */}
-      <div className="mt-3 flex justify-between items-center">
-        <p className={`text-sm font-semibold ${getStockColor(stockMessage)}`}>
+      {quantity > 0 && (
+        <p
+          className={`text-xs sm:text-sm pt-2 font-semibold ${getStockColor(stockMessage)}`}
+        >
           {stockMessage}
         </p>
+      )}
+
+      {/* QUANTITY */}
+      <div className="mt-3 flex justify-between items-center">
+        {quantity < 1 && (
+          <p className={`text-sm font-semibold ${getStockColor(stockMessage)}`}>
+            {stockMessage}
+          </p>
+        )}
 
         {quantity === 0 ? (
           <button
@@ -241,7 +277,7 @@ const ProductCard = ({ product, onQuickView }) => {
             +
           </button>
         ) : (
-          <div className="flex items-center  rounded-lg px-1 py-[3px]">
+          <div className="flex w-full items-center justify-between bg-gray-100 rounded-xl p-1 ring-2 ring-brand-green/20">
             {quantity > 1 ? (
               <button
                 onClick={() =>

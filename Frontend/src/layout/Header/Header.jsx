@@ -7,6 +7,7 @@ import {
   FiUser,
   FiChevronUp,
   FiTrash,
+  FiHeart,
 } from "react-icons/fi";
 import { PiUserCircleLight } from "react-icons/pi";
 import { BiSolidShoppingBagAlt } from "react-icons/bi";
@@ -25,6 +26,7 @@ import {
 } from "../../features/actions/cart";
 import ChangePassword from "../../components/Modal/Account/ChangePassword";
 import { getCustomerDetails } from "../../features/actions/customer";
+import { FaHeart } from "react-icons/fa";
 
 /* ================= HEADER ================= */
 
@@ -124,9 +126,9 @@ function Header() {
         />
 
         <BottomNavItem
-          icon={<BiSolidShoppingBagAlt />}
-          badge={cartData?.items?.length}
-          onClick={() => setIsCartOpen(true)}
+          icon={<FiHeart />}
+          // badge={cartData?.items?.length}
+          onClick={() => navigate("/wishlist")}
         />
 
         <BottomNavItem
@@ -220,6 +222,7 @@ function MainNavbar({
   setInput,
   searchRef,
 }) {
+  const navigate = useNavigate();
   const { cartData } = useSelector((state) => state.cart);
   const linkClass = ({ isActive }) =>
     `relative h-20 flex items-center text-sm font-semibold px-1
@@ -285,6 +288,12 @@ function MainNavbar({
             <AccountSection authView={authView} setAuthView={setAuthView} />
           </div>
 
+          <div
+            onClick={() => navigate("/wishlist")}
+            className=" hidden md:block relative cursor-pointer text-gray-700 hover:text-brand-green"
+          >
+            <FiHeart className="text-2xl" />
+          </div>
           <div
             onClick={() => setIsCartOpen(true)}
             className="relative cursor-pointer text-gray-700 hover:text-brand-green"
@@ -364,7 +373,7 @@ function DesktopSubItem({ item, parentSlug = "", isCategory }) {
 
   // ✅ URL LOGIC
   const path = isCategory
-    ? `/category?category_slug=${currentSlug}`
+    ? `/products?category_slug=${currentSlug}`
     : `/${currentSlug}`;
 
   return (
@@ -679,7 +688,7 @@ function MobileSubItem({ item, parentSlug = "", onClose }) {
   const isCategory = !!item.children_recursive;
 
   const path = isCategory
-    ? `/category?category_slug=${parentSlug ? parentSlug + "/" : ""}${
+    ? `/products?category_slug=${parentSlug ? parentSlug + "/" : ""}${
         item.slug
       }`
     : `${item.slug}`;

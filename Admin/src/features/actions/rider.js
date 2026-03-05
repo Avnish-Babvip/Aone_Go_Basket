@@ -3,7 +3,7 @@ import { instance } from "../../services/axiosInterceptor";
 
 export const getAllRiders = createAsyncThunk(
   "admin/riders",
-  async ({ search, status, page ,per_page}, { getState, rejectWithValue }) => {
+  async ({ search, status, page, per_page }, { getState, rejectWithValue }) => {
     try {
       // ✅ Get token directly from store
       const loginToken = getState().authentication?.adminData?.token;
@@ -72,7 +72,10 @@ export const getAllRiderReferrals = createAsyncThunk(
 
 export const getAllRiderKyc = createAsyncThunk(
   "admin/rider-kyc",
-  async ({ search, status, page ,city_id }, { getState, rejectWithValue }) => {
+  async (
+    { search, status, page, city_id, per_page },
+    { getState, rejectWithValue },
+  ) => {
     try {
       // ✅ Get token directly from store
       const loginToken = getState().authentication?.adminData?.token;
@@ -80,7 +83,7 @@ export const getAllRiderKyc = createAsyncThunk(
       const params = new URLSearchParams();
 
       params.append("page", page);
-      params.append("per_page", 1);
+      params.append("per_page", per_page || 10);
 
       if (search) params.append("search", search);
 

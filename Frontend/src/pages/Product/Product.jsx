@@ -5,7 +5,9 @@ import {
   FiChevronDown,
   FiChevronUp,
   FiTrash,
+  FiHeart,
 } from "react-icons/fi";
+import { FaHeart } from "react-icons/fa";
 import { useDispatch, useSelector } from "react-redux";
 import { getAllProducts } from "../../features/actions/product";
 import { useSearchParams } from "react-router-dom";
@@ -14,6 +16,10 @@ import FilterSelect from "../../components/FilterSelect";
 import QuickViewModal from "../../components/Product/QuickView";
 import { getAllCategoriesWithSubCategories } from "../../features/actions/category";
 import { addToCart, deleteCart, updateCart } from "../../features/actions/cart";
+import {
+  addToWishlist,
+  removeFromWishlist,
+} from "../../features/actions/wishlist";
 
 export default function Product() {
   const dispatch = useDispatch();
@@ -45,8 +51,10 @@ export default function Product() {
     if (search) params.search = search;
     if (sort) params.sort = sort;
 
-    if (min_price !== undefined) params.min_price = min_price;
-    if (max_price !== undefined) params.max_price = max_price;
+    if (min_price !== null)
+      params.min_price = min_price || priceData?.min_price;
+    if (max_price !== null)
+      params.max_price = max_price || priceData?.max_price;
 
     if (category_slug?.length) params.category_slug = category_slug.join(",");
 
@@ -54,8 +62,8 @@ export default function Product() {
   };
 
   const [filters, setFilters] = useState({
-    minPrice: priceData?.min_price,
-    maxPrice: priceData?.max_price,
+    minPrice: priceData?.min_price || null,
+    maxPrice: priceData?.max_price || null,
   });
 
   const getSlugById = (id) => {
@@ -157,6 +165,12 @@ export default function Product() {
           <ProductList
             products={data}
             onQuickView={setSelectedProduct}
+            page={page}
+            searchQuery={searchQuery}
+            sort={sort}
+            min_price={min_price}
+            max_price={max_price}
+            category_slug={category_slug}
             clearFilters={() => {
               setFilters({
                 minPrice: priceData?.min_price,
@@ -195,13 +209,23 @@ export default function Product() {
 }
 
 // --- 2. PRODUCT LIST COMPONENT ---
-function ProductList({ products, onQuickView, clearFilters }) {
+function ProductList({
+  products,
+  onQuickView,
+  clearFilters,
+  page,
+  searchQuery,
+  sort,
+  min_price,
+  max_price,
+  category_slug,
+}) {
   const { productLoading } = useSelector((state) => state.product);
 
   if (productLoading) {
     return (
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-2 xl:grid-cols-3 gap-4 md:gap-8">
-        {Array.from({ length: 8 }).map((_, index) => (
+        {Array.from({ length: 6 }).map((_, index) => (
           <ProductCardSkeleton key={index} />
         ))}
       </div>
@@ -241,12 +265,17 @@ function ProductList({ products, onQuickView, clearFilters }) {
 
   return (
     <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-2 xl:grid-cols-3 gap-4 md:gap-8">
-      {products.map((product, index) => (
+      {products.map((product) => (
         <ProductCard
           key={product.id}
           product={product}
           onQuickView={onQuickView}
-          index={index}
+          page={page}
+          searchQuery={searchQuery}
+          sort={sort}
+          min_price={min_price}
+          max_price={max_price}
+          category_slug={category_slug}
         />
       ))}
     </div>
@@ -281,8 +310,9 @@ function ProductCardSkeleton() {
       </div>
 
       {/* Button Skeleton */}
-      <div className="mt-4">
+      <div className="mt-4 flex gap-2">
         <div className="h-10 w-full bg-gray-300 rounded-xl"></div>
+        <div className="h-10 w-1/6 bg-gray-300 rounded-xl"></div>
       </div>
     </div>
   );
@@ -501,7 +531,16 @@ function FilterSidebar({ onFilterChange, currentFilters, category }) {
   );
 }
 
-function ProductCard({ product, onQuickView }) {
+function ProductCard({
+  product,
+  onQuickView,
+  page,
+  searchQuery,
+  sort,
+  min_price,
+  max_price,
+  category_slug,
+}) {
   const dispatch = useDispatch();
   const { cartData } = useSelector((state) => state.cart);
   const items = cartData?.items || [];
@@ -562,33 +601,22 @@ function ProductCard({ product, onQuickView }) {
 
   const isOutOfStock = stockMessage?.toLowerCase().includes("out");
 
-  // useEffect(() => {
-  //   if (isOutOfStock) setQuantity(0);
-  // }, [selectedVariation]);
-
   return (
-    <div className="group bg-white rounded-3xl p-4 border border-gray-100 hover:shadow-2xl transition-all duration-500 relative flex flex-col h-full">
+    <div className="group bg-white rounded-3xl p-2 sm:p-4 border border-gray-100 hover:shadow-2xl transition-all duration-500 relative flex flex-col h-full">
       <div className="relative aspect-square mb-4 bg-gray-50 rounded-2xl overflow-hidden">
-        {/* 🏷️ Badges */}
-        <div className="absolute top-3 left-3 right-3 z-10 flex flex-row justify-between items-start">
-          {/* If product.isNew is false, this side will be empty */}
-          <div>
-            {product.is_new && (
-              <span className="bg-brand-green text-white text-[10px] font-black px-2 py-1 rounded-lg uppercase shadow-md">
-                New
-              </span>
-            )}
-          </div>
+        {/* Sale */}
+        {product.is_on_sale && (
+          <span className="absolute top-1 sm:top-2 md:top-3 right-1 bg-red-500 text-white text-[9px] sm:text-[10px] font-black px-2 py-0.5 sm:py-1 rounded-lg uppercase shadow-md z-10">
+            Sale
+          </span>
+        )}
 
-          {/* This side stays on the right */}
-          <div>
-            {product.is_on_sale && (
-              <span className="bg-red-500 text-white text-[10px] font-black px-2 py-1 rounded-lg uppercase shadow-md">
-                Sale
-              </span>
-            )}
-          </div>
-        </div>
+        {/* New */}
+        {product.is_new && (
+          <span className="absolute bottom-0 sm:bottom-1 md:bottom-3 left-1 bg-brand-green text-white text-[10px] font-black px-2 py-0.5 sm:py-1 rounded-lg uppercase shadow-md z-10">
+            New
+          </span>
+        )}
         <img
           src={`${import.meta.env.VITE_REACT_APP_IMAGE_URL}/${primaryImage?.image}`}
           className="max-h-full object-contain rounded-xl transform group-hover:scale-105 transition-transform"
@@ -682,30 +710,65 @@ function ProductCard({ product, onQuickView }) {
       </div>
 
       {/* 🛒 Action Area */}
-      {/* 🛒 Action Area */}
       <div className="mt-auto pt-2">
         {quantity === 0 ? (
-          <button
-            disabled={isOutOfStock}
-            onClick={() =>
-              !isOutOfStock &&
-              dispatch(
-                addToCart({
-                  product_id: product.id,
-                  product_variation_id: variationId || null,
-                  quantity: 1,
-                }),
-              )
-            }
-            className={`w-full py-3 rounded-xl font-bold text-xs flex items-center justify-center gap-2
+          <div className="flex gap-2">
+            {/* Add To Cart */}
+            <button
+              disabled={isOutOfStock}
+              onClick={() =>
+                !isOutOfStock &&
+                dispatch(
+                  addToCart({
+                    product_id: product.id,
+                    product_variation_id: variationId || null,
+                    quantity: 1,
+                  }),
+                )
+              }
+              className={`flex-1 py-3 rounded-xl font-bold text-xs flex items-center justify-center gap-2
         ${
           isOutOfStock
             ? "bg-gray-300 text-gray-500 cursor-not-allowed"
             : "bg-gray-900 hover:bg-brand-green text-white"
         }`}
-          >
-            <FiShoppingCart className="text-lg" /> Add to Cart
-          </button>
+            >
+              <FiShoppingCart className="hidden sm:block text-lg" /> Add to Cart
+            </button>
+
+            {/* Wishlist */}
+            <button
+              onClick={async () => {
+                try {
+                  if (product?.is_wishlist) {
+                    await dispatch(removeFromWishlist(product.id)).unwrap();
+                  } else {
+                    await dispatch(addToWishlist(product.id)).unwrap();
+                  }
+
+                  dispatch(
+                    getAllProducts({
+                      page,
+                      search: searchQuery,
+                      sort,
+                      min_price,
+                      max_price,
+                      category_slug,
+                    }),
+                  );
+                } catch (err) {
+                  console.error(err);
+                }
+              }}
+              className="p-3 bg-white border border-gray-200 rounded-xl shadow-sm hover:bg-red-50 transition"
+            >
+              {product?.is_wishlist ? (
+                <FaHeart className="text-red-500 text-lg" />
+              ) : (
+                <FiHeart className="text-gray-600 hover:text-red-500 text-lg" />
+              )}
+            </button>
+          </div>
         ) : (
           <div className="flex items-center justify-between bg-gray-100 rounded-xl p-1 ring-2 ring-brand-green/20">
             {quantity > 1 ? (

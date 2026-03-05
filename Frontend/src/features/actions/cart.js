@@ -56,6 +56,45 @@ export const addToCart = createAsyncThunk(
     }
   },
 );
+export const applyCoupon = createAsyncThunk(
+  "/api/customer/apply-coupon",
+  async (payload, { getState, rejectWithValue }) => {
+    try {
+      const loginToken = getState().authentication?.customerData?.token;
+
+      const { data } = await instance.post(
+        "/customer/cart/apply-coupon",
+        payload,
+        {
+          headers: {
+            Authorization: `Bearer ${loginToken}`,
+          },
+        },
+      );
+      return data;
+    } catch (error) {
+      return rejectWithValue(error.response.data.message || "Failed");
+    }
+  },
+);
+
+export const removeCoupon = createAsyncThunk(
+  "/api/customer/remove-coupon",
+  async (_, { getState, rejectWithValue }) => {
+    try {
+      const loginToken = getState().authentication?.customerData?.token;
+
+      const { data } = await instance.delete("/customer/cart/remove-coupon", {
+        headers: {
+          Authorization: `Bearer ${loginToken}`,
+        },
+      });
+      return data;
+    } catch (error) {
+      return rejectWithValue(error.response.data.message || "Failed");
+    }
+  },
+);
 
 export const updateCart = createAsyncThunk(
   "/api/customer/cart/update",

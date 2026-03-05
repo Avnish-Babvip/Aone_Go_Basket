@@ -11,7 +11,12 @@ import {
 } from "../../features/actions/customer";
 import { getCountries } from "../../features/actions/location";
 import UpdateAddressModal from "../../components/Modal/Address/UpdateAddress";
-import { getCartData, updateCartCharges } from "../../features/actions/cart";
+import {
+  applyCoupon,
+  getCartData,
+  removeCoupon,
+  updateCartCharges,
+} from "../../features/actions/cart";
 import { checkout } from "../../features/actions/order";
 import { useNavigate } from "react-router-dom";
 import { Spinner } from "../../components/Loader/Spinner";
@@ -22,8 +27,11 @@ export default function Checkout() {
   const [paymentMethod, setPaymentMethod] = useState("cod");
   const [isAddressModalOpen, setIsAddressModalOpen] = useState(false);
   const [editAddressData, setEditAddressData] = useState(null);
+  const [couponCode, setCouponCode] = useState("");
 
-  const { cartData, chargesLoading } = useSelector((state) => state.cart);
+  const { cartData, chargesLoading, cartLoading, couponLoading } = useSelector(
+    (state) => state.cart,
+  );
   const { addressData } = useSelector((state) => state.customer);
   const { errorMessage, orderLoading } = useSelector((state) => state.order);
 
@@ -66,6 +74,15 @@ export default function Checkout() {
     }
   };
 
+  const handleApplyCoupon = () => {
+    if (!couponCode) return;
+    dispatch(applyCoupon({ code: couponCode }));
+  };
+
+  const handleRemoveCoupon = () => {
+    dispatch(removeCoupon());
+    setCouponCode("");
+  };
   /* ================= PLACE ORDER ================= */
 
   const handlePlaceOrder = async () => {
@@ -415,6 +432,57 @@ export default function Checkout() {
                   <span>₹{formatAmount(charge.amount)}</span>
                 </div>
               ))}
+
+              {/* ================= COUPON ================= */}
+              <div className="mt-5 border-t border-gray-200 pt-5">
+                <h3 className="text-sm font-semibold mb-3">Apply Coupon</h3>
+
+                {!cartData?.coupon ? (
+                  <div className="flex gap-2">
+                    <input
+                      type="text"
+                      placeholder="Enter coupon code"
+                      value={couponCode}
+                      onChange={(e) =>
+                        setCouponCode(e.target.value.toUpperCase())
+                      }
+                      className="flex-1 border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-brand-green"
+                    />
+
+                    <button
+                      onClick={handleApplyCoupon}
+                      disabled={!couponCode || couponLoading}
+                      className={`px-4 py-2 rounded-xl text-sm font-semibold text-white transition ${
+                        couponCode
+                          ? "bg-brand-green hover:bg-emerald-600"
+                          : "bg-gray-300 cursor-not-allowed"
+                      }`}
+                    >
+                      {couponLoading ? "Applying..." : "Apply"}
+                    </button>
+                  </div>
+                ) : (
+                  <div className="flex justify-between items-center bg-emerald-50 border border-emerald-100 rounded-xl px-3 py-2">
+                    <div className="text-sm">
+                      <p className="font-semibold text-brand-green">
+                        Coupon Applied: {cartData?.coupon.code}
+                      </p>
+
+                      <p className="text-xs text-gray-600">
+                        Discount: ₹
+                        {formatAmount(cartData?.coupon.discount_amount)}
+                      </p>
+                    </div>
+
+                    <button
+                      onClick={handleRemoveCoupon}
+                      className="text-xs font-semibold text-red-500"
+                    >
+                      Remove
+                    </button>
+                  </div>
+                )}
+              </div>
 
               {/* TOTAL */}
               <div className="flex justify-between text-lg font-black pt-4 border-t  border-gray-200">
