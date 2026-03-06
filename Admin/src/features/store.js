@@ -16,6 +16,9 @@ import rider from "./slices/rider";
 import order from "./slices/order";
 import location from "./slices/location";
 import commission from "./slices/commission";
+import coupon from "./slices/coupon";
+import offer from "./slices/offer";
+import tax from "./slices/tax";
 import rider_order from "./slices/rider/order";
 import rider_user from "./slices/rider/user";
 import rider_wallet from "./slices/rider/wallet";
@@ -34,6 +37,9 @@ const rootReducer = combineReducers({
   order,
   location,
   commission,
+  coupon,
+  offer,
+  tax,
   rider_order,
   rider_user,
   rider_wallet,

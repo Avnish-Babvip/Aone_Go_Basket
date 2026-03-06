@@ -1,13 +1,6 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import { instance } from "../../services/axiosInterceptor";
 
-// const getCsrfToken = async () => {
-//   const response = await instance.get("/site/csrf-token", {
-//     headers: headers,
-//   });
-//   return response.data.csrf_token;
-// };
-
 //LOGIN
 
 export const adminLogin = createAsyncThunk(
@@ -91,29 +84,62 @@ export const adminLogout = createAsyncThunk(
   },
 );
 
-
 export const updateAdminProfile = createAsyncThunk(
   "admin/profile",
-  async (payload, { getState,rejectWithValue }) => {
+  async (payload, { getState, rejectWithValue }) => {
     try {
-       // ✅ Get token directly from store
+      // ✅ Get token directly from store
       const loginToken = getState().authentication?.adminData?.token;
 
-      const { data } = await instance.put(
-        `/admin/profile`,
-        payload,
-        {
-          headers: {
-            "Content-type": "application/json",
-            Authorization: `Bearer ${loginToken}`,
-          },
+      const { data } = await instance.put(`/admin/profile`, payload, {
+        headers: {
+          "Content-type": "application/json",
+          Authorization: `Bearer ${loginToken}`,
         },
-      );
+      });
       return data;
     } catch (error) {
-      return rejectWithValue(
-        error.response.data.message || "Failed to logout admin",
-      );
+      return rejectWithValue(error.response.data.message || "Failed ");
+    }
+  },
+);
+
+export const updateCompanyInfo = createAsyncThunk(
+  "admin/company-info/update",
+  async (payload, { getState, rejectWithValue }) => {
+    try {
+      // ✅ Get token directly from store
+      const loginToken = getState().authentication?.adminData?.token;
+
+      const { data } = await instance.post(`/admin/company-info`, payload, {
+        headers: {
+          "Content-type": "application/json",
+          Authorization: `Bearer ${loginToken}`,
+        },
+      });
+      return data;
+    } catch (error) {
+      return rejectWithValue(error.response.data.message || "Failed ");
+    }
+  },
+);
+
+export const getCompanyInfo = createAsyncThunk(
+  "admin/company-info",
+  async (_, { getState, rejectWithValue }) => {
+    try {
+      // ✅ Get token directly from store
+      const loginToken = getState().authentication?.adminData?.token;
+
+      const { data } = await instance.get(`/admin/company-info`, {
+        headers: {
+          "Content-type": "application/json",
+          Authorization: `Bearer ${loginToken}`,
+        },
+      });
+      return data;
+    } catch (error) {
+      return rejectWithValue(error.response.data.message || "Failed ");
     }
   },
 );

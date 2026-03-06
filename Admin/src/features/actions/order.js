@@ -48,7 +48,7 @@ export const getAllOrders = createAsyncThunk(
 export const getAllAssignOrders = createAsyncThunk(
   "/admin/order-assignments",
   async (
-    { search,filter, status, page, from_date, to_date },
+    { search, filter, status, page, from_date, to_date },
     { getState, rejectWithValue },
   ) => {
     try {
@@ -72,7 +72,7 @@ export const getAllAssignOrders = createAsyncThunk(
       if (from_date !== "" && from_date !== undefined) {
         params.append("from_date", from_date);
       }
-            if (to_date !== "" && to_date !== undefined) {
+      if (to_date !== "" && to_date !== undefined) {
         params.append("to_date", to_date);
       }
 
@@ -95,7 +95,7 @@ export const getAllAssignOrders = createAsyncThunk(
 export const getAllNotAssignOrders = createAsyncThunk(
   "admin/not-assigned-orders",
   async (
-    { search,filter, status, page, from_date, to_date },
+    { search, filter, status, page, from_date, to_date },
     { getState, rejectWithValue },
   ) => {
     try {
@@ -119,7 +119,7 @@ export const getAllNotAssignOrders = createAsyncThunk(
       if (from_date !== "" && from_date !== undefined) {
         params.append("from_date", from_date);
       }
-            if (to_date !== "" && to_date !== undefined) {
+      if (to_date !== "" && to_date !== undefined) {
         params.append("to_date", to_date);
       }
 
@@ -145,16 +145,12 @@ export const assignOrder = createAsyncThunk(
     try {
       // ✅ Get token directly from store
       const loginToken = getState().authentication?.adminData?.token;
-      const { data } = await instance.post(
-        `/admin/assign-rider`,
-        payload,
-        {
-          headers: {
-            "Content-type": "application/json",
-            Authorization: `Bearer ${loginToken}`,
-          },
+      const { data } = await instance.post(`/admin/assign-rider`, payload, {
+        headers: {
+          "Content-type": "application/json",
+          Authorization: `Bearer ${loginToken}`,
         },
-      );
+      });
       return data;
     } catch (error) {
       return rejectWithValue(error.response.data.message || "Failed ");
@@ -164,12 +160,10 @@ export const assignOrder = createAsyncThunk(
 
 export const getSingleOrder = createAsyncThunk(
   "admin/order/single",
-  async (id,{ getState, rejectWithValue },
-  ) => {
+  async (id, { getState, rejectWithValue }) => {
     try {
       // ✅ Get token directly from store
       const loginToken = getState().authentication?.adminData?.token;
-
 
       const { data } = await instance.get(`/admin/orders/${id}`, {
         headers: {
@@ -201,6 +195,47 @@ export const editOrderStatus = createAsyncThunk(
           },
         },
       );
+      return data;
+    } catch (error) {
+      return rejectWithValue(error.response.data.message || "Failed ");
+    }
+  },
+);
+
+export const getOrderSettings = createAsyncThunk(
+  "admin/settings",
+  async (_, { getState, rejectWithValue }) => {
+    try {
+      // ✅ Get token directly from store
+      const loginToken = getState().authentication?.adminData?.token;
+
+      const { data } = await instance.get(`/admin/settings`, {
+        headers: {
+          "Content-type": "application/json",
+          Authorization: `Bearer ${loginToken}`,
+        },
+      });
+
+      return data;
+    } catch (error) {
+      return rejectWithValue(error.response.data.message || "Failed ");
+    }
+  },
+);
+export const updateOrderSettings = createAsyncThunk(
+  "admin/settings/update",
+  async (payload, { getState, rejectWithValue }) => {
+    try {
+      // ✅ Get token directly from store
+      const loginToken = getState().authentication?.adminData?.token;
+
+      const { data } = await instance.post(`/admin/settings/update`, payload, {
+        headers: {
+          "Content-type": "application/json",
+          Authorization: `Bearer ${loginToken}`,
+        },
+      });
+
       return data;
     } catch (error) {
       return rejectWithValue(error.response.data.message || "Failed ");

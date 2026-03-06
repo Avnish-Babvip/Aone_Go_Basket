@@ -56,3 +56,50 @@ export const getCities = createAsyncThunk(
   },
 );
 
+export const addCity = createAsyncThunk(
+  "/admin/locations/city",
+  async (payload, { getState, rejectWithValue }) => {
+    try {
+      const loginToken = getState().authentication?.adminData?.token;
+
+      const { data } = await instance.post(`/admin/locations/city`, payload, {
+        headers: {
+          "Content-type": "application/json",
+          Authorization: `Bearer ${loginToken}`,
+        },
+      });
+
+      return data;
+    } catch (error) {
+      return rejectWithValue(
+        error.response?.data || { message: "Something went wrong" },
+      );
+    }
+  },
+);
+
+export const updateCity = createAsyncThunk(
+  "/admin/locations/city/update",
+  async ({ payload, id }, { getState, rejectWithValue }) => {
+    try {
+      const loginToken = getState().authentication?.adminData?.token;
+
+      const { data } = await instance.put(
+        `/admin/locations/city/${id}`,
+        payload,
+        {
+          headers: {
+            "Content-type": "application/json",
+            Authorization: `Bearer ${loginToken}`,
+          },
+        },
+      );
+
+      return data;
+    } catch (error) {
+      return rejectWithValue(
+        error.response?.data || { message: "Something went wrong" },
+      );
+    }
+  },
+);

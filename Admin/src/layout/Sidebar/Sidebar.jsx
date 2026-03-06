@@ -198,18 +198,66 @@ const Sidebar = ({ closeSidebar }) => {
       ],
     },
     {
+      label: "Coupon Code",
+      icon: TbSettingsFilled,
+      children: [
+        {
+          name: "All Coupon Code",
+          url: "/admin/coupon",
+        },
+        {
+          name: "Add Coupon Code",
+          url: "/admin/coupon",
+          state: { openModal: true },
+        },
+      ],
+    },
+    {
+      label: "Offer",
+      icon: TbSettingsFilled,
+      children: [
+        {
+          name: "All Offers",
+          url: "/admin/offer",
+        },
+        {
+          name: "Add Offer",
+          url: "/admin/offer",
+          state: { openModal: true },
+        },
+      ],
+    },
+    {
+      label: "Taxes",
+      icon: TbSettingsFilled,
+      children: [
+        {
+          name: "All Taxes",
+          url: "/admin/tax",
+        },
+        {
+          name: "Add Tax",
+          url: "/admin/tax",
+          state: { openModal: true },
+        },
+      ],
+    },
+    {
       label: "Settings",
       icon: TbSettingsFilled,
       children: [
         {
-          name: "Location",
-          url: "/admin/location",
+          name: "Order Settings",
+          url: "/admin/settings/order-settings",
         },
-        // {
-        //   name: "Add Category",
-        //   url: "/admin/category",
-        //   state: { openModal: true },
-        // },
+        {
+          name: "Location",
+          url: "/admin/settings/location",
+        },
+        {
+          name: "Company Info",
+          url: "/admin/settings/company-info",
+        },
       ],
     },
   ];

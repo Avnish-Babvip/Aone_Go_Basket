@@ -65,6 +65,14 @@ export const Header = ({ setSidebarOpen }) => {
       title: "Unassigned Order List",
       placeholder: "Search customer or order number ",
     },
+    "/admin/coupon": {
+      title: "Coupon List",
+      placeholder: "Search coupon code",
+    },
+    "/admin/offer": {
+      title: "Offer List",
+      placeholder: "Search offer name",
+    },
     "/admin/settings": {
       title: "Settings",
     },

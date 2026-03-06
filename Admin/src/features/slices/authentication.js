@@ -4,8 +4,10 @@ import {
   adminLogin,
   adminLogout,
   forgotPassword,
+  getCompanyInfo,
   resetForgotPassword,
   updateAdminProfile,
+  updateCompanyInfo,
   verifyAdmin,
 } from "../actions/authentication";
 
@@ -21,9 +23,11 @@ const formattedDate = new Date().toLocaleString("en-US", {
 
 const initialState = {
   isLoading: false,
+  isCompanyLoading: false,
   isCredentials: false,
   isAdminLoggedIn: false,
   adminData: {},
+  companyData: {},
   errorMessage: "",
   isPasswordChanged: false,
   loginCredentials: {
@@ -161,11 +165,43 @@ const authSlice = createSlice({
       })
       .addCase(updateAdminProfile.fulfilled, (state, action) => {
         state.errorMessage = "";
+        state.adminData = action.payload.data;
         toast("Profile updated successfully.", {
           description: formattedDate,
         });
       })
       .addCase(updateAdminProfile.rejected, (state, action) => {
+        state.errorMessage = action.payload || "Failed";
+        toast(action.payload, {
+          description: formattedDate,
+        });
+      })
+      .addCase(updateCompanyInfo.pending, (state) => {
+        state.isCompanyLoading = true;
+        state.errorMessage = "";
+      })
+      .addCase(updateCompanyInfo.fulfilled, (state, action) => {
+        state.isCompanyLoading = false;
+        state.errorMessage = "";
+        toast("Company updated successfully.", {
+          description: formattedDate,
+        });
+      })
+      .addCase(updateCompanyInfo.rejected, (state, action) => {
+        state.isCompanyLoading = false;
+        state.errorMessage = action.payload || "Failed";
+        toast(action.payload, {
+          description: formattedDate,
+        });
+      })
+      .addCase(getCompanyInfo.pending, (state) => {
+        state.errorMessage = "";
+      })
+      .addCase(getCompanyInfo.fulfilled, (state, action) => {
+        state.errorMessage = "";
+        state.companyData = action.payload.data;
+      })
+      .addCase(getCompanyInfo.rejected, (state, action) => {
         state.errorMessage = action.payload || "Failed";
         toast(action.payload, {
           description: formattedDate,

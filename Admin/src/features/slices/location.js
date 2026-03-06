@@ -1,9 +1,11 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { toast } from "sonner";
 import {
+  addCity,
   getCities,
   getCountries,
   getStates,
+  updateCity,
 } from "../actions/location";
 
 const formattedDate = new Date().toLocaleString("en-US", {
@@ -19,6 +21,7 @@ const formattedDate = new Date().toLocaleString("en-US", {
 const initialState = {
   errorMessage: "",
   locationLoading: false,
+  cityLoading: false,
   countryData: [],
   stateData: [],
   cityData: [],
@@ -65,21 +68,92 @@ const locationSlice = createSlice({
       })
       .addCase(getCities.pending, (state) => {
         state.errorMessage = "";
-        state.locationLoading = true;
+        state.cityLoading = true;
       })
       .addCase(getCities.fulfilled, (state, action) => {
         state.errorMessage = "";
-        state.locationLoading = false;
+        state.cityLoading = false;
         state.cityData = action.payload.data;
       })
       .addCase(getCities.rejected, (state, action) => {
         state.errorMessage = action.payload || "Failed";
-        state.locationLoading = false;
+        state.cityLoading = false;
         toast(action.payload, {
           description: formattedDate,
         });
       })
+      .addCase(addCity.pending, (state) => {
+        state.errorMessage = "";
+        state.locationLoading = true;
+      })
+      .addCase(addCity.fulfilled, (state, action) => {
+        state.errorMessage = "";
+        state.locationLoading = false;
+        toast("City added successfully.", {
+          description: formattedDate,
+        });
+      })
+      .addCase(addCity.rejected, (state, action) => {
+        state.locationLoading = false;
+        const payload = action.payload;
 
+        // ✅ Validation errors from backend
+        if (payload?.data?.errors) {
+          Object.values(payload.data.errors).forEach((messages) => {
+            messages.forEach((msg) => {
+              toast.error(msg, {
+                description: formattedDate,
+              });
+            });
+          });
+
+          state.errorMessage = payload.message || "Validation error";
+        } else {
+          // ✅ Fallback error
+          const message = payload?.message || payload || "Failed";
+          state.errorMessage = message;
+
+          toast.error(message, {
+            description: formattedDate,
+          });
+        }
+      })
+      .addCase(updateCity.pending, (state) => {
+        state.errorMessage = "";
+        state.locationLoading = true;
+      })
+      .addCase(updateCity.fulfilled, (state, action) => {
+        state.errorMessage = "";
+        state.locationLoading = false;
+        toast("City updated successfully.", {
+          description: formattedDate,
+        });
+      })
+      .addCase(updateCity.rejected, (state, action) => {
+        state.locationLoading = false;
+        const payload = action.payload;
+
+        // ✅ Validation errors from backend
+        if (payload?.data?.errors) {
+          Object.values(payload.data.errors).forEach((messages) => {
+            messages.forEach((msg) => {
+              toast.error(msg, {
+                description: formattedDate,
+              });
+            });
+          });
+
+          state.errorMessage = payload.message || "Validation error";
+        } else {
+          // ✅ Fallback error
+          const message = payload?.message || payload || "Failed";
+          state.errorMessage = message;
+
+          toast.error(message, {
+            description: formattedDate,
+          });
+        }
+      });
   },
 });
 

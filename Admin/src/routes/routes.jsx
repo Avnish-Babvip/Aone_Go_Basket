@@ -38,6 +38,12 @@ import RiderReferralCode from "../pages/RiderDashboard/RiderReferralCode";
 import RiderCommission from "../pages/RiderDashboard/RiderCommission";
 import RiderReferralHistory from "../pages/RiderDashboard/RiderReferralHistory";
 import Commission from "../pages/Commission/Commission";
+import Coupon from "../pages/Coupon/Coupon";
+import Offer from "../pages/Offer/Offer";
+import State from "../pages/Location/State/State";
+import Company from "../pages/Company/Company";
+import Tax from "../pages/Tax/Tax";
+import Setting from "../pages/Setting/Setting";
 
 export const appRouter = createBrowserRouter([
   /* ---------------- PUBLIC ROUTES ---------------- */
@@ -83,7 +89,12 @@ export const appRouter = createBrowserRouter([
           { path: "rider/referral", element: <RiderReferral /> },
           { path: "rider/kyc", element: <RiderKyc /> },
           { path: "rider/commission", element: <Commission /> },
-          { path: "location", element: <Commission /> },
+          { path: "coupon", element: <Coupon /> },
+          { path: "offer", element: <Offer /> },
+          { path: "tax", element: <Tax /> },
+          { path: "settings/location", element: <State /> },
+          { path: "settings/company-info", element: <Company /> },
+          { path: "settings/order-settings", element: <Setting /> },
         ],
       },
     ],

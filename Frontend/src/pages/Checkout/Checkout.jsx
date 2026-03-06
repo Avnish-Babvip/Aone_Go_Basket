@@ -32,11 +32,15 @@ export default function Checkout() {
   const { cartData, chargesLoading, cartLoading, couponLoading } = useSelector(
     (state) => state.cart,
   );
+
   const { addressData } = useSelector((state) => state.customer);
   const { errorMessage, orderLoading } = useSelector((state) => state.order);
 
   const items = cartData?.items || [];
   const chargeBreakup = cartData?.charge_breakup || [];
+  const couponCharge = chargeBreakup?.find(
+    (charge) => charge.code && charge.coupon_details,
+  );
   const estimatedDelivery = cartData?.estimated_delivery;
 
   const formatAmount = (amount) => Number(parseFloat(amount).toFixed(2));
@@ -426,18 +430,30 @@ export default function Checkout() {
               </div>
 
               {/* ================= CHARGE BREAKUP ================= */}
-              {chargeBreakup.map((charge, index) => (
-                <div key={index} className="flex justify-between text-gray-600">
-                  <span>{charge.name}</span>
-                  <span>₹{formatAmount(charge.amount)}</span>
-                </div>
-              ))}
+              {chargeBreakup.map((charge, index) => {
+                const isDiscount = charge.type === "discount";
+
+                return (
+                  <div
+                    key={index}
+                    className={`flex justify-between ${
+                      isDiscount ? "text-red-500 font-medium" : "text-gray-600"
+                    }`}
+                  >
+                    <span>{charge.name}</span>
+
+                    <span>
+                      {isDiscount ? "-" : ""}₹{formatAmount(charge.amount)}
+                    </span>
+                  </div>
+                );
+              })}
 
               {/* ================= COUPON ================= */}
               <div className="mt-5 border-t border-gray-200 pt-5">
                 <h3 className="text-sm font-semibold mb-3">Apply Coupon</h3>
 
-                {!cartData?.coupon ? (
+                {!couponCharge ? (
                   <div className="flex gap-2">
                     <input
                       type="text"
@@ -462,24 +478,56 @@ export default function Checkout() {
                     </button>
                   </div>
                 ) : (
-                  <div className="flex justify-between items-center bg-emerald-50 border border-emerald-100 rounded-xl px-3 py-2">
-                    <div className="text-sm">
-                      <p className="font-semibold text-brand-green">
-                        Coupon Applied: {cartData?.coupon.code}
-                      </p>
+                  <div className="bg-emerald-50 border border-emerald-100 rounded-xl px-4 py-3 space-y-2">
+                    <div className="flex justify-between items-start">
+                      <div>
+                        <p className="text-sm font-semibold text-brand-green">
+                          Coupon Applied: {couponCharge.code}
+                        </p>
 
-                      <p className="text-xs text-gray-600">
-                        Discount: ₹
-                        {formatAmount(cartData?.coupon.discount_amount)}
-                      </p>
+                        <p className="text-xs text-gray-600">
+                          You saved ₹{formatAmount(couponCharge.amount)}
+                        </p>
+                      </div>
+
+                      <button
+                        onClick={handleRemoveCoupon}
+                        className="text-xs font-semibold text-red-500 hover:underline"
+                      >
+                        Remove
+                      </button>
                     </div>
 
-                    <button
-                      onClick={handleRemoveCoupon}
-                      className="text-xs font-semibold text-red-500"
-                    >
-                      Remove
-                    </button>
+                    {/* Coupon Details */}
+                    <div className="text-xs text-gray-600 space-y-1">
+                      <p>
+                        Discount:{" "}
+                        {couponCharge.coupon_details.discount_type ===
+                        "percentage"
+                          ? `${couponCharge.coupon_details.discount_value}%`
+                          : `₹${formatAmount(
+                              couponCharge.coupon_details.discount_value,
+                            )}`}
+                      </p>
+
+                      {couponCharge.coupon_details.max_discount && (
+                        <p>
+                          Max Discount: ₹
+                          {formatAmount(
+                            couponCharge.coupon_details.max_discount,
+                          )}
+                        </p>
+                      )}
+
+                      {couponCharge.coupon_details.min_cart_value && (
+                        <p>
+                          Min Cart Value: ₹
+                          {formatAmount(
+                            couponCharge.coupon_details.min_cart_value,
+                          )}
+                        </p>
+                      )}
+                    </div>
                   </div>
                 )}
               </div>

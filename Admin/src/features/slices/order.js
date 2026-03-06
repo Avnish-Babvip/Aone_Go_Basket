@@ -1,6 +1,15 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { toast } from "sonner";
-import { assignOrder, editOrderStatus, getAllAssignOrders, getAllNotAssignOrders, getAllOrders, getSingleOrder } from "../actions/order";
+import {
+  assignOrder,
+  editOrderStatus,
+  getAllAssignOrders,
+  getAllNotAssignOrders,
+  getAllOrders,
+  getOrderSettings,
+  getSingleOrder,
+  updateOrderSettings,
+} from "../actions/order";
 
 const formattedDate = new Date().toLocaleString("en-US", {
   weekday: "long",
@@ -16,9 +25,10 @@ const initialState = {
   errorMessage: "",
   orderLoading: false,
   orderData: {},
+  settingData: {},
   assignedOrderData: {},
   unassignedOrderData: {},
-    orderDetails: {},
+  orderDetails: {},
 };
 
 // ---------------------------------------------------------------------------------------
@@ -77,7 +87,7 @@ const orderSlice = createSlice({
           description: formattedDate,
         });
       })
-            .addCase(getSingleOrder.pending, (state) => {
+      .addCase(getSingleOrder.pending, (state) => {
         state.errorMessage = "";
         state.orderLoading = true;
       })
@@ -93,7 +103,38 @@ const orderSlice = createSlice({
           description: formattedDate,
         });
       })
-         .addCase(assignOrder.pending, (state) => {
+      .addCase(getOrderSettings.pending, (state) => {
+        state.errorMessage = "";
+      })
+      .addCase(getOrderSettings.fulfilled, (state, action) => {
+        state.errorMessage = "";
+        state.settingData = action.payload.data;
+      })
+      .addCase(getOrderSettings.rejected, (state, action) => {
+        state.errorMessage = action.payload || "Failed";
+        toast(action.payload, {
+          description: formattedDate,
+        });
+      })
+      .addCase(updateOrderSettings.pending, (state) => {
+        state.errorMessage = "";
+        state.orderLoading = true;
+      })
+      .addCase(updateOrderSettings.fulfilled, (state, action) => {
+        state.errorMessage = "";
+        state.orderLoading = false;
+        toast("Order settings updated successfully.", {
+          description: formattedDate,
+        });
+      })
+      .addCase(updateOrderSettings.rejected, (state, action) => {
+        state.errorMessage = action.payload || "Failed";
+        state.orderLoading = false;
+        toast(action.payload, {
+          description: formattedDate,
+        });
+      })
+      .addCase(assignOrder.pending, (state) => {
         state.errorMessage = "";
         state.orderLoading = true;
       })

@@ -1,33 +1,25 @@
-import { React, useEffect} from "react";
+import { React, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useForm } from "react-hook-form";
 import { Spinner } from "../../components/Loader/Spinner";
 import { updateAdminProfile } from "../../features/actions/authentication";
 
-
 export default function Profile() {
   return (
     <>
-    <div className="min-h-screen py-5 px-4  space-y-10">
-      {/* ================= PROFILE FORM ================= */}
-      <div className="max-w-5xl mx-auto bg-white rounded-3xl shadow-sm  p-8 md:p-12">
-        <ProfileForm/>
+      <div className="min-h-screen py-5 px-4  space-y-10">
+        {/* ================= PROFILE FORM ================= */}
+        <div className="max-w-5xl mx-auto bg-white rounded-3xl shadow-sm  p-8 md:p-12">
+          <ProfileForm />
+        </div>
       </div>
-
-
-
-    </div>
-
     </>
   );
 }
 
-
 function ProfileForm() {
   const dispatch = useDispatch();
-  const { adminData, isLoading } = useSelector(
-    (state) => state.authentication
-  );
+  const { adminData, isLoading } = useSelector((state) => state.authentication);
 
   const {
     register,
@@ -38,7 +30,7 @@ function ProfileForm() {
 
   /* ================= LOAD PROFILE DATA ================= */
   useEffect(() => {
-    if (!adminData) return;
+    if (!adminData?.admin) return;
 
     const admin = adminData?.admin;
 
@@ -110,19 +102,14 @@ function ProfileForm() {
   );
 }
 
-
 /* ================= REUSABLE INPUT ================= */
 const InputField = ({ label, register, error }) => (
   <div>
     <label className="text-sm font-semibold mb-2 block">{label}</label>
     <input
       {...register}
-      className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-emerald-500 outline-none"
+      className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-brand-green outline-none"
     />
-    {error && (
-      <p className="text-red-500 text-xs mt-1">{error.message}</p>
-    )}
+    {error && <p className="text-red-500 text-xs mt-1">{error.message}</p>}
   </div>
 );
-
-
