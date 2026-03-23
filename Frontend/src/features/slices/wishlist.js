@@ -42,7 +42,14 @@ const orderSlice = createSlice({
       .addCase(addToWishlist.rejected, (state, action) => {
         state.errorMessage = "";
         state.wishlistLoading = false;
-        state.errorMessage = action.payload || "Failed";
+        if (action.payload?.status === 401) {
+          toast.error("Please log in to continue", {
+            position: "top-right",
+            duration: 800,
+          });
+        } else {
+          state.errorMessage = action.payload || "Failed";
+        }
       })
       .addCase(removeFromWishlist.pending, (state, action) => {
         state.errorMessage = "";
@@ -68,7 +75,15 @@ const orderSlice = createSlice({
       .addCase(removeFromWishlist.rejected, (state, action) => {
         state.errorMessage = "";
         state.wishlistLoading = false;
-        state.errorMessage = action.payload || "Failed";
+
+        if (action.payload?.status === 401) {
+          toast.error("Please log in to continue", {
+            position: "top-right",
+            duration: 800,
+          });
+        } else {
+          state.errorMessage = action.payload || "Failed";
+        }
       })
       .addCase(getWishlist.pending, (state, action) => {
         state.errorMessage = "";
@@ -83,8 +98,14 @@ const orderSlice = createSlice({
       .addCase(getWishlist.rejected, (state, action) => {
         state.errorMessage = "";
         state.wishlistLoading = false;
-        state.errorMessage = action.payload || "Failed";
-        toast(action.payload);
+        if (action.payload?.status === 401) {
+          toast.error("Please log in to continue", {
+            position: "top-right",
+            duration: 800,
+          });
+        } else {
+          state.errorMessage = action.payload || "Failed";
+        }
       });
   },
 });

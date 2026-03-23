@@ -3,15 +3,20 @@ import { useForm } from "react-hook-form";
 import { useDispatch, useSelector } from "react-redux";
 import { HiX } from "react-icons/hi";
 import { Spinner } from "../../Loader/Spinner";
-import { assignOrder } from "../../../features/actions/order";
+import {
+  assignOrder,
+  customerNotification,
+} from "../../../features/actions/order";
 import { getAllRiderKyc } from "../../../features/actions/rider";
 import Select from "react-select"; // searchable dropdown
 
-export const AssignOrderModal = ({ isOpen, onClose, id,city }) => {
+export const AssignOrderModal = ({ isOpen, onClose, id, city, customerId }) => {
   if (!isOpen) return null;
 
   const dispatch = useDispatch();
   const { orderLoading } = useSelector((state) => state.order);
+  const { adminData } = useSelector((state) => state.authentication);
+  const loginToken = adminData?.token;
   const { kycData } = useSelector((state) => state.rider); // assuming you store fetched riders here
   const [options, setOptions] = useState([]);
   const {
@@ -23,7 +28,13 @@ export const AssignOrderModal = ({ isOpen, onClose, id,city }) => {
   // Load riders when modal opens
   useEffect(() => {
     if (id) {
-      dispatch(getAllRiderKyc({ per_page: 1000,status:"approved",city_id:city?.id }));
+      dispatch(
+        getAllRiderKyc({
+          per_page: 1000,
+          status: "approved",
+          city_id: city?.id,
+        }),
+      );
     }
   }, [id, dispatch]);
 
@@ -40,9 +51,22 @@ export const AssignOrderModal = ({ isOpen, onClose, id,city }) => {
   }, [kycData]);
 
   const onSubmit = (data) => {
+    const payload = {
+      customer_ids: [customerId],
+      title: "Order Shipped",
+      message: "Your order has been shipped successfully",
+      type: "order",
+      extra: {
+        order_id: id,
+      },
+    };
+
     dispatch(assignOrder({ rider_id: data.rider_id, order_id: id }))
       .unwrap()
-      .then(() => onClose());
+      .then(() => {
+        dispatch(customerNotification({ payload, loginToken }));
+        onClose();
+      });
   };
 
   return (
@@ -61,15 +85,16 @@ export const AssignOrderModal = ({ isOpen, onClose, id,city }) => {
         </button>
 
         {/* HEADER */}
-   <div className="px-8 pt-8">
-  <h2 className="text-center text-black text-xl font-semibold mb-2">
-    Assign Order to Rider
-  </h2>
+        <div className="px-8 pt-8">
+          <h2 className="text-center text-black text-xl font-semibold mb-2">
+            Assign Order to Rider
+          </h2>
 
-  <p className="text-center text-sm text-gray-500">
-    City: <span className="font-medium text-gray-700">{city?.name}</span>
-  </p>
-</div>
+          <p className="text-center text-sm text-gray-500">
+            City:{" "}
+            <span className="font-medium text-gray-700">{city?.name}</span>
+          </p>
+        </div>
 
         {/* BODY */}
         <div className="px-8 pb-6">

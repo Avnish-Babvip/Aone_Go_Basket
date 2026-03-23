@@ -3,6 +3,7 @@ import { HiX } from "react-icons/hi";
 import { useForm } from "react-hook-form";
 import { useDispatch, useSelector } from "react-redux";
 import { getCities, getStates } from "../../../features/actions/location";
+import { Spinner } from "../../Loader/Spinner";
 
 export default function UpdateAddressModal({
   isOpen,
@@ -15,6 +16,7 @@ export default function UpdateAddressModal({
   const { countryData, stateData, cityData } = useSelector(
     (state) => state.location,
   );
+  const { addressLoading } = useSelector((state) => state.customer);
 
   const {
     register,
@@ -24,49 +26,48 @@ export default function UpdateAddressModal({
     formState: { errors },
   } = useForm();
 
+  useEffect(() => {
+    if (!isOpen) return;
 
-useEffect(() => {
-  if (!isOpen) return;
+    const loadData = async () => {
+      if (editData) {
+        reset({
+          name: editData.name || "",
+          mobile: editData.mobile || "",
+          address_line_1: editData.address_line_1 || "",
+          address_line_2: editData.address_line_2 || "",
+          landmark: editData.landmark || "",
+          pincode: editData.pincode || "",
+        });
 
-  const loadData = async () => {
-    if (editData) {
-      reset({
-        name: editData.name || "",
-        mobile: editData.mobile || "",
-        address_line_1: editData.address_line_1 || "",
-        address_line_2: editData.address_line_2 || "",
-        landmark: editData.landmark || "",
-        pincode: editData.pincode || "",
-      });
+        if (editData.country_id) {
+          await dispatch(getStates(editData.country_id)).unwrap();
+        }
 
-      if (editData.country_id) {
-        await dispatch(getStates(editData.country_id)).unwrap();
+        if (editData.state_id) {
+          await dispatch(getCities(editData.state_id)).unwrap();
+        }
+
+        setValue("country_id", editData.country_id);
+        setValue("state_id", editData.state_id);
+        setValue("city_id", editData.city_id);
+      } else {
+        reset({
+          name: "",
+          mobile: "",
+          address_line_1: "",
+          address_line_2: "",
+          landmark: "",
+          pincode: "",
+          country_id: "",
+          state_id: "",
+          city_id: "",
+        });
       }
+    };
 
-      if (editData.state_id) {
-        await dispatch(getCities(editData.state_id)).unwrap();
-      }
-
-      setValue("country_id", editData.country_id);
-      setValue("state_id", editData.state_id);
-      setValue("city_id", editData.city_id);
-    } else {
-      reset({
-        name: "",
-        mobile: "",
-        address_line_1: "",
-        address_line_2: "",
-        landmark: "",
-        pincode: "",
-        country_id: "",
-        state_id: "",
-        city_id: "",
-      });
-    }
-  };
-
-  loadData();
-}, [isOpen, editData, dispatch]);
+    loadData();
+  }, [isOpen, editData, dispatch]);
 
   if (!isOpen) return;
 
@@ -109,9 +110,6 @@ useEffect(() => {
                 // ✅ ADD API
                 onAddAddress(cleanPayload);
               }
-
-              reset();
-              onClose();
             })}
           >
             <div className="grid md:grid-cols-2 gap-6">
@@ -124,18 +122,18 @@ useEffect(() => {
               />
 
               <InputField
-  label="Mobile"
-  name="mobile"
-  register={register}
-  errors={errors}
-  required
-  validation={{
-    pattern: {
-      value: /^[0-9]{10}$/,
-      message: "Mobile number must be exactly 10 digits",
-    },
-  }}
-/>
+                label="Mobile"
+                name="mobile"
+                register={register}
+                errors={errors}
+                required
+                validation={{
+                  pattern: {
+                    value: /^[0-9]{10}$/,
+                    message: "Mobile number must be exactly 10 digits",
+                  },
+                }}
+              />
 
               <InputField
                 label="Address Line 1"
@@ -169,17 +167,19 @@ useEffect(() => {
                 <label className="text-sm font-semibold mb-2 block">
                   Country
                 </label>
-             <select
-              className="w-full px-4 py-3 rounded-xl border border-gray-200"
-  {...register("country_id", { required: "Country is required" })}
-  onChange={(e) => {
-    const value = e.target.value;
-    setValue("country_id", value);
-    setValue("state_id", "");
-    setValue("city_id", "");
-    dispatch(getStates(value));
-  }}
->
+                <select
+                  className="w-full px-4 py-3 rounded-xl border border-gray-200"
+                  {...register("country_id", {
+                    required: "Country is required",
+                  })}
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    setValue("country_id", value);
+                    setValue("state_id", "");
+                    setValue("city_id", "");
+                    dispatch(getStates(value));
+                  }}
+                >
                   <option value="">Select Country</option>
                   {countryData?.map((c) => (
                     <option key={c.id} value={c.id}>
@@ -199,16 +199,16 @@ useEffect(() => {
                 <label className="text-sm font-semibold mb-2 block">
                   State
                 </label>
-           <select
-            className="w-full px-4 py-3 rounded-xl border border-gray-200"
-  {...register("state_id", { required: "State is required" })}
-  onChange={(e) => {
-    const value = e.target.value;
-    setValue("state_id", value);
-    setValue("city_id", "");
-    dispatch(getCities(value));
-  }}
->
+                <select
+                  className="w-full px-4 py-3 rounded-xl border border-gray-200"
+                  {...register("state_id", { required: "State is required" })}
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    setValue("state_id", value);
+                    setValue("city_id", "");
+                    dispatch(getCities(value));
+                  }}
+                >
                   <option value="">Select State</option>
                   {stateData?.map((s) => (
                     <option key={s.id} value={s.id}>
@@ -230,7 +230,7 @@ useEffect(() => {
                   {...register("city_id", {
                     required: "City is required",
                   })}
-                disabled={!stateData?.length}
+                  disabled={!stateData?.length}
                   className="w-full px-4 py-3 rounded-xl border border-gray-200"
                 >
                   <option value="">Select City</option>
@@ -247,26 +247,27 @@ useEffect(() => {
                 )}
               </div>
               {/* PINCODE */}
-        <InputField
-  label="Pincode"
-  name="pincode"
-  register={register}
-  errors={errors}
-  required
-  validation={{
-    pattern: {
-      value: /^[0-9]{6}$/,
-      message: "Pincode must be exactly 6 digits",
-    },
-  }}
-/>
+              <InputField
+                label="Pincode"
+                name="pincode"
+                register={register}
+                errors={errors}
+                required
+                validation={{
+                  pattern: {
+                    value: /^[0-9]{6}$/,
+                    message: "Pincode must be exactly 6 digits",
+                  },
+                }}
+              />
             </div>
 
             <button
+              disabled={addressLoading}
               type="submit"
               className="mt-8 w-full py-3 rounded-xl bg-brand-green text-white font-bold"
             >
-              Save Address
+              {addressLoading ? <Spinner /> : "Save Address"}
             </button>
           </form>
         </div>
@@ -289,9 +290,9 @@ function InputField({
     <div className={className}>
       <label className="text-sm font-semibold mb-2 block">{label}</label>
       <input
-  type="tel"
-  maxLength={name === "mobile" ? 10 : name === "pincode" ? 6 : undefined}
-  inputMode="numeric"
+        type="tel"
+        maxLength={name === "mobile" ? 10 : name === "pincode" ? 6 : undefined}
+        inputMode="numeric"
         {...register(name, {
           required: required ? `${label} is required` : false,
           ...validation,

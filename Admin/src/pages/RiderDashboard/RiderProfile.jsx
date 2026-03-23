@@ -229,13 +229,12 @@ function ProfileForm() {
           />
 
           {/* VEHICLE TYPE */}
-          <SelectField
+          <InputField
             label="Vehicle Type"
             register={register("vehicle_type", {
               required: "Vehicle type is required",
             })}
             error={errors.vehicle_type}
-            options={[{ id: "bike", name: "Bike" }]}
           />
 
           {/* VEHICLE NUMBER */}

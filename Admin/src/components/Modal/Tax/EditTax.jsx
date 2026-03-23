@@ -66,7 +66,7 @@ export const EditTaxModal = ({ isOpen, onClose, tax }) => {
         {/* HEADER */}
         <div className="px-8 pt-8">
           <h2 className="text-center text-black text-xl font-semibold mb-6">
-            Add Tax
+            Edit Tax Details
           </h2>
         </div>
 

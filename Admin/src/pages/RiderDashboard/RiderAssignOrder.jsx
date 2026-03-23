@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
-import { FiEye, FiEdit2 } from "react-icons/fi";
+import { FiEye } from "react-icons/fi";
 import { useDispatch, useSelector } from "react-redux";
-import { useLocation, useSearchParams } from "react-router-dom";
+import { useSearchParams } from "react-router-dom";
 import TableSkeleton from "../../components/TableSkeleton";
 import FilterSelect from "../../components/FilterSelect";
 import Pagination from "../../components/Pagination";
@@ -14,6 +14,7 @@ import {
 import { ViewAssignedOrderModal } from "../../components/Modal/RiderDashboard/ViewAssignedOrder";
 import { Spinner } from "../../components/Loader/Spinner";
 import { FailedAssignedOrderModal } from "../../components/Modal/RiderDashboard/FailedAssignedOrder";
+import { customerNotification } from "../../features/actions/order";
 
 const RiderAssignOrder = () => {
   const dispatch = useDispatch();
@@ -33,7 +34,8 @@ const RiderAssignOrder = () => {
   const status = searchParams.get("status") || "";
   const payment_status = searchParams.get("payment_status") || "";
   const payment_method = searchParams.get("payment_method") || "";
-
+  const { adminData } = useSelector((state) => state.authentication);
+  const loginToken = adminData?.token;
   const users = orderData?.data || [];
   const hasData = Array.isArray(users) && users.length > 0;
   const updateParams = ({
@@ -56,10 +58,10 @@ const RiderAssignOrder = () => {
 
   const getOrderStatusStyle = (status) => {
     switch (status?.toLowerCase()) {
-      case "confirmed":
-        return "bg-blue-100 text-blue-700 ring-1 ring-blue-200";
-      case "shipped":
+      case "assigned":
         return "bg-indigo-100 text-indigo-700 ring-1 ring-indigo-200";
+      case "picked":
+        return "bg-blue-100 text-blue-700 ring-1 ring-blue-200";
       case "delivered":
         return "bg-emerald-100 text-emerald-700 ring-1 ring-emerald-200";
       case "cancelled":
@@ -81,7 +83,6 @@ const RiderAssignOrder = () => {
         return "bg-gray-100 text-gray-600 ring-1 ring-gray-200";
     }
   };
-
   useEffect(() => {
     dispatch(
       getAssignedOrders({
@@ -101,61 +102,69 @@ const RiderAssignOrder = () => {
         <div className="flex items-center justify-between px-6 py-4 border-b">
           <h2 className="font-semibold text-gray-800">Your Assigned Orders</h2>
 
-          <div className="flex items-center gap-2">
-            <FilterSelect
-              label="Payment Method"
-              value={payment_method || "All"}
-              options={[
-                { label: "Online", value: "online" },
-                { label: "Cod", value: "cod" },
-              ]}
-              onChange={(val) =>
-                updateParams({
-                  payment_method: val,
-                  payment_status,
-                  status,
-                  page: 1,
-                  search: searchQuery,
-                })
-              }
-            />
-            <FilterSelect
-              label="Payment Status"
-              value={payment_status || "All"}
-              options={[
-                { label: "Paid", value: "paid" },
-                { label: "Pending", value: "pending" },
-                { label: "Failed", value: "failed" },
-              ]}
-              onChange={(val) =>
-                updateParams({
-                  payment_status: val,
-                  payment_method,
-                  status,
-                  page: 1,
-                  search: searchQuery,
-                })
-              }
-            />
-            <FilterSelect
-              label="Order Status"
-              value={status || "All"}
-              options={[
-                { label: "Shipped", value: "shipped" },
-                { label: "Delivered", value: "delivered" },
-                { label: "Cancelled", value: "cancelled" },
-                { label: "Failed", value: "failed" },
-              ]}
-              onChange={(val) =>
-                updateParams({
-                  status: val,
-                  payment_status,
-                  payment_method,
-                  page: 1,
-                  search: searchQuery,
-                })
-              }
-            />
+          <div className="flex flex-col md:flex-row md:items-end gap-4">
+            {/* Type */}
+            <div className="flex flex-col w-full md:w-64">
+              <FilterSelect
+                label="Payment Method"
+                value={payment_method || "All"}
+                options={[
+                  { label: "Online", value: "online" },
+                  { label: "Cod", value: "cod" },
+                ]}
+                onChange={(val) =>
+                  updateParams({
+                    payment_method: val,
+                    payment_status,
+                    status,
+                    page: 1,
+                    search: searchQuery,
+                  })
+                }
+              />
+            </div>
+            <div className="flex flex-col w-full md:w-64">
+              <FilterSelect
+                label="Payment Status"
+                value={payment_status || "All"}
+                options={[
+                  { label: "Paid", value: "paid" },
+                  { label: "Pending", value: "pending" },
+                  { label: "Failed", value: "failed" },
+                ]}
+                onChange={(val) =>
+                  updateParams({
+                    payment_status: val,
+                    payment_method,
+                    status,
+                    page: 1,
+                    search: searchQuery,
+                  })
+                }
+              />
+            </div>
+            <div className="flex flex-col w-full md:w-64">
+              <FilterSelect
+                label="Delivery Status"
+                value={status || "All"}
+                options={[
+                  { label: "Assigned", value: "assigned" },
+                  { label: "Picked", value: "picked" },
+                  { label: "Delivered", value: "delivered" },
+                  { label: "Failed", value: "failed" },
+                  { label: "Cancelled", value: "cancelled" },
+                ]}
+                onChange={(val) =>
+                  updateParams({
+                    status: val,
+                    payment_status,
+                    payment_method,
+                    page: 1,
+                    search: searchQuery,
+                  })
+                }
+              />
+            </div>
           </div>
         </div>
 
@@ -171,7 +180,9 @@ const RiderAssignOrder = () => {
                 <th className="text-left px-3 py-3 w-[120px]">
                   Payment Method
                 </th>
-                <th className="text-left px-3 py-3 w-[120px]">Order Status</th>
+                <th className="text-left px-3 py-3 w-[120px]">
+                  Delivery Status
+                </th>
                 <th className="text-left px-3 py-3 w-[120px]">Price</th>
                 <th className="text-center px-3 py-3 w-[350px]">Action</th>
               </tr>
@@ -190,7 +201,7 @@ const RiderAssignOrder = () => {
                     { width: "w-24 h-4" }, // Status
                   ]}
                   actionColumn
-                  actionCount={2}
+                  actionCount={4}
                   actionWidth="w-12 h-8"
                 />
               ) : !hasData ? (
@@ -240,11 +251,11 @@ const RiderAssignOrder = () => {
                     <td className="px-3 py-5">
                       <span
                         className={`inline-flex items-center gap-2 text-xs font-semibold px-3 py-1.5 rounded-full shadow-sm capitalize ${getOrderStatusStyle(
-                          item?.status,
+                          item?.latest_assignment?.delivery_status,
                         )}`}
                       >
                         <span className="w-2 h-2 rounded-full bg-current opacity-70"></span>
-                        {item?.status}
+                        {item?.latest_assignment?.delivery_status}
                       </span>
                     </td>
 
@@ -254,6 +265,7 @@ const RiderAssignOrder = () => {
 
                     <td className="px-3 py-5">
                       <div className="flex justify-center gap-2">
+                        {/* VIEW */}
                         <button
                           onClick={() => {
                             setOpenViewModal(true);
@@ -263,79 +275,142 @@ const RiderAssignOrder = () => {
                         >
                           <FiEye />
                         </button>
-                        {item?.status === "confirmed" && (
-                          <button
-                            disabled={pickedLoading}
-                            onClick={() => {
-                              setSelected(item);
-                              dispatch(markedPicked(item?.id))
-                                .unwrap()
-                                .then(() => {
-                                  dispatch(
-                                    getAssignedOrders({
-                                      search: searchQuery,
-                                      page,
-                                      status,
-                                      payment_status,
-                                      payment_method,
-                                    }),
-                                  );
-                                });
-                            }}
-                            className="p-2 px-3 flex items-center justify-center gap-2 w-30 bg-orange-100 text-orange-500 rounded-lg hover:bg-orange-200"
-                          >
-                            {pickedLoading && item?.id === selected.id ? (
-                              <Spinner />
-                            ) : (
-                              <span>Marked Picked</span>
-                            )}
-                          </button>
-                        )}
-                        {item?.status === "shipped" && (
-                          <button
-                            disabled={deliveredLoading}
-                            onClick={() => {
-                              setSelected(item);
-                              dispatch(markedDelivered(item?.id))
-                                .unwrap()
-                                .then(() => {
-                                  dispatch(
-                                    getAssignedOrders({
-                                      search: searchQuery,
-                                      page,
-                                      status,
-                                      payment_status,
-                                      payment_method,
-                                    }),
-                                  );
-                                });
-                            }}
-                            className="p-2 px-3 flex items-center justify-center gap-2 w-36 bg-orange-100 text-orange-500 rounded-lg hover:bg-orange-200"
-                          >
-                            {deliveredLoading && item?.id === selected.id ? (
-                              <Spinner />
-                            ) : (
-                              <span>Marked Delivered</span>
-                            )}
-                          </button>
-                        )}
-                        {item?.status !== "failed" &&
-                          item?.status !== "delivered" && (
-                            <button
-                              disabled={failedLoading}
-                              onClick={() => {
-                                setSelected(item);
-                                setOpenEditModal(true);
-                              }}
-                              className="p-2 px-3 flex items-center justify-center gap-2 bg-red-100 w-30 text-red-500 rounded-lg hover:bg-red-200"
-                            >
-                              {failedLoading && item?.id === selected.id ? (
-                                <Spinner />
-                              ) : (
-                                <span>Marked Failed</span>
-                              )}
-                            </button>
+
+                        {/* MARKED PICKED */}
+                        <button
+                          disabled={pickedLoading}
+                          onClick={() => {
+                            if (
+                              item?.status === "cancelled" ||
+                              item?.status === "delivered"
+                            )
+                              return;
+
+                            setSelected(item);
+                            dispatch(markedPicked(item?.id))
+                              .unwrap()
+                              .then(() => {
+                                dispatch(
+                                  getAssignedOrders({
+                                    search: searchQuery,
+                                    page,
+                                    status,
+                                    payment_status,
+                                    payment_method,
+                                  }),
+                                );
+
+                                dispatch(
+                                  customerNotification({
+                                    payload: {
+                                      customer_ids: [item?.customer?.id],
+                                      title: "Order Picked",
+                                      message:
+                                        "Your order has been picked successfully",
+                                      type: "order",
+                                      extra: { order_id: item?.id },
+                                    },
+                                    loginToken,
+                                  }),
+                                );
+                              });
+                          }}
+                          className={`p-2 px-3 flex items-center justify-center gap-2 w-32 rounded-lg
+      ${
+        item?.status === "cancelled" || item?.status === "delivered"
+          ? "invisible"
+          : "bg-purple-100 text-purple-500 hover:bg-purple-200"
+      }`}
+                        >
+                          {pickedLoading && item?.id === selected?.id ? (
+                            <Spinner />
+                          ) : (
+                            <span>Marked Picked</span>
                           )}
+                        </button>
+
+                        {/* MARKED DELIVERED */}
+                        <button
+                          disabled={deliveredLoading}
+                          onClick={() => {
+                            if (
+                              item?.status === "cancelled" ||
+                              item?.status === "delivered"
+                            )
+                              return;
+
+                            setSelected(item);
+                            dispatch(markedDelivered(item?.id))
+                              .unwrap()
+                              .then(() => {
+                                dispatch(
+                                  getAssignedOrders({
+                                    search: searchQuery,
+                                    page,
+                                    status,
+                                    payment_status,
+                                    payment_method,
+                                  }),
+                                );
+
+                                dispatch(
+                                  customerNotification({
+                                    payload: {
+                                      customer_ids: [item?.customer?.id],
+                                      title: "Order Delivered",
+                                      message:
+                                        "Your order has been delivered successfully",
+                                      type: "order",
+                                      extra: { order_id: item?.id },
+                                    },
+                                    loginToken,
+                                  }),
+                                );
+                              });
+                          }}
+                          className={`p-2 px-3 flex items-center justify-center gap-2 w-36 rounded-lg
+      ${
+        item?.status === "cancelled" || item?.status === "delivered"
+          ? "invisible"
+          : "bg-orange-100 text-orange-500 hover:bg-orange-200"
+      }`}
+                        >
+                          {deliveredLoading && item?.id === selected?.id ? (
+                            <Spinner />
+                          ) : (
+                            <span>Marked Delivered</span>
+                          )}
+                        </button>
+
+                        {/* MARKED FAILED */}
+                        <button
+                          disabled={failedLoading}
+                          onClick={() => {
+                            if (
+                              item?.status === "failed" ||
+                              item?.status === "cancelled" ||
+                              item?.status === "delivered"
+                            )
+                              return;
+
+                            setSelected(item);
+                            setOpenEditModal(true);
+                          }}
+                          className={`p-2 px-3 flex items-center justify-center gap-2 w-32 rounded-lg
+      ${
+        item?.status === "failed" ||
+        item?.status === "cancelled" ||
+        item?.status === "delivered"
+          ? "invisible"
+          : "bg-red-100 text-red-500 hover:bg-red-200"
+      }`}
+                        >
+                          {failedLoading && item?.id === selected?.id ? (
+                            <Spinner />
+                          ) : (
+                            <span>Marked Failed</span>
+                          )}
+                        </button>
                       </div>
                     </td>
                   </tr>
@@ -369,7 +444,7 @@ const RiderAssignOrder = () => {
               }),
             )
               .unwrap()
-              .then(() =>
+              .then(() => {
                 dispatch(
                   getAssignedOrders({
                     search: searchQuery,
@@ -378,8 +453,22 @@ const RiderAssignOrder = () => {
                     payment_status,
                     payment_method,
                   }),
-                ),
-              );
+                );
+                dispatch(
+                  customerNotification({
+                    payload: {
+                      customer_ids: [selected?.customer_id],
+                      title: "Order Failed",
+                      message: "Your order has been cancelled by rider.",
+                      type: "order",
+                      extra: {
+                        order_id: selected?.id,
+                      },
+                    },
+                    loginToken,
+                  }),
+                );
+              });
           } catch (err) {
             console.error(err);
           }

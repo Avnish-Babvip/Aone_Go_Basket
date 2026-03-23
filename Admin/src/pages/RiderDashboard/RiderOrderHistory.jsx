@@ -44,10 +44,10 @@ const RiderOrderHistory = () => {
 
   const getOrderStatusStyle = (status) => {
     switch (status?.toLowerCase()) {
-      case "confirmed":
-        return "bg-blue-100 text-blue-700 ring-1 ring-blue-200";
-      case "shipped":
+      case "assigned":
         return "bg-indigo-100 text-indigo-700 ring-1 ring-indigo-200";
+      case "picked":
+        return "bg-blue-100 text-blue-700 ring-1 ring-blue-200";
       case "delivered":
         return "bg-emerald-100 text-emerald-700 ring-1 ring-emerald-200";
       case "cancelled":
@@ -89,61 +89,69 @@ const RiderOrderHistory = () => {
         <div className="flex items-center justify-between px-6 py-4 border-b">
           <h2 className="font-semibold text-gray-800">Your Orders History</h2>
 
-          <div className="flex items-center gap-2">
-            <FilterSelect
-              label="Payment Method"
-              value={payment_method || "All"}
-              options={[
-                { label: "Online", value: "online" },
-                { label: "Cod", value: "cod" },
-              ]}
-              onChange={(val) =>
-                updateParams({
-                  payment_method: val,
-                  payment_status,
-                  status,
-                  page: 1,
-                  search: searchQuery,
-                })
-              }
-            />
-            <FilterSelect
-              label="Payment Status"
-              value={payment_status || "All"}
-              options={[
-                { label: "Paid", value: "paid" },
-                { label: "Pending", value: "pending" },
-                { label: "Failed", value: "failed" },
-              ]}
-              onChange={(val) =>
-                updateParams({
-                  payment_status: val,
-                  payment_method,
-                  status,
-                  page: 1,
-                  search: searchQuery,
-                })
-              }
-            />
-            <FilterSelect
-              label="Order Status"
-              value={status || "All"}
-              options={[
-                { label: "Shipped", value: "shipped" },
-                { label: "Delivered", value: "delivered" },
-                { label: "Cancelled", value: "cancelled" },
-                { label: "Failed", value: "failed" },
-              ]}
-              onChange={(val) =>
-                updateParams({
-                  status: val,
-                  payment_status,
-                  payment_method,
-                  page: 1,
-                  search: searchQuery,
-                })
-              }
-            />
+          <div className="flex flex-col md:flex-row md:items-end gap-4">
+            {/* Type */}
+            <div className="flex flex-col w-full md:w-64">
+              <FilterSelect
+                label="Payment Method"
+                value={payment_method || "All"}
+                options={[
+                  { label: "Online", value: "online" },
+                  { label: "Cod", value: "cod" },
+                ]}
+                onChange={(val) =>
+                  updateParams({
+                    payment_method: val,
+                    payment_status,
+                    status,
+                    page: 1,
+                    search: searchQuery,
+                  })
+                }
+              />
+            </div>
+            <div className="flex flex-col w-full md:w-64">
+              <FilterSelect
+                label="Payment Status"
+                value={payment_status || "All"}
+                options={[
+                  { label: "Paid", value: "paid" },
+                  { label: "Pending", value: "pending" },
+                  { label: "Failed", value: "failed" },
+                ]}
+                onChange={(val) =>
+                  updateParams({
+                    payment_status: val,
+                    payment_method,
+                    status,
+                    page: 1,
+                    search: searchQuery,
+                  })
+                }
+              />
+            </div>
+            <div className="flex flex-col w-full md:w-64">
+              <FilterSelect
+                label="Delivery Status"
+                value={status || "All"}
+                options={[
+                  { label: "Assigned", value: "assigned" },
+                  { label: "Picked", value: "picked" },
+                  { label: "Delivered", value: "delivered" },
+                  { label: "Failed", value: "failed" },
+                  { label: "Cancelled", value: "cancelled" },
+                ]}
+                onChange={(val) =>
+                  updateParams({
+                    status: val,
+                    payment_status,
+                    payment_method,
+                    page: 1,
+                    search: searchQuery,
+                  })
+                }
+              />
+            </div>
           </div>
         </div>
 
@@ -159,7 +167,9 @@ const RiderOrderHistory = () => {
                 <th className="text-left px-3 py-3 w-[120px]">
                   Payment Method
                 </th>
-                <th className="text-left px-3 py-3 w-[120px]">Order Status</th>
+                <th className="text-left px-3 py-3 w-[120px]">
+                  Delivery Status
+                </th>
                 <th className="text-left px-3 py-3 w-[120px]">Price</th>
                 <th className="text-center px-3 py-3 w-[350px]">Action</th>
               </tr>
@@ -228,11 +238,11 @@ const RiderOrderHistory = () => {
                     <td className="px-3 py-5">
                       <span
                         className={`inline-flex items-center gap-2 text-xs font-semibold px-3 py-1.5 rounded-full shadow-sm capitalize ${getOrderStatusStyle(
-                          item?.status,
+                          item?.latest_assignment?.delivery_status,
                         )}`}
                       >
                         <span className="w-2 h-2 rounded-full bg-current opacity-70"></span>
-                        {item?.status}
+                        {item?.latest_assignment?.delivery_status}
                       </span>
                     </td>
 

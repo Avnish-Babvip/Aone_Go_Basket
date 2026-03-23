@@ -6,9 +6,10 @@ import { SelectWithId } from "../../ReusableInputs";
 import { HiX } from "react-icons/hi";
 import { Spinner } from "../../Loader/Spinner";
 
-export const EditAdminUserStatusModal = ({ isOpen, onClose, user }) => {
+export const EditAdminUserStatusModal = ({ isOpen, onClose, user, roles }) => {
   if (!isOpen) return null;
   const dispatch = useDispatch();
+  console.log(user);
   const { adminUserLoading } = useSelector((state) => state.adminUser);
   const {
     register,
@@ -16,6 +17,7 @@ export const EditAdminUserStatusModal = ({ isOpen, onClose, user }) => {
     formState: { errors },
   } = useForm({
     defaultValues: {
+      role_id: user?.role_id,
       status: user?.status,
     },
   });
@@ -54,12 +56,21 @@ export const EditAdminUserStatusModal = ({ isOpen, onClose, user }) => {
         {/* HEADER */}
         <div className="px-8 pt-8">
           <h2 className="text-center text-black text-xl font-semibold mb-6">
-            Edit Admin User Status
+            Edit User Role & Status
           </h2>
         </div>
 
         {/* FORM BODY */}
-        <div className="flex-1 overflow-y-auto px-8 pb-6">
+        <div className="flex-1 overflow-y-auto px-8 pb-6 space-y-3">
+          <SelectWithId
+            label="Choose Role"
+            name="role_id"
+            options={roles}
+            register={register}
+            required
+            errors={errors}
+          />
+
           <SelectWithId
             label="Choose Status"
             name="status"

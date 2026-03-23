@@ -7,10 +7,7 @@ export const getCartData = createAsyncThunk(
   async (_, { getState, rejectWithValue }) => {
     try {
       const loginToken = getState().authentication?.customerData?.token;
-
       const headers = {};
-      console.log(loginToken);
-
       if (loginToken) {
         // ✅ Logged in user
         headers.Authorization = `Bearer ${loginToken}`;

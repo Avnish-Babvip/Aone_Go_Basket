@@ -225,3 +225,43 @@ export const deleteAddress = createAsyncThunk(
     }
   },
 );
+
+export const subscribeNow = createAsyncThunk(
+  "/api/customer/subscribe",
+  async (payload, { getState, rejectWithValue }) => {
+    try {
+      const loginToken = getState().authentication?.customerData?.token;
+
+      const { data } = await instance.post(`/customer/subscribe`, payload, {
+        headers: {
+          Authorization: `Bearer ${loginToken}`,
+        },
+      });
+      return data;
+    } catch (error) {
+      return rejectWithValue(
+        error.response?.data || { message: "Something went wrong" },
+      );
+    }
+  },
+);
+
+export const contactUs = createAsyncThunk(
+  "/api/customer/contact",
+  async (payload, { getState, rejectWithValue }) => {
+    try {
+      const loginToken = getState().authentication?.customerData?.token;
+
+      const { data } = await instance.post(`/customer/contact`, payload, {
+        headers: {
+          Authorization: `Bearer ${loginToken}`,
+        },
+      });
+      return data;
+    } catch (error) {
+      return rejectWithValue(
+        error.response?.data || { message: "Something went wrong" },
+      );
+    }
+  },
+);

@@ -22,12 +22,16 @@ export default function OnlineOrderPending() {
       // assuming your action is a createAsyncThunk and returns {payment_status: 'paid'/'failed'}
 
       if (data?.payment_status === "paid") {
-        navigate(`/payment/success?order_number=${orderNumber}`);
+        navigate(`/payment/success?order_number=${orderNumber}`, {
+          replace: true,
+        });
         clearInterval(interval);
       }
 
       if (data?.payment_status === "failed") {
-        navigate(`/payment/failed?order_number=${orderNumber}`);
+        navigate(`/payment/failed?order_number=${orderNumber}`, {
+          replace: true,
+        });
         clearInterval(interval);
       }
     }, 1000);

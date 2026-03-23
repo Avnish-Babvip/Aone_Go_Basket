@@ -18,7 +18,7 @@ export const addToWishlist = createAsyncThunk(
       );
       return data;
     } catch (error) {
-      return rejectWithValue(error.response.data.message || "Failed");
+      return rejectWithValue(error.response || "Failed");
     }
   },
 );
@@ -36,7 +36,7 @@ export const removeFromWishlist = createAsyncThunk(
       });
       return data;
     } catch (error) {
-      return rejectWithValue(error.response.data.message || "Failed");
+      return rejectWithValue(error.response || "Failed");
     }
   },
 );
@@ -61,7 +61,7 @@ export const getWishlist = createAsyncThunk(
       });
       return data;
     } catch (error) {
-      return rejectWithValue(error.response.data.message || "Failed");
+      return rejectWithValue(error.response || "Failed");
     }
   },
 );

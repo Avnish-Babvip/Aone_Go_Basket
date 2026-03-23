@@ -11,7 +11,7 @@ export const getAllRiders = createAsyncThunk(
       const params = new URLSearchParams();
 
       params.append("page", page || 1);
-      params.append("per_page", per_page || 5);
+      params.append("per_page", per_page || 10);
 
       if (search) params.append("search", search);
 
@@ -45,7 +45,7 @@ export const getAllRiderReferrals = createAsyncThunk(
       const params = new URLSearchParams();
 
       params.append("page", page);
-      params.append("per_page", 1);
+      params.append("per_page", 10);
 
       if (search) params.append("search", search);
 

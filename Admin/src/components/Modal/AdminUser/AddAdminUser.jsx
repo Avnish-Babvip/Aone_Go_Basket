@@ -142,18 +142,6 @@ const AddAdminUserModal = ({ isOpen, onClose, roles }) => {
               required
               errors={errors}
             />
-
-            {/* ✅ FULL WIDTH FIELD */}
-            {/* <div className="md:col-span-2">
-              <Textarea
-                label="Remarks"
-                name="remarks"
-                placeholder="Write remarks ..."
-                register={register}
-                required
-                errors={errors}
-              />
-            </div> */}
           </div>
         </div>
 

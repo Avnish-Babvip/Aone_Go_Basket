@@ -61,10 +61,9 @@ export const EditCustomerStatusModal = ({ isOpen, onClose, user }) => {
         {/* FORM BODY */}
         <div className="flex-1 overflow-y-auto px-8 pb-6">
           <SelectWithId
-            label="Choose Status"
+            label="Status"
             name="status"
             options={[
-              { label: "Pending", value: "pending" },
               { label: "Active", value: "active" },
               { label: "Inactive", value: "inactive" },
             ]}

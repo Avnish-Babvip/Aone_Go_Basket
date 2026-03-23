@@ -11,46 +11,59 @@ import { ViewAssignOrder } from "../../components/Modal/Order/ViewAssignOrder";
 const AssignOrder = () => {
   const dispatch = useDispatch();
   const [searchParams, setSearchParams] = useSearchParams();
-  const { assignedOrderData, orderLoading } = useSelector((state) => state.order);
+  const { assignedOrderData, orderLoading } = useSelector(
+    (state) => state.order,
+  );
   const [selectedUser, setSelectedUser] = useState({});
   const [openViewModal, setOpenViewModal] = useState(false);
   const [openEditModal, setOpenEditModal] = useState(false);
   const page = Number(searchParams.get("page")) || 1;
   const searchQuery = searchParams.get("search") || "";
   const from_date = searchParams.get("from_date") || "";
-const to_date = searchParams.get("to_date") || "";
+  const to_date = searchParams.get("to_date") || "";
 
   const users = assignedOrderData?.data || [];
   const hasData = Array.isArray(users) && users.length > 0;
-  const updateParams = ({
-    page,
-    search,
-     from_date,
-  to_date,
-  }) => {
+  const updateParams = ({ page, search, from_date, to_date }) => {
     const params = {};
     if (page) params.page = page;
     if (search) params.search = search;
-     if (from_date) params.from_date = from_date;
-  if (to_date) params.to_date = to_date;
+    if (from_date) params.from_date = from_date;
+    if (to_date) params.to_date = to_date;
     setSearchParams(params);
-
   };
-const formatDate = (dateString) => {
-  if (!dateString) return "";
+  const formatDate = (dateString) => {
+    if (!dateString) return "";
 
-  const date = new Date(dateString);
+    const date = new Date(dateString);
 
-  return date.toLocaleString("en-IN", {
-    day: "2-digit",
-    month: "short",
-    year: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-    second: "2-digit", // optional
-    hour12: true, // true = 12hr (AM/PM), false = 24hr
-  });
-};
+    return date.toLocaleString("en-IN", {
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit", // optional
+      hour12: true, // true = 12hr (AM/PM), false = 24hr
+    });
+  };
+
+  const getDeliveryStatusStyle = (status) => {
+    switch (status?.toLowerCase()) {
+      case "assigned":
+        return "bg-blue-100 text-blue-700 ring-1 ring-blue-200";
+      case "picked":
+        return "bg-indigo-100 text-indigo-700 ring-1 ring-indigo-200";
+      case "delivered":
+        return "bg-emerald-100 text-emerald-700 ring-1 ring-emerald-200";
+      case "cancelled":
+        return "bg-red-100 text-red-600 ring-1 ring-red-200";
+      case "failed":
+        return "bg-red-100 text-red-600 ring-1 ring-red-200";
+      default:
+        return "bg-gray-100 text-gray-600 ring-1 ring-gray-200";
+    }
+  };
 
   useEffect(() => {
     if (!openEditModal) {
@@ -58,18 +71,12 @@ const formatDate = (dateString) => {
         getAllAssignOrders({
           search: searchQuery,
           page,
-           from_date,
-  to_date,
+          from_date,
+          to_date,
         }),
       );
     }
-  }, [
-    openEditModal,
-    page,
-    searchQuery,
-     from_date,
-  to_date,
-  ]);
+  }, [openEditModal, page, searchQuery, from_date, to_date]);
 
   return (
     <>
@@ -78,50 +85,48 @@ const formatDate = (dateString) => {
         <div className="flex items-center justify-between px-6 py-4 border-b">
           <h2 className="font-semibold text-gray-800">All Assigned Orders</h2>
 
-<div className="flex items-end gap-4">
+          <div className="flex items-end gap-4">
+            {/* From Date */}
+            <div className="flex flex-col">
+              <label className="text-xs font-medium text-gray-500 mb-1">
+                From Date
+              </label>
+              <input
+                type="date"
+                value={from_date}
+                onChange={(e) =>
+                  updateParams({
+                    page: 1,
+                    search: searchQuery,
+                    from_date: e.target.value,
+                    to_date,
+                  })
+                }
+                className="border border-gray-300 rounded-lg px-3 py-2 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+              />
+            </div>
 
-  {/* From Date */}
-  <div className="flex flex-col">
-    <label className="text-xs font-medium text-gray-500 mb-1">
-      From Date
-    </label>
-    <input
-      type="date"
-      value={from_date}
-      onChange={(e) =>
-        updateParams({
-          page: 1,
-          search: searchQuery,
-          from_date: e.target.value,
-          to_date,
-        })
-      }
-      className="border border-gray-300 rounded-lg px-3 py-2 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
-    />
-  </div>
-
-  {/* To Date */}
-  <div className="flex flex-col">
-    <label className="text-xs font-medium text-gray-500 mb-1">
-      To Date
-    </label>
-    <input
-      type="date"
-      value={to_date}
-      min={from_date}
-      onChange={(e) =>
-        updateParams({
-          page: 1,
-          search: searchQuery,
-          from_date,
-          to_date: e.target.value,
-        })
-      }
-      className="border border-gray-300 rounded-lg px-3 py-2 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
-    />
-  </div>
-
-</div>
+            {/* To Date */}
+            <div className="flex flex-col">
+              <label className="text-xs font-medium text-gray-500 mb-1">
+                To Date
+              </label>
+              <input
+                type="date"
+                value={to_date}
+                min={from_date}
+                onChange={(e) =>
+                  updateParams({
+                    page: 1,
+                    search: searchQuery,
+                    from_date,
+                    to_date: e.target.value,
+                  })
+                }
+                className="border border-gray-300 rounded-lg px-3 py-2 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+              />
+            </div>
+          </div>
         </div>
 
         {/* TABLE */}
@@ -133,15 +138,13 @@ const formatDate = (dateString) => {
                   Order Number
                 </th>
                 <th className="text-left px-3 py-3 w-[160px]">Rider Name</th>
+                <th className="text-left px-3 py-3 w-[120px]">Assigned At</th>
+                <th className="text-left px-3 py-3 w-[120px]">Delivered At</th>
                 <th className="text-left px-3 py-3 w-[120px]">
-                 Assigned At
+                  Delivery Status
                 </th>
-                <th className="text-left px-3 py-3 w-[120px]">
-                 Delivered At
-                </th>
-                <th className="text-left px-3 py-3 w-[120px]">Delivery Status</th>
                 <th className="text-left px-3 py-3 w-[120px]">Price</th>
-                <th className="text-center px-3 py-3 w-[250px]">Action</th>
+                <th className="text-center px-3 py-3 w-[50px]">Action</th>
               </tr>
             </thead>
 
@@ -159,7 +162,7 @@ const formatDate = (dateString) => {
                     { width: "w-24 h-4" }, // Status
                   ]}
                   actionColumn
-                  actionCount={2}
+                  actionCount={1}
                   actionWidth="w-12 h-8"
                 />
               ) : !hasData ? (
@@ -198,12 +201,18 @@ const formatDate = (dateString) => {
                       {formatDate(item?.assigned_at) || "—"}
                     </td>
                     <td className="px-3 py-5 text-gray-700">
-                               {formatDate(item?.delivered_at) || "—"}
+                      {formatDate(item?.delivered_at) || "—"}
                     </td>
                     <td className="px-3 py-5 capitalize text-gray-700">
-                      {item?.delivery_status || "—"}
+                      <span
+                        className={`inline-flex items-center gap-2 text-xs font-semibold px-3 py-1.5 rounded-full shadow-sm capitalize ${getDeliveryStatusStyle(
+                          item?.delivery_status,
+                        )}`}
+                      >
+                        <span className="w-2 h-2 rounded-full bg-current opacity-70"></span>
+                        {item?.delivery_status}
+                      </span>
                     </td>
-
 
                     <td className="px-3 py-5 text-gray-700 whitespace-nowrap">
                       ₹{item?.order?.total || "—"}
@@ -219,19 +228,6 @@ const formatDate = (dateString) => {
                           className="p-2 px-3 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200"
                         >
                           <FiEye />
-                        </button>
-                        <button
-                          onClick={() => {
-                            setOpenEditModal(true);
-                            setSelectedUser({
-                              id: item?.id,
-                              status: item?.status,
-                            });
-                          }}
-                          className="p-2 px-3 flex items-center gap-2  bg-orange-100 text-orange-500 rounded-lg hover:bg-orange-200"
-                        >
-                          <FiEdit2 />
-                          <span>Change Status</span>
                         </button>
                       </div>
                     </td>

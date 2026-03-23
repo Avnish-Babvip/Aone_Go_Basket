@@ -7,6 +7,7 @@ import TableSkeleton from "../../components/TableSkeleton";
 import FilterSelect from "../../components/FilterSelect";
 import { EditCustomerStatusModal } from "../../components/Modal/Customer/EditCustomerStatus";
 import { getAllCustomers } from "../../features/actions/customer";
+import { ViewCustomerModal } from "../../components/Modal/Customer/ViewCustomer";
 
 const Customer = () => {
   const dispatch = useDispatch();
@@ -18,6 +19,7 @@ const Customer = () => {
   const hasData = Array.isArray(users) && users.length > 0;
 
   const [selectedUser, setSelectedUser] = useState({});
+  const [openViewModal, setOpenViewModal] = useState(false);
   const [openEditModal, setOpenEditModal] = useState(false);
 
   const page = Number(searchParams.get("page")) || 1;
@@ -82,7 +84,7 @@ const Customer = () => {
                 <th className="text-left px-3 py-3 w-[140px]">Mobile</th>
                 <th className="text-left px-3 py-3 w-[140px]">Referral Code</th>
                 <th className="text-left px-3 py-3 w-[120px]">Status</th>
-                <th className="text-center px-3 py-3 w-[120px]">Action</th>
+                <th className="text-center px-3 py-3 w-[150px]">Action</th>
               </tr>
             </thead>
 
@@ -163,9 +165,17 @@ const Customer = () => {
 
                     <td className="px-3 py-5">
                       <div className="flex justify-center gap-2">
-                        {/* <button className="p-2 px-3 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200">
+                        <button
+                          onClick={() => {
+                            setOpenViewModal(true);
+                            setSelectedUser({
+                              id: item?.id,
+                            });
+                          }}
+                          className="p-2 px-3 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200"
+                        >
                           <FiEye />
-                        </button> */}
+                        </button>
                         <button
                           onClick={() => {
                             setOpenEditModal(true);
@@ -207,6 +217,14 @@ const Customer = () => {
         isOpen={openEditModal}
         onClose={() => setOpenEditModal(false)}
         user={selectedUser}
+      />
+
+      <ViewCustomerModal
+        isOpen={openViewModal}
+        onClose={() => {
+          setOpenViewModal(false);
+        }}
+        id={selectedUser.id}
       />
     </>
   );

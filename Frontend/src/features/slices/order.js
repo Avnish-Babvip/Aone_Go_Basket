@@ -27,7 +27,11 @@ const initialState = {
 const orderSlice = createSlice({
   name: "order",
   initialState,
-  reducers: {},
+  reducers: {
+    clearError: (state) => {
+      state.errorMessage = "";
+    },
+  },
   extraReducers: (builder) => {
     builder
       .addCase(checkout.pending, (state, action) => {
@@ -175,6 +179,6 @@ const orderSlice = createSlice({
   },
 });
 
-export const {} = orderSlice.actions;
+export const { clearError } = orderSlice.actions;
 
 export default orderSlice.reducer;

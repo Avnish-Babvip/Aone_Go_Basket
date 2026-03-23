@@ -1,6 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { toast } from "sonner";
-import { getHomeData } from "../actions/home";
+import { getHomeContent, getHomeData, siteSettings } from "../actions/home";
 
 const formattedDate = new Date().toLocaleString("en-US", {
   weekday: "long",
@@ -16,6 +16,8 @@ const initialState = {
   errorMessage: "",
   homeLoading: false,
   homeData: [],
+  contentData: {},
+  siteData: {},
 };
 
 // ---------------------------------------------------------------------------------------
@@ -39,6 +41,32 @@ const homeSlice = createSlice({
       .addCase(getHomeData.rejected, (state, action) => {
         state.errorMessage = action.payload || "Failed";
         state.homeLoading = false;
+        toast(action.payload, {
+          description: formattedDate,
+        });
+      })
+      .addCase(getHomeContent.pending, (state) => {
+        state.errorMessage = "";
+      })
+      .addCase(getHomeContent.fulfilled, (state, action) => {
+        state.errorMessage = "";
+        state.contentData = action.payload.data;
+      })
+      .addCase(getHomeContent.rejected, (state, action) => {
+        state.errorMessage = action.payload || "Failed";
+        toast(action.payload, {
+          description: formattedDate,
+        });
+      })
+      .addCase(siteSettings.pending, (state) => {
+        state.errorMessage = "";
+      })
+      .addCase(siteSettings.fulfilled, (state, action) => {
+        state.errorMessage = "";
+        state.siteData = action.payload.data;
+      })
+      .addCase(siteSettings.rejected, (state, action) => {
+        state.errorMessage = action.payload || "Failed";
         toast(action.payload, {
           description: formattedDate,
         });

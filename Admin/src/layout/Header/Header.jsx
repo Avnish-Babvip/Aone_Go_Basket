@@ -10,7 +10,7 @@ import { FiChevronDown } from "react-icons/fi";
 
 export const Header = ({ setSidebarOpen }) => {
   const PAGE_CONFIG = {
-    "/admin/dashboard": {
+    "/admin": {
       title: "Dashboard",
     },
     "/admin/user": {
@@ -24,6 +24,13 @@ export const Header = ({ setSidebarOpen }) => {
     "/admin/customer/kyc": {
       title: "Customers Kyc Document List",
       placeholder: "Search name",
+    },
+    "/admin/customer/subscribe": {
+      title: "Subscribers List",
+      placeholder: "Search email",
+    },
+    "/admin/customer/contact": {
+      title: "Contact List",
     },
     "/admin/role": {
       title: "Role List",
@@ -53,6 +60,9 @@ export const Header = ({ setSidebarOpen }) => {
       title: "Rider Kyc Approval List",
       placeholder: "Search rider",
     },
+    "/admin/rider/commission": {
+      title: "Rider Commission",
+    },
     "/admin/order": {
       title: "Order List",
       placeholder: "Search customer or order number ",
@@ -65,6 +75,9 @@ export const Header = ({ setSidebarOpen }) => {
       title: "Unassigned Order List",
       placeholder: "Search customer or order number ",
     },
+    "/admin/order/download": {
+      title: "Download Orders Sheet",
+    },
     "/admin/coupon": {
       title: "Coupon List",
       placeholder: "Search coupon code",
@@ -73,10 +86,33 @@ export const Header = ({ setSidebarOpen }) => {
       title: "Offer List",
       placeholder: "Search offer name",
     },
-    "/admin/settings": {
-      title: "Settings",
+    "/admin/tax": {
+      title: "Taxes List",
+    },
+    "/admin/settings/order-settings": {
+      title: "Order Settings",
+      placeholder: "Search pincode number",
+    },
+    "/admin/settings/location": {
+      title: "Location",
+    },
+    "/admin/settings/company-info": {
+      title: "Company Information",
+    },
+    "/admin/settings/delivery-pincode": {
+      title: "Delivery Pincode List",
+      placeholder: "Search pincode number",
+    },
+    "/admin/settings/site-settings": {
+      title: "Site Settings",
+    },
+    "/admin/settings/payment-gateway": {
+      title: "Payment Gateway List",
     },
 
+    "/rider": {
+      title: "Rider Dashboard",
+    },
     "/rider/order/assigned": {
       title: "Assigned Orders",
       placeholder: "Search name or order number ",
@@ -268,7 +304,7 @@ function AccountSection({}) {
             My Profile
           </NavLink>
           <NavLink
-            to="/account/change-password"
+            to="change-password"
             onClick={() => setOpen(false)}
             className={({ isActive }) =>
               `flex items-center px-5 py-2.5 text-sm transition-all ${

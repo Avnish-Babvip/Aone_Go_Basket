@@ -4,7 +4,16 @@ import { instance } from "../../services/axiosInterceptor";
 export const getAllOrders = createAsyncThunk(
   "admin/orders",
   async (
-    { search, status, page, payment_status, payment_method },
+    {
+      search,
+      status,
+      page,
+      payment_status,
+      payment_method,
+      from_date,
+      to_date,
+      period,
+    },
     { getState, rejectWithValue },
   ) => {
     try {
@@ -27,6 +36,15 @@ export const getAllOrders = createAsyncThunk(
       }
       if (payment_method !== "" && payment_method !== undefined) {
         params.append("payment_method", payment_method);
+      }
+      if (from_date !== "" && from_date !== undefined) {
+        params.append("from_date", from_date);
+      }
+      if (to_date !== "" && to_date !== undefined) {
+        params.append("to_date", payment_method);
+      }
+      if (period !== "" && period !== undefined) {
+        params.append("period", period);
       }
 
       const link = `/admin/orders?${params.toString()}`;
@@ -236,6 +254,90 @@ export const updateOrderSettings = createAsyncThunk(
         },
       });
 
+      return data;
+    } catch (error) {
+      return rejectWithValue(error.response.data.message || "Failed ");
+    }
+  },
+);
+
+export const exportOrders =
+  ({ payload, loginToken }) =>
+  async () => {
+    try {
+      const response = await instance.post("/admin/Track-export", payload, {
+        headers: {
+          "Content-type": "application/json",
+          Authorization: `Bearer ${loginToken}`,
+        },
+        responseType: "blob",
+      });
+
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", "orders.xlsx");
+
+      document.body.appendChild(link);
+      link.click();
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+export const customerNotification =
+  ({ payload, loginToken }) =>
+  async () => {
+    try {
+      const response = await instance.post(
+        "/admin/customer-notifications/send",
+        payload,
+        {
+          headers: {
+            "Content-type": "application/json",
+            Authorization: `Bearer ${loginToken}`,
+          },
+          responseType: "blob",
+        },
+      );
+
+      return response.data;
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+export const singleOrderPrint = createAsyncThunk(
+  "/admin/print/1",
+  async (id, { getState, rejectWithValue }) => {
+    try {
+      // ✅ Get token directly from store
+      const loginToken = getState().authentication?.adminData?.token;
+      const { data } = await instance.get(`/admin/print/${id}`, {
+        responseType: "blob",
+        headers: {
+          Authorization: `Bearer ${loginToken}`,
+        },
+      });
+      return data;
+    } catch (error) {
+      return rejectWithValue(error.response.data.message || "Failed ");
+    }
+  },
+);
+export const multipleOrderPrint = createAsyncThunk(
+  "/admin/bulk-print",
+  async (payload, { getState, rejectWithValue }) => {
+    try {
+      // ✅ Get token directly from store
+      const loginToken = getState().authentication?.adminData?.token;
+      const { data } = await instance.post(`/admin/bulk-print`, payload, {
+        responseType: "blob",
+        headers: {
+          Authorization: `Bearer ${loginToken}`,
+        },
+      });
       return data;
     } catch (error) {
       return rejectWithValue(error.response.data.message || "Failed ");

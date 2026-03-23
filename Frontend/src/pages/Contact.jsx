@@ -1,4 +1,11 @@
+import { useSelector } from "react-redux";
+import ContactForm from "../components/ContactForm";
+
 export default function ContactUs() {
+  const { homeData, contentData, homeLoading } = useSelector(
+    (state) => state.home,
+  );
+
   return (
     <div className="w-full bg-white mt-20">
       {/* ===== HERO SECTION ===== */}
@@ -109,50 +116,7 @@ export default function ContactUs() {
         </div>
 
         {/* RIGHT FORM */}
-        <form className="bg-white p-6 rounded-lg shadow">
-          <div className="mb-4">
-            <label className="text-sm font-medium">Full Name *</label>
-            <input
-              type="text"
-              placeholder="Enter your full name"
-              className="w-full mt-1 border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"
-            />
-          </div>
-
-          <div className="mb-4">
-            <label className="text-sm font-medium">Email Address *</label>
-            <input
-              type="email"
-              placeholder="Enter your email"
-              className="w-full mt-1 border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"
-            />
-          </div>
-
-          <div className="mb-4">
-            <label className="text-sm font-medium">Phone (Optional)</label>
-            <input
-              type="text"
-              placeholder="Enter your phone"
-              className="w-full mt-1 border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"
-            />
-          </div>
-
-          <div className="mb-4">
-            <label className="text-sm font-medium">Message</label>
-            <textarea
-              rows="4"
-              placeholder="Briefly describe..."
-              className="w-full mt-1 border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"
-            ></textarea>
-          </div>
-
-          <button
-            type="submit"
-            className="w-full bg-brand-green text-white py-2 rounded-xl hover:bg-lime-600 transition"
-          >
-            Send Message
-          </button>
-        </form>
+        <ContactForm />
       </div>
 
       {/* ===== BOTTOM INFO SECTION ===== */}

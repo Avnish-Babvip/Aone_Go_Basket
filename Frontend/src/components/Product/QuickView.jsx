@@ -13,6 +13,7 @@ import { addToCart, deleteCart, updateCart } from "../../features/actions/cart";
 function QuickViewModal({ product, onClose, onSwitchProduct }) {
   const { relatedProductData } = useSelector((state) => state.product);
   const dispatch = useDispatch();
+  const [imgLoaded, setImgLoaded] = useState(false);
   const [activeImg, setActiveImg] = useState(0);
   const [selectedVariation, setSelectedVariation] = useState(
     product?.variations?.[0] || null,
@@ -129,6 +130,8 @@ function QuickViewModal({ product, onClose, onSwitchProduct }) {
                     src={`${import.meta.env.VITE_REACT_APP_IMAGE_URL}/${img.image}`}
                     className="w-full h-full object-cover"
                     alt=""
+                    loading="lazy"
+                    decoding="async"
                   />
                 </button>
               ))}
@@ -139,8 +142,12 @@ function QuickViewModal({ product, onClose, onSwitchProduct }) {
               {activeImage && (
                 <img
                   src={`${import.meta.env.VITE_REACT_APP_IMAGE_URL}/${activeImage.image}`}
-                  className="max-h-[400px] w-auto object-contain"
+                  className={`max-h-[400px] w-auto object-contain transition-all duration-300 ${
+                    imgLoaded ? "opacity-100 blur-0" : "opacity-0 blur-md"
+                  }`}
                   alt={product.name}
+                  loading="eager"
+                  onLoad={() => setImgLoaded(true)}
                 />
               )}
             </div>

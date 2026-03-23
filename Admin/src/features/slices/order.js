@@ -8,6 +8,8 @@ import {
   getAllOrders,
   getOrderSettings,
   getSingleOrder,
+  multipleOrderPrint,
+  singleOrderPrint,
   updateOrderSettings,
 } from "../actions/order";
 
@@ -24,6 +26,8 @@ const formattedDate = new Date().toLocaleString("en-US", {
 const initialState = {
   errorMessage: "",
   orderLoading: false,
+  printLoading: false,
+  multiplePrintLoading: false,
   orderData: {},
   settingData: {},
   assignedOrderData: {},
@@ -166,6 +170,42 @@ const orderSlice = createSlice({
       .addCase(editOrderStatus.rejected, (state, action) => {
         state.errorMessage = action.payload || "Failed";
         state.orderLoading = false;
+        toast(action.payload, {
+          description: formattedDate,
+        });
+      })
+      .addCase(singleOrderPrint.pending, (state) => {
+        state.errorMessage = "";
+        state.printLoading = true;
+      })
+      .addCase(singleOrderPrint.fulfilled, (state, action) => {
+        state.errorMessage = "";
+        state.printLoading = false;
+        toast("Print order successfully.", {
+          description: formattedDate,
+        });
+      })
+      .addCase(singleOrderPrint.rejected, (state, action) => {
+        state.errorMessage = action.payload || "Failed";
+        state.printLoading = false;
+        toast(action.payload, {
+          description: formattedDate,
+        });
+      })
+      .addCase(multipleOrderPrint.pending, (state) => {
+        state.errorMessage = "";
+        state.multiplePrintLoading = true;
+      })
+      .addCase(multipleOrderPrint.fulfilled, (state, action) => {
+        state.errorMessage = "";
+        state.multiplePrintLoading = false;
+        toast("Multiple print order successfully.", {
+          description: formattedDate,
+        });
+      })
+      .addCase(multipleOrderPrint.rejected, (state, action) => {
+        state.errorMessage = action.payload || "Failed";
+        state.multiplePrintLoading = false;
         toast(action.payload, {
           description: formattedDate,
         });

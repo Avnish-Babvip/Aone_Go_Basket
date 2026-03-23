@@ -3,6 +3,7 @@ import { toast } from "sonner";
 import {
   addAddress,
   addBusinessInfo,
+  contactUs,
   deleteAddress,
   getBusinessInfo,
   getCustomerAddresses,
@@ -10,6 +11,7 @@ import {
   getCustomerKycStatus,
   setDefaultAddress,
   submitKyc,
+  subscribeNow,
   updateAddress,
   updateBusinessInfo,
   updateProfile,
@@ -83,7 +85,7 @@ const customerSlice = createSlice({
       })
       .addCase(getCustomerAddresses.pending, (state) => {
         state.errorMessage = "";
-        state.addressLoading = true;
+        state.addressLoading = false;
       })
       .addCase(getCustomerAddresses.fulfilled, (state, action) => {
         state.errorMessage = "";
@@ -131,6 +133,124 @@ const customerSlice = createSlice({
             fontWeight: "600",
           },
         });
+      })
+      .addCase(contactUs.pending, (state, action) => {
+        state.errorMessage = "";
+        state.customerLoading = true;
+      })
+
+      .addCase(contactUs.fulfilled, (state, action) => {
+        state.errorMessage = "";
+        state.customerLoading = false;
+        toast.success("CONTACT DETAILS SENT.", {
+          position: "top-right",
+          style: {
+            background: "#79BF28",
+            color: "#fff",
+            borderRadius: "16px",
+            padding: "16px",
+            fontWeight: "600",
+          },
+        });
+      })
+
+      .addCase(contactUs.rejected, (state, action) => {
+        state.customerLoading = false;
+        const payload = action.payload;
+
+        // ✅ Validation errors from backend
+        if (payload?.errors) {
+          Object.values(payload.errors).forEach((messages) => {
+            messages.forEach((msg) => {
+              toast.error(msg, {
+                position: "top-right",
+                style: {
+                  background: "#fb2c36",
+                  color: "#fff",
+                  borderRadius: "16px",
+                  padding: "16px",
+                  fontWeight: "600",
+                },
+              });
+            });
+          });
+
+          state.errorMessage = payload.message || "Validation Error";
+        } else {
+          // ✅ Fallback error
+          const message = payload?.message || payload || "Failed";
+          state.errorMessage = message;
+
+          toast.error(message, {
+            position: "top-right",
+            style: {
+              background: "#fb2c36",
+              color: "#fff",
+              borderRadius: "16px",
+              padding: "16px",
+              fontWeight: "600",
+            },
+          });
+        }
+      })
+      .addCase(subscribeNow.pending, (state, action) => {
+        state.errorMessage = "";
+        state.customerLoading = true;
+      })
+
+      .addCase(subscribeNow.fulfilled, (state, action) => {
+        state.errorMessage = "";
+        state.customerLoading = false;
+        toast.success("YOU ARE NOW SUBSCRIBED.", {
+          position: "top-right",
+          style: {
+            background: "#79BF28",
+            color: "#fff",
+            borderRadius: "16px",
+            padding: "16px",
+            fontWeight: "600",
+          },
+        });
+      })
+
+      .addCase(subscribeNow.rejected, (state, action) => {
+        state.customerLoading = false;
+        const payload = action.payload;
+
+        // ✅ Validation errors from backend
+        if (payload?.errors) {
+          Object.values(payload.errors).forEach((messages) => {
+            messages.forEach((msg) => {
+              toast.error(msg, {
+                position: "top-right",
+                style: {
+                  background: "#fb2c36",
+                  color: "#fff",
+                  borderRadius: "16px",
+                  padding: "16px",
+                  fontWeight: "600",
+                },
+              });
+            });
+          });
+
+          state.errorMessage = payload.message || "Validation Error";
+        } else {
+          // ✅ Fallback error
+          const message = payload?.message || payload || "Failed";
+          state.errorMessage = message;
+
+          toast.error(message, {
+            position: "top-right",
+            style: {
+              background: "#fb2c36",
+              color: "#fff",
+              borderRadius: "16px",
+              padding: "16px",
+              fontWeight: "600",
+            },
+          });
+        }
       })
       .addCase(updateBusinessInfo.pending, (state, action) => {
         state.errorMessage = "";

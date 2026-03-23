@@ -34,37 +34,34 @@ export default function ProfilePage() {
 
   return (
     <>
-    <div className="min-h-screen bg-gray-50 pt-28 pb-20 px-4 lg:px-16 space-y-10">
-      {/* ================= PROFILE FORM ================= */}
-      <div className="max-w-5xl mx-auto bg-white rounded-3xl shadow-sm  p-8 md:p-12">
-        <ProfileForm profileData={profileData} />
-      </div>
+      <div className="min-h-screen bg-gray-50 pt-28 pb-20 px-4 lg:px-16 space-y-10">
+        {/* ================= PROFILE FORM ================= */}
+        <div className="max-w-5xl mx-auto bg-white rounded-3xl shadow-sm  p-8 md:p-12">
+          <ProfileForm profileData={profileData} />
+        </div>
 
-      {/* ================= BUSINESS INFO ================= */}
-      <div className="max-w-5xl mx-auto bg-white rounded-3xl shadow-sm p-8 md:p-12">
-        <h2 className="text-xl font-bold text-gray-800 mb-6">
-          Business Information
-        </h2>
+        {/* ================= BUSINESS INFO ================= */}
+        <div className="max-w-5xl mx-auto bg-white rounded-3xl shadow-sm p-8 md:p-12">
+          <h2 className="text-xl font-bold text-gray-800 mb-6">
+            Business Information
+          </h2>
 
-        <BusinessInfoForm />
-      </div>
-      {/* ================= ADDRESS INFO ================= */}
-
-
+          <BusinessInfoForm />
+        </div>
+        {/* ================= ADDRESS INFO ================= */}
 
         <AddressInfo />
 
+        {/* ================= KYC FORM ================= */}
+        <div className="max-w-5xl mx-auto bg-white rounded-3xl shadow-sm p-8 md:p-12">
+          <h2 className="text-xl font-bold text-gray-800 mb-6">
+            KYC Information
+          </h2>
 
-      {/* ================= KYC FORM ================= */}
-      <div className="max-w-5xl mx-auto bg-white rounded-3xl shadow-sm p-8 md:p-12">
-        <h2 className="text-xl font-bold text-gray-800 mb-6">
-          KYC Information
-        </h2>
-
-        {kycData ? <KycStatusCard kyc={kycData} /> : <KycUploadSection />}
+          {kycData ? <KycStatusCard kyc={kycData} /> : <KycUploadSection />}
+          {kycData.status === "rejected" && <KycUploadSection />}
+        </div>
       </div>
-    </div>
-
     </>
   );
 }
@@ -227,7 +224,7 @@ function KycUploadSection() {
   const dispatch = useDispatch();
   const selectedType = watch("document_type");
 
-  const onSubmit = (data) => {
+  const onSubmit = async (data) => {
     const formData = new FormData();
 
     formData.append("document_type", data.document_type);
@@ -238,14 +235,17 @@ function KycUploadSection() {
       formData.append("document_back", data.document_back[0]);
     }
 
-    dispatch(submitKyc(formData));
+    await dispatch(submitKyc(formData)).unwrap();
+
+    // 🔥 refresh KYC status
+    dispatch(getCustomerKycStatus());
   };
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
       {/* ================= DOCUMENT TYPE ================= */}
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">
+        <label className="block text-sm font-medium text-gray-700 my-2">
           Select Document Type <span className="text-red-500">*</span>
         </label>
 
@@ -486,6 +486,12 @@ function BusinessInfoForm() {
 
   /* ================= COUNTRY → STATE ================= */
   useEffect(() => {
+    if (!selectedCountry) return;
+
+    dispatch(getStates(selectedCountry));
+  }, [selectedCountry]);
+
+  useEffect(() => {
     if (!selectedState) return;
 
     dispatch(getCities(selectedState));
@@ -676,15 +682,15 @@ function BusinessInfoForm() {
 function AddressInfo() {
   const dispatch = useDispatch();
   const { addressData } = useSelector((state) => state.customer);
-    const [editAddressData, setEditAddressData] = useState(null);
-    const [isAddressModalOpen, setIsAddressModalOpen] = useState(false);
+  const [editAddressData, setEditAddressData] = useState(null);
+  const [isAddressModalOpen, setIsAddressModalOpen] = useState(false);
   const addresses = addressData || [];
 
-    const handleDeleteAddress = (id) => {
-      dispatch(deleteAddress(id)).then(() => {
-        dispatch(getCustomerAddresses());
-      });
-    };
+  const handleDeleteAddress = (id) => {
+    dispatch(deleteAddress(id)).then(() => {
+      dispatch(getCustomerAddresses());
+    });
+  };
 
   useEffect(() => {
     dispatch(getCustomerAddresses());
@@ -692,94 +698,94 @@ function AddressInfo() {
 
   return (
     <>
-    <div className="max-w-5xl mx-auto bg-white rounded-3xl shadow-sm  p-8 md:p-12">
-      <div className="flex justify-between items-center mb-6">
-        <h2 className="text-xl font-black">Saved Addresses</h2>
+      <div className="max-w-5xl mx-auto bg-white rounded-3xl shadow-sm  p-8 md:p-12">
+        <div className="flex justify-between items-center mb-6">
+          <h2 className="text-xl font-black">Saved Addresses</h2>
 
-        <button
-          className="text-brand-green font-semibold text-sm"
-          onClick={() => {
-            setEditAddressData(null);
-            setIsAddressModalOpen(true);
-          }}
-        >
-          + Add New Address
-        </button>
-      </div>
-
-      {addresses.length === 0 ? (
-        <p className="text-gray-500 text-sm">No shipping address found.</p>
-      ) : (
-        <div className="space-y-4">
-          {addresses.map((addr) => (
-            <div
-              key={addr.id}
-              className={`border rounded-2xl p-4 transition ${
-                addr?.is_default_shipping
-                  ? "border-brand-green bg-emerald-50"
-                  : "border-gray-200"
-              }`}
-            >
-              <label className="flex items-start gap-3 cursor-pointer">
-                <div className="flex-1">
-                  <p className="font-semibold">{addr.name}</p>
-
-                  <p className="text-sm text-gray-600 mt-1">
-                    {addr.address_line_1}, {addr.address_line_2}
-                  </p>
-
-                  <p className="text-sm text-gray-600">
-                    {addr.city_name}, {addr.pincode}, {addr.state_name},{" "}
-                    {addr.country_name}
-                  </p>
-
-                  <p className="text-sm text-gray-600">📞 {addr.mobile}</p>
-
-                  {addr.is_default_shipping && (
-                    <span className="inline-block mt-2 text-xs bg-brand-green text-white px-2 py-1 rounded-full">
-                      Default Address
-                    </span>
-                  )}
-                </div>
-              </label>
-
-              <div className="flex gap-4 mt-4 text-sm">
-                <button
-                  onClick={() => {
-                    setEditAddressData(addr);
-                    setIsAddressModalOpen(true);
-                  }}
-                  className="text-blue-600 font-medium"
-                >
-                  Update
-                </button>
-
-                {!addr.is_default_shipping && (
-                  <button
-                    onClick={() =>
-                      dispatch(setDefaultAddress({ address_id: addr.id })).then(
-                        () => dispatch(getCustomerAddresses()),
-                      )
-                    }
-                    className="text-brand-green font-medium"
-                  >
-                    Set Default
-                  </button>
-                )}
-
-                <button
-                  onClick={() => handleDeleteAddress(addr.id)}
-                  className="text-red-500 font-medium"
-                >
-                  Delete
-                </button>
-              </div>
-            </div>
-          ))}
+          <button
+            className="text-brand-green font-semibold text-sm"
+            onClick={() => {
+              setEditAddressData(null);
+              setIsAddressModalOpen(true);
+            }}
+          >
+            + Add New Address
+          </button>
         </div>
-      )}
-    </div>
-              <UpdateAddressModal
+
+        {addresses.length === 0 ? (
+          <p className="text-gray-500 text-sm">No shipping address found.</p>
+        ) : (
+          <div className="space-y-4">
+            {addresses.map((addr) => (
+              <div
+                key={addr.id}
+                className={`border rounded-2xl p-4 transition ${
+                  addr?.is_default_shipping
+                    ? "border-brand-green bg-emerald-50"
+                    : "border-gray-200"
+                }`}
+              >
+                <label className="flex items-start gap-3 cursor-pointer">
+                  <div className="flex-1">
+                    <p className="font-semibold">{addr.name}</p>
+
+                    <p className="text-sm text-gray-600 mt-1">
+                      {addr.address_line_1}, {addr.address_line_2}
+                    </p>
+
+                    <p className="text-sm text-gray-600">
+                      {addr.city_name}, {addr.pincode}, {addr.state_name},{" "}
+                      {addr.country_name}
+                    </p>
+
+                    <p className="text-sm text-gray-600">📞 {addr.mobile}</p>
+
+                    {addr.is_default_shipping && (
+                      <span className="inline-block mt-2 text-xs bg-brand-green text-white px-2 py-1 rounded-full">
+                        Default Address
+                      </span>
+                    )}
+                  </div>
+                </label>
+
+                <div className="flex gap-4 mt-4 text-sm">
+                  <button
+                    onClick={() => {
+                      setEditAddressData(addr);
+                      setIsAddressModalOpen(true);
+                    }}
+                    className="text-blue-600 font-medium"
+                  >
+                    Update
+                  </button>
+
+                  {!addr.is_default_shipping && (
+                    <button
+                      onClick={() =>
+                        dispatch(
+                          setDefaultAddress({ address_id: addr.id }),
+                        ).then(() => dispatch(getCustomerAddresses()))
+                      }
+                      className="text-brand-green font-medium"
+                    >
+                      Set Default
+                    </button>
+                  )}
+
+                  <button
+                    onClick={() => handleDeleteAddress(addr.id)}
+                    className="text-red-500 font-medium"
+                  >
+                    Delete
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+      <UpdateAddressModal
         isOpen={isAddressModalOpen}
         onClose={() => {
           setIsAddressModalOpen(false);
@@ -787,14 +793,22 @@ function AddressInfo() {
         }}
         editData={editAddressData}
         onAddAddress={(data) =>
-          dispatch(addAddress(data)).then(() =>
-            dispatch(getCustomerAddresses()),
-          )
+          dispatch(addAddress(data))
+            .unwrap()
+            .then(() => {
+              dispatch(getCustomerAddresses());
+              setIsAddressModalOpen(false);
+              setEditAddressData(null);
+            })
         }
         onUpdateAddress={(data) =>
-          dispatch(updateAddress(data)).then(() =>
-            dispatch(getCustomerAddresses()),
-          )
+          dispatch(updateAddress(data))
+            .unwrap()
+            .then(() => {
+              dispatch(getCustomerAddresses());
+              setIsAddressModalOpen(false);
+              setEditAddressData(null);
+            })
         }
       />
     </>

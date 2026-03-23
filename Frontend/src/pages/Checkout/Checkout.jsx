@@ -20,6 +20,7 @@ import {
 import { checkout } from "../../features/actions/order";
 import { useNavigate } from "react-router-dom";
 import { Spinner } from "../../components/Loader/Spinner";
+import { clearError } from "../../features/slices/order";
 
 export default function Checkout() {
   const dispatch = useDispatch();
@@ -29,7 +30,7 @@ export default function Checkout() {
   const [editAddressData, setEditAddressData] = useState(null);
   const [couponCode, setCouponCode] = useState("");
 
-  const { cartData, chargesLoading, cartLoading, couponLoading } = useSelector(
+  const { cartData, chargesLoading, couponLoading } = useSelector(
     (state) => state.cart,
   );
 
@@ -123,6 +124,7 @@ export default function Checkout() {
       await dispatch(getCartData());
 
       navigate("/checkout/order-placed", {
+        replace: true,
         state: {
           order: orderData,
         },
@@ -153,6 +155,7 @@ export default function Checkout() {
   useEffect(() => {
     dispatch(getCountries());
     dispatch(getCustomerAddresses());
+    dispatch(clearError());
   }, [dispatch]);
 
   useEffect(() => {
@@ -602,7 +605,7 @@ export default function Checkout() {
             </div>
 
             {errorMessage && (
-              <div className="text-sm mt-3 rounded-xl py-1  bg-red-500 text-white text-center">
+              <div className="text-[13px] mt-3 rounded-lg py-1  bg-red-500 text-white text-center">
                 {errorMessage}
               </div>
             )}
@@ -639,14 +642,22 @@ export default function Checkout() {
         }}
         editData={editAddressData}
         onAddAddress={(data) =>
-          dispatch(addAddress(data)).then(() =>
-            dispatch(getCustomerAddresses()),
-          )
+          dispatch(addAddress(data))
+            .unwrap()
+            .then(() => {
+              dispatch(getCustomerAddresses());
+              setIsAddressModalOpen(false);
+              setEditAddressData(null);
+            })
         }
         onUpdateAddress={(data) =>
-          dispatch(updateAddress(data)).then(() =>
-            dispatch(getCustomerAddresses()),
-          )
+          dispatch(updateAddress(data))
+            .unwrap()
+            .then(() => {
+              dispatch(getCustomerAddresses());
+              setIsAddressModalOpen(false);
+              setEditAddressData(null);
+            })
         }
       />
     </>

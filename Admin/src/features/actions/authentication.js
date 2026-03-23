@@ -61,6 +61,23 @@ export const resetForgotPassword = createAsyncThunk(
   },
 );
 
+export const changePassword = createAsyncThunk(
+  "admin/change-password",
+  async (payload, { getState, rejectWithValue }) => {
+    try {
+      const loginToken = getState().authentication?.adminData?.token;
+      const { data } = await instance.post(`/admin/change-password`, payload, {
+        headers: {
+          Authorization: `Bearer ${loginToken}`,
+        },
+      });
+      return data;
+    } catch (error) {
+      return rejectWithValue(error.response.data.message || "Failed ");
+    }
+  },
+);
+
 export const adminLogout = createAsyncThunk(
   "admin/Logout",
   async (loginToken, { rejectWithValue }) => {

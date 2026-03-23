@@ -8,26 +8,29 @@ import { adminLogin } from "../../features/actions/authentication";
 import { Spinner } from "../../components/Loader/Spinner";
 import { resetUserState } from "../../features/slices/authentication";
 
+export const slides = [
+  {
+    title: "Built for Bulk. Driven by Precision.",
+    subtitle: "Accuracy. Speed. Consistency.",
+    desc: "Your wholesale supply, handled step by step.",
+    imageUrl: "/1.png",
+  },
+  {
+    title: "Trust Built Through Timely Deliveries.",
+    subtitle: "On time. Every time.",
+    desc: "Reliability that keeps your shelves stocked.",
+    imageUrl: "/2.png",
+  },
+  {
+    title: "Carefully Sorted. Consistently Delivered.",
+    subtitle: "No delays. No surprises.",
+    desc: "Fresh stock arrives when promised.",
+    imageUrl: "/3.png",
+  },
+];
+
 const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
-  const slides = [
-    {
-      title: "Demo Text Here",
-      subtitle: "Slider 1",
-      desc: "Founder, Flo and Wer shop",
-    },
-    {
-      title: "Empower Your Business",
-      subtitle: "Slider 2",
-      desc: "Grow with Smart HRMS Tools",
-    },
-    {
-      title: "Seamless Experience",
-      subtitle: "Slider 3",
-      desc: "Manage employees with ease",
-    },
-  ];
-
   const [current, setCurrent] = useState(0);
 
   const nextSlide = () => {
@@ -140,38 +143,54 @@ const Login = () => {
             {isLoading ? <Spinner /> : "Log in"}
           </button>
 
-          <div className="flex justify-center gap-4 mt-4 text-sm">
+          {/* <div className="flex justify-center gap-4 mt-4 text-sm">
             <a href="#" className="text-black hover:underline">
               Customer Support
             </a>
             <a href="#" className="text-black hover:underline">
               Terms of Service
             </a>
-          </div>
+          </div> */}
         </form>
 
         {/* Right Side - Slider */}
-        <div className="hidden md:flex w-1/2 bg-gradient-to-b from-[#009220] to-[#549A01] text-white flex-col  justify-end px-10 relative">
-          <div className="transition-all duration-700 absolute bottom-10">
+        <div className="hidden md:flex w-1/2  text-white flex-col justify-end px-10 relative overflow-hidden">
+          {/* Background Image */}
+          <div className="absolute inset-0">
+            {/* Image */}
+            <img
+              src={slides[current].imageUrl}
+              alt="background"
+              className="absolute inset-0 w-full h-full object-cover transition-opacity duration-700"
+            />
+
+            {/* Gradient overlay */}
+            <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/70"></div>
+          </div>
+
+          {/* Overlay */}
+          {/* <div className="absolute inset-0 bg-gradient-to-b "></div> */}
+
+          <div className="transition-all duration-700 absolute bottom-10 z-10">
             <h2 className="text-3xl font-bold mb-2">{slides[current].title}</h2>
             <h4 className="font-semibold">{slides[current].subtitle}</h4>
-            <p className="text-gray-400">{slides[current].desc}</p>
+            <p className="text-gray-200">{slides[current].desc}</p>
             <p className="text-sm mt-6 opacity-70">
               {current + 1} of {slides.length}
             </p>
           </div>
 
           {/* Controls */}
-          <div className="absolute bottom-10 right-10 flex gap-3">
+          <div className="absolute bottom-10 right-10 flex gap-3 z-10">
             <button
               onClick={prevSlide}
-              className="w-9 h-9 flex  items-center justify-center rounded-full border border-gray-400 hover:bg-gray-200 hover:text-black transition"
+              className="w-9 h-9 flex items-center justify-center rounded-full border border-gray-300 hover:bg-white hover:text-black transition"
             >
               <IoArrowBackOutline />
             </button>
             <button
               onClick={nextSlide}
-              className="w-9 h-9 flex items-center justify-center rounded-full border border-gray-400 hover:bg-gray-200 hover:text-black transition"
+              className="w-9 h-9 flex items-center justify-center rounded-full border border-gray-300 hover:bg-white hover:text-black transition"
             >
               <IoArrowForwardOutline />
             </button>

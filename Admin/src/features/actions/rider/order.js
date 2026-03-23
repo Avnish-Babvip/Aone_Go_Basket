@@ -20,7 +20,7 @@ export const getAssignedOrders = createAsyncThunk(
 
       // // ✅ Add status filter
       if (status !== "" && status !== undefined) {
-        params.append("status", status);
+        params.append("delivery_status", status);
       }
       if (filter !== "" && filter !== undefined) {
         params.append("filter", filter);
@@ -67,7 +67,7 @@ export const getAllOrderHistory = createAsyncThunk(
 
       // // ✅ Add status filter
       if (status !== "" && status !== undefined) {
-        params.append("status", status);
+        params.append("delivery_status", status);
       }
       if (payment_method !== "" && payment_method !== undefined) {
         params.append("payment_method", payment_method);

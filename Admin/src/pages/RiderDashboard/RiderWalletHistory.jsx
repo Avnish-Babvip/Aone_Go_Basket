@@ -143,7 +143,6 @@ const RiderWalletHistory = () => {
                 <th className="text-left px-3 py-3 w-[120px]">Description</th>
                 <th className="text-left px-3 py-3 w-[120px]">Type</th>
                 <th className="text-left px-3 py-3 w-[120px]">Amount</th>
-                <th className="text-left px-3 py-3 w-[120px]">Referral Code</th>
               </tr>
             </thead>
 
@@ -157,7 +156,6 @@ const RiderWalletHistory = () => {
                     { width: "w-24 h-4" }, // Username
                     { width: "w-24 h-4" }, // Email
                     { width: "w-24 h-4" }, // Mobile
-                    { width: "w-24 h-4" }, // Status
                   ]}
                 />
               ) : !hasData ? (
@@ -206,9 +204,6 @@ const RiderWalletHistory = () => {
 
                     <td className="px-3 py-5 text-gray-700 whitespace-nowrap">
                       ₹{item?.amount || "—"}
-                    </td>
-                    <td className="px-3 py-5 text-gray-700 whitespace-nowrap">
-                      {item?.referral_code || "—"}
                     </td>
                   </tr>
                 ))

@@ -7,33 +7,9 @@ import "swiper/css";
 import "swiper/css/pagination";
 import "swiper/css/navigation";
 
-const sliderData = [
-  {
-    id: 1,
-    title: "Bulk Groceries, Reliable Supply. Delivered to Your Store",
-    subtitle:
-      "From farm-fresh vegetables to daily essentials, nicely and safely delivered to your store. Aone Go Basket brings quality you can trust, right when you need it.",
-    bgImage: "/images/home/Banner-2.webp",
-  },
-  {
-    id: 2,
-    title: "Naturally Fresh. Carefully Selected",
-    subtitle:
-      "At Aone Go Basket, every product is chosen for quality, freshness, and value—because your business depends on consistent supply.",
-    bgImage: "/images/home/Banner-3.webp",
-  },
-  // {
-  //   id: 2,
-  //   title: "Competitive Wholesale Pricing for Retail Growth",
-  //   subtitle:
-  //     "We source and sell the very best beef, lamb and pork, sourced with the greatest care from farmers.",
-  //   bgImage: "/images/home/Banner-1.webp",
-  // },
-];
-
-function HeroBanner() {
+function HeroBanner({ data }) {
   return (
-    <div className="relative w-full h-[300px] md:h-[300px] lg:h-[500px] mt-20 ">
+    <div className="relative w-full h-[300px] lg:h-[350px] xl:h-[500px] mt-20 ">
       <Swiper
         modules={[Pagination, Autoplay]}
         pagination={{ clickable: true }}
@@ -41,22 +17,21 @@ function HeroBanner() {
         loop={true}
         className="h-full w-full"
       >
-        {sliderData.map((slide) => (
+        {data?.map((slide) => (
           <SwiperSlide key={slide.id}>
             <div
               className="relative w-full h-full flex items-center justify-center  bg-cover bg-center transition-transform duration-700"
-              style={{ backgroundImage: `url(${slide.bgImage})` }}
+              style={{
+                backgroundImage: `url(${import.meta.env.VITE_REACT_APP_IMAGE_URL_2}/${slide?.bg_image})`,
+              }}
             >
-              {/* Soft Overlay to make text readable */}
-              {/* <div className="absolute inset-0 bg-white/20"></div> */}
-
               {/* Content */}
-              <div className="relative z-10 container mx-auto px-4 text-center max-w-4xl">
-                <h1 className="text-3xl md:text-5xl lg:text-6xl font-bold text-[#003d29] leading-tight mb-4">
+              <div className="relative z-10 container mx-auto px-4 text-center max-w-xl lg:max-w-2xl xl:max-w-4xl">
+                <h1 className="text-3xl lg:text-5xl xl:text-6xl font-bold text-[#003d29] leading-tight mb-4">
                   {slide.title}
                 </h1>
-                <p className="text-sm md:text-base text-gray-700 mb-8 max-w-2xl mx-auto">
-                  {slide.subtitle}
+                <p className="text-xs lg:text-sm md:text-base text-gray-700 mb-8 max-w-2xl mx-auto">
+                  {slide.description}
                 </p>
               </div>
             </div>

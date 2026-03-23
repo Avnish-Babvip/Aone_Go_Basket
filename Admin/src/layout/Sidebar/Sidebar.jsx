@@ -1,15 +1,33 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { FaRegUser } from "react-icons/fa";
-import { TbSettingsFilled } from "react-icons/tb";
-import { TbDashboardFilled } from "react-icons/tb";
+import {
+  FiUsers,
+  FiUserCheck,
+  FiShoppingCart,
+  FiPackage,
+  FiTag,
+  FiPercent,
+  FiTruck,
+  FiGift,
+  FiShield,
+  FiCreditCard,
+  FiRepeat,
+  FiFileText,
+} from "react-icons/fi";
+
+import {
+  TbDashboardFilled,
+  TbSettingsFilled,
+  TbCategory,
+} from "react-icons/tb";
+import { MdOutlineInventory2 } from "react-icons/md";
+import { FaUserShield } from "react-icons/fa";
 import { IoChevronDownSharp } from "react-icons/io5";
 import {
   setActiveAccountCenterTab,
   setActiveSubTab,
 } from "../../features/slices/references";
-import { FaUnlockAlt } from "react-icons/fa";
 
 const Sidebar = ({ closeSidebar }) => {
   const navigate = useNavigate();
@@ -43,81 +61,51 @@ const Sidebar = ({ closeSidebar }) => {
     },
     {
       label: "Order Management",
-      icon: FaUnlockAlt,
+      icon: FiShoppingCart,
       children: [
-        {
-          name: "View Orders",
-          url: `/admin/order`,
-        },
-        {
-          name: "Assigned Order",
-          url: "/admin/order/assigned",
-        },
-        {
-          name: "Unassigned Order",
-          url: "/admin/order/unassigned",
-        },
+        { name: "View Orders", url: `/admin/order` },
+        { name: "Assigned Order", url: "/admin/order/assigned" },
+        { name: "Unassigned Order", url: "/admin/order/unassigned" },
+        { name: "Download Order", url: "/admin/order/download" },
       ],
     },
     {
       label: "Admin User Profile",
-      icon: FaRegUser,
+      icon: FaUserShield,
       children: [
-        {
-          name: "All Users",
-          url: "/admin/user",
-        },
+        { name: "All Users", url: "/admin/user" },
         {
           name: "Add User",
           url: "/admin/user",
-          state: { openModal: true }, // 👈 key part
+          state: { openModal: true },
         },
       ],
     },
     {
       label: "Customer Management",
-      icon: FaRegUser,
+      icon: FiUsers,
       children: [
-        {
-          name: "All Customers",
-          url: "/admin/customer",
-        },
-        {
-          name: "Customer KYC Approval",
-          url: "/admin/customer/kyc",
-        },
+        { name: "All Customers", url: "/admin/customer" },
+        { name: "Customer KYC Approval", url: "/admin/customer/kyc" },
+        { name: "Contact Customers", url: "/admin/customer/contact" },
+        { name: "Email Subscribed", url: "/admin/customer/subscribe" },
       ],
     },
     {
       label: "Rider Management",
-      icon: FaUnlockAlt,
+      icon: FiTruck,
       children: [
-        {
-          name: "All Riders",
-          url: `/admin/rider`,
-        },
-        {
-          name: "Riders Referrals",
-          url: "/admin/rider/referral",
-        },
-        {
-          name: "Rider KYC Approval",
-          url: "/admin/rider/kyc",
-        },
-        {
-          name: "Rider Commission",
-          url: "/admin/rider/commission",
-        },
+        { name: "All Riders", url: `/admin/rider` },
+        { name: "Riders Referrals", url: "/admin/rider/referral" },
+        { name: "Rider KYC Approval", url: "/admin/rider/kyc" },
+        { name: "Rider Commission", url: "/admin/rider/commission" },
       ],
     },
     {
       label: "Role",
-      icon: FaRegUser,
+      icon: FiShield,
       children: [
-        {
-          name: "All Roles",
-          url: "/admin/role",
-        },
+        { name: "All Roles", url: "/admin/role" },
         {
           name: "Add Role",
           url: "/admin/role",
@@ -127,12 +115,9 @@ const Sidebar = ({ closeSidebar }) => {
     },
     {
       label: "Permission",
-      icon: FaUnlockAlt,
+      icon: FiUserCheck,
       children: [
-        {
-          name: "All Permissions",
-          url: "/admin/permission",
-        },
+        { name: "All Permissions", url: "/admin/permission" },
         {
           name: "Add Permission",
           url: "/admin/permission",
@@ -142,12 +127,9 @@ const Sidebar = ({ closeSidebar }) => {
     },
     {
       label: "Category",
-      icon: FaUnlockAlt,
+      icon: TbCategory,
       children: [
-        {
-          name: "All Categories",
-          url: "/admin/category",
-        },
+        { name: "All Categories", url: "/admin/category" },
         {
           name: "Add Category",
           url: "/admin/category",
@@ -157,12 +139,9 @@ const Sidebar = ({ closeSidebar }) => {
     },
     {
       label: "Attribute & Values",
-      icon: FaUnlockAlt,
+      icon: MdOutlineInventory2,
       children: [
-        {
-          name: "All Attributes",
-          url: "/admin/attribute",
-        },
+        { name: "All Attributes", url: "/admin/attribute" },
         {
           name: "Add Attribute",
           url: "/admin/attribute",
@@ -172,39 +151,24 @@ const Sidebar = ({ closeSidebar }) => {
     },
     {
       label: "Product",
-      icon: FaUnlockAlt,
+      icon: FiPackage,
       children: [
-        {
-          name: "Active Products",
-          url: `/admin/product?status=active`,
-        },
-        {
-          name: "Inactive Products",
-          url: "/admin/product?status=inactive",
-        },
+        { name: "Active Products", url: `/admin/product?status=active` },
+        { name: "Inactive Products", url: "/admin/product?status=inactive" },
         {
           name: "Add Product",
           url: "/admin/product",
           state: { openModal: true },
         },
-        {
-          name: "Add Bulk Products",
-          url: "/admin/product/bulk-products",
-        },
-        {
-          name: "Add Bulk Images",
-          url: "/admin/product/bulk-images",
-        },
+        { name: "Add Bulk Products", url: "/admin/product/bulk-products" },
+        { name: "Add Bulk Images", url: "/admin/product/bulk-images" },
       ],
     },
     {
       label: "Coupon Code",
-      icon: TbSettingsFilled,
+      icon: FiTag,
       children: [
-        {
-          name: "All Coupon Code",
-          url: "/admin/coupon",
-        },
+        { name: "All Coupon Code", url: "/admin/coupon" },
         {
           name: "Add Coupon Code",
           url: "/admin/coupon",
@@ -214,12 +178,9 @@ const Sidebar = ({ closeSidebar }) => {
     },
     {
       label: "Offer",
-      icon: TbSettingsFilled,
+      icon: FiGift,
       children: [
-        {
-          name: "All Offers",
-          url: "/admin/offer",
-        },
+        { name: "All Offers", url: "/admin/offer" },
         {
           name: "Add Offer",
           url: "/admin/offer",
@@ -229,12 +190,9 @@ const Sidebar = ({ closeSidebar }) => {
     },
     {
       label: "Taxes",
-      icon: TbSettingsFilled,
+      icon: FiPercent,
       children: [
-        {
-          name: "All Taxes",
-          url: "/admin/tax",
-        },
+        { name: "All Taxes", url: "/admin/tax" },
         {
           name: "Add Tax",
           url: "/admin/tax",
@@ -243,21 +201,29 @@ const Sidebar = ({ closeSidebar }) => {
       ],
     },
     {
+      label: "CMS",
+      icon: FiFileText,
+      children: [
+        { name: "All Home Sections", url: "/admin/cms/home-section" },
+        { name: "App Banners", url: "/admin/cms/app-banner" },
+        { name: "About Us", url: "/admin/cms/about-us" },
+        { name: "FAQ", url: "/admin/cms/faq" },
+        { name: "Privacy Policy", url: "/admin/cms/privacy-policy" },
+        { name: "Contact Us", url: "/admin/cms/contact-us" },
+        { name: "Terms & Conditions", url: "/admin/cms/terms-conditions" },
+        { name: "Return Policy", url: "/admin/cms/return-policy" },
+      ],
+    },
+    {
       label: "Settings",
       icon: TbSettingsFilled,
       children: [
-        {
-          name: "Order Settings",
-          url: "/admin/settings/order-settings",
-        },
-        {
-          name: "Location",
-          url: "/admin/settings/location",
-        },
-        {
-          name: "Company Info",
-          url: "/admin/settings/company-info",
-        },
+        { name: "Order Settings", url: "/admin/settings/order-settings" },
+        { name: "Location", url: "/admin/settings/location" },
+        { name: "Company Info", url: "/admin/settings/company-info" },
+        { name: "Delivery Pincode", url: "/admin/settings/delivery-pincode" },
+        { name: "Site Settings", url: "/admin/settings/site-settings" },
+        { name: "Payment Gateway", url: "/admin/settings/payment-gateway" },
       ],
     },
   ];
@@ -270,42 +236,42 @@ const Sidebar = ({ closeSidebar }) => {
     },
     {
       label: "Assigned Orders",
-      icon: FaUnlockAlt,
+      icon: FiTruck,
       url: `/rider/order/assigned`,
     },
     {
       label: "Order History",
-      icon: FaUnlockAlt,
+      icon: FiShoppingCart,
       url: "/rider/order/history",
     },
     {
       label: "Your Wallet",
-      icon: FaUnlockAlt,
+      icon: FiCreditCard,
       url: "/rider/wallet",
     },
     {
-      label: "Wallet Transactions ",
-      icon: FaUnlockAlt,
+      label: "Wallet Transactions",
+      icon: FiRepeat,
       url: "/rider/wallet/history",
     },
     {
       label: "KYC & Rider Profile",
-      icon: FaUnlockAlt,
+      icon: FiUserCheck,
       url: "/rider/profile",
     },
     {
       label: "Your Referral Code",
-      icon: FaUnlockAlt,
+      icon: FiGift,
       url: "/rider/referral",
     },
     {
       label: "Referral History",
-      icon: FaUnlockAlt,
+      icon: FiUsers,
       url: "/rider/referral/history",
     },
     {
       label: "Your Commission",
-      icon: FaUnlockAlt,
+      icon: FiPercent,
       url: "/rider/commission",
     },
   ];
@@ -377,9 +343,9 @@ const Sidebar = ({ closeSidebar }) => {
                 {/* Dropdown */}
                 {hasChildren && (
                   <ul
-                    className={`ml-10 mt-2 space-y-1 overflow-hidden transition-all duration-300 ${
+                    className={`ml-10 mt-2 space-y-1  overflow-hidden transition-all duration-300 ${
                       openDropdown === item.label
-                        ? "max-h-40 opacity-100"
+                        ? "max-h-64 opacity-100"
                         : "max-h-0 opacity-0"
                     }`}
                   >
@@ -414,8 +380,6 @@ const Sidebar = ({ closeSidebar }) => {
           })}
         </ul>
       </div>
-
-      <div></div>
     </div>
   );
 };

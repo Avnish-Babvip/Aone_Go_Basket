@@ -1,6 +1,11 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { toast } from "sonner";
-import { editCommission, getAllCommissions } from "../actions/commission";
+import {
+  editCommission,
+  editReferralCommission,
+  getAllCommissions,
+  getReferralCommission,
+} from "../actions/commission";
 
 const formattedDate = new Date().toLocaleString("en-US", {
   weekday: "long",
@@ -15,7 +20,9 @@ const formattedDate = new Date().toLocaleString("en-US", {
 const initialState = {
   errorMessage: "",
   commissionLoading: false,
+  referralLoading: false,
   commissionData: [],
+  referralData: [],
 };
 
 // ---------------------------------------------------------------------------------------
@@ -26,6 +33,22 @@ const commissionSlice = createSlice({
   reducers: {},
   extraReducers: (builder) => {
     builder
+      .addCase(getReferralCommission.pending, (state) => {
+        state.errorMessage = "";
+        state.referralLoading = true;
+      })
+      .addCase(getReferralCommission.fulfilled, (state, action) => {
+        state.errorMessage = "";
+        state.referralLoading = false;
+        state.referralData = action.payload.data;
+      })
+      .addCase(getReferralCommission.rejected, (state, action) => {
+        state.errorMessage = action.payload || "Failed";
+        state.referralLoading = false;
+        toast(action.payload, {
+          description: formattedDate,
+        });
+      })
       .addCase(getAllCommissions.pending, (state) => {
         state.errorMessage = "";
         state.commissionLoading = true;
@@ -38,6 +61,24 @@ const commissionSlice = createSlice({
       .addCase(getAllCommissions.rejected, (state, action) => {
         state.errorMessage = action.payload || "Failed";
         state.commissionLoading = false;
+        toast(action.payload, {
+          description: formattedDate,
+        });
+      })
+      .addCase(editReferralCommission.pending, (state) => {
+        state.errorMessage = "";
+        state.referralLoading = true;
+      })
+      .addCase(editReferralCommission.fulfilled, (state, action) => {
+        state.errorMessage = "";
+        state.referralLoading = false;
+        toast("Referral commission value updated successfully.", {
+          description: formattedDate,
+        });
+      })
+      .addCase(editReferralCommission.rejected, (state, action) => {
+        state.errorMessage = action.payload || "Failed";
+        state.referralLoading = false;
         toast(action.payload, {
           description: formattedDate,
         });

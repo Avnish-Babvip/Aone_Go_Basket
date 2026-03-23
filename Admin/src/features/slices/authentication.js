@@ -3,6 +3,7 @@ import { toast } from "sonner";
 import {
   adminLogin,
   adminLogout,
+  changePassword,
   forgotPassword,
   getCompanyInfo,
   resetForgotPassword,
@@ -189,6 +190,24 @@ const authSlice = createSlice({
       })
       .addCase(updateCompanyInfo.rejected, (state, action) => {
         state.isCompanyLoading = false;
+        state.errorMessage = action.payload || "Failed";
+        toast(action.payload, {
+          description: formattedDate,
+        });
+      })
+      .addCase(changePassword.pending, (state) => {
+        state.isLoading = true;
+        state.errorMessage = "";
+      })
+      .addCase(changePassword.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.errorMessage = "";
+        toast("Password updated successfully.", {
+          description: formattedDate,
+        });
+      })
+      .addCase(changePassword.rejected, (state, action) => {
+        state.isLoading = false;
         state.errorMessage = action.payload || "Failed";
         toast(action.payload, {
           description: formattedDate,

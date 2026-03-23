@@ -2,10 +2,13 @@ import { createSlice } from "@reduxjs/toolkit";
 import { toast } from "sonner";
 import {
   addCity,
+  addPincode,
+  getAllPincodes,
   getCities,
   getCountries,
   getStates,
   updateCity,
+  updatePincode,
 } from "../actions/location";
 
 const formattedDate = new Date().toLocaleString("en-US", {
@@ -25,6 +28,7 @@ const initialState = {
   countryData: [],
   stateData: [],
   cityData: [],
+  pincodeData: [],
 };
 
 const locationSlice = createSlice({
@@ -34,6 +38,94 @@ const locationSlice = createSlice({
   extraReducers: (builder) => {
     builder
 
+      .addCase(getAllPincodes.pending, (state) => {
+        state.errorMessage = "";
+        state.locationLoading = true;
+      })
+      .addCase(getAllPincodes.fulfilled, (state, action) => {
+        state.errorMessage = "";
+        state.locationLoading = false;
+        state.pincodeData = action.payload.data;
+      })
+      .addCase(getAllPincodes.rejected, (state, action) => {
+        state.errorMessage = action.payload || "Failed";
+        state.locationLoading = false;
+        toast(action.payload, {
+          description: formattedDate,
+        });
+      })
+      .addCase(addPincode.pending, (state) => {
+        state.errorMessage = "";
+        state.locationLoading = true;
+      })
+      .addCase(addPincode.fulfilled, (state, action) => {
+        state.errorMessage = "";
+        state.locationLoading = false;
+        toast("Delivery Pincode added successfully.", {
+          description: formattedDate,
+        });
+      })
+      .addCase(addPincode.rejected, (state, action) => {
+        state.locationLoading = false;
+        const payload = action.payload;
+
+        // ✅ Validation errors from backend
+        if (payload?.data?.errors) {
+          Object.values(payload.data.errors).forEach((messages) => {
+            messages.forEach((msg) => {
+              toast.error(msg, {
+                description: formattedDate,
+              });
+            });
+          });
+
+          state.errorMessage = payload.message || "Validation error";
+        } else {
+          // ✅ Fallback error
+          const message = payload?.message || payload || "Failed";
+          state.errorMessage = message;
+
+          toast.error(message, {
+            description: formattedDate,
+          });
+        }
+      })
+      .addCase(updatePincode.pending, (state) => {
+        state.errorMessage = "";
+        state.locationLoading = true;
+      })
+      .addCase(updatePincode.fulfilled, (state, action) => {
+        state.errorMessage = "";
+        state.locationLoading = false;
+        toast("Delivery Pincode updated successfully.", {
+          description: formattedDate,
+        });
+      })
+      .addCase(updatePincode.rejected, (state, action) => {
+        state.locationLoading = false;
+        const payload = action.payload;
+
+        // ✅ Validation errors from backend
+        if (payload?.data?.errors) {
+          Object.values(payload.data.errors).forEach((messages) => {
+            messages.forEach((msg) => {
+              toast.error(msg, {
+                description: formattedDate,
+              });
+            });
+          });
+
+          state.errorMessage = payload.message || "Validation error";
+        } else {
+          // ✅ Fallback error
+          const message = payload?.message || payload || "Failed";
+          state.errorMessage = message;
+
+          toast.error(message, {
+            description: formattedDate,
+          });
+        }
+      })
       .addCase(getCountries.pending, (state) => {
         state.errorMessage = "";
         state.locationLoading = true;

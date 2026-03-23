@@ -16,6 +16,7 @@ const UnassignOrder = () => {
   const { unassignedOrderData, orderLoading } = useSelector(
     (state) => state.order,
   );
+  const blockedStatuses = ["failed", "delivered", "shipped", "cancelled"];
   const [selectedUser, setSelectedUser] = useState({});
   const [openViewModal, setOpenViewModal] = useState(false);
   const [openAssignModal, setOpenAssignModal] = useState(false);
@@ -135,16 +136,14 @@ const UnassignOrder = () => {
           <table className="min-w-[900px] w-full text-sm table-fixed">
             <thead className="bg-gray-50 text-gray-500">
               <tr>
-                <th className="text-left  ps-5  px-3 py-3 w-[160px]">
+                <th className="text-left  ps-5  px-3 py-3 w-[120px]">
                   Order Number
                 </th>
-                <th className="text-left px-3 py-3 w-[160px]">Customer Name</th>
-                <th className="text-left px-3 py-3 w-[120px]">
-                  Payment Method
-                </th>
-                <th className="text-left px-3 py-3 w-[120px]">Order Status</th>
-                <th className="text-left px-3 py-3 w-[120px]">Price</th>
-                <th className="text-center px-3 py-3 w-[250px]">Action</th>
+                <th className="text-left px-3 py-3 w-[140px]">Customer Name</th>
+                <th className="text-left px-3 py-3 w-[95px]">Pay Method</th>
+                <th className="text-left px-3 py-3 w-[100px]">Order Status</th>
+                <th className="text-left px-3 py-3 w-[110px]">Price</th>
+                <th className="text-center px-3 py-3 w-[400px]">Action</th>
               </tr>
             </thead>
 
@@ -156,12 +155,12 @@ const UnassignOrder = () => {
                   columns={[
                     { width: "w-24 h-4" }, // Name
                     { width: "w-24 h-4" }, // Username
-                    { width: "w-24 h-4" }, // Email
-                    { width: "w-24 h-4" }, // Mobile
-                    { width: "w-24 h-4" }, // Status
+                    { width: "w-18 h-4" }, // Email
+                    { width: "w-18 h-4" }, // Mobile
+                    { width: "w-20 h-4" }, // Status
                   ]}
                   actionColumn
-                  actionCount={2}
+                  actionCount={3}
                   actionWidth="w-12 h-8"
                 />
               ) : !hasData ? (
@@ -190,10 +189,10 @@ const UnassignOrder = () => {
                     key={item?.id}
                     className="border-b border-gray-100 hover:bg-gray-50 transition"
                   >
-                    <td className="ps-5 px-3 py-5 text-gray-700">
+                    <td className="ps-5 px-3 py-5  text-gray-700">
                       {item?.order_number || "—"}
                     </td>
-                    <td className="px-3 py-5 text-gray-700">
+                    <td className="px-3 truncate py-5 text-gray-700">
                       {item?.customer?.name || "—"}
                     </td>
 
@@ -241,23 +240,36 @@ const UnassignOrder = () => {
                             setSelectedUser({
                               id: item?.id,
                               city: item?.address_snapshot?.shipping?.city,
+                              customerId: item?.customer_id,
                             });
                           }}
-                          className="p-2 px-3 flex items-center gap-2 bg-indigo-100 text-indigo-500 rounded-lg hover:bg-indigo-200"
+                          className="p-2 px-3 w-[148px] justify-center flex items-center gap-2 bg-indigo-100 text-indigo-500 rounded-lg hover:bg-indigo-200"
                         >
                           <TbTruckDelivery />
-                          <span>Assign Rider</span>
+                          {item.status === "failed" ? (
+                            <span>Re-Assign Rider</span>
+                          ) : (
+                            <span>Assign Rider</span>
+                          )}
                         </button>
 
                         <button
                           onClick={() => {
-                            setOpenEditModal(true);
-                            setSelectedUser({
-                              id: item?.id,
-                              status: item?.status,
-                            });
+                            if (!blockedStatuses.includes(item?.status)) {
+                              setOpenEditModal(true);
+                              setSelectedUser({
+                                id: item?.id,
+                                status: item?.status,
+                                customerId: item?.customer?.id,
+                              });
+                            }
                           }}
-                          className="p-2 px-3 flex items-center gap-2  bg-orange-100 text-orange-500 rounded-lg hover:bg-orange-200"
+                          className={`p-2 px-3 flex items-center gap-2 w-36 rounded-lg 
+        ${
+          blockedStatuses.includes(item?.status)
+            ? "invisible"
+            : "bg-orange-100 text-orange-500 hover:bg-orange-200"
+        }`}
                         >
                           <FiEdit2 />
                           <span>Change Status</span>
@@ -292,6 +304,7 @@ const UnassignOrder = () => {
         onClose={() => setOpenAssignModal(false)}
         id={selectedUser?.id}
         city={selectedUser?.city}
+        customerId={selectedUser?.customerId}
       />
       <ViewUnassignedOrderModal
         isOpen={openViewModal}

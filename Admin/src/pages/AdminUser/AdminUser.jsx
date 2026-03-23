@@ -131,13 +131,13 @@ const AdminUser = () => {
           <table className="min-w-[900px] w-full text-sm table-fixed">
             <thead className="bg-gray-50 text-gray-500">
               <tr>
-                <th className="text-left ps-5 px-3 py-3 w-[160px]">Name</th>
-                <th className="text-left px-3 py-3 w-[160px]">Username</th>
-                <th className="text-left px-3 py-3 w-[260px]">Email</th>
-                <th className="text-left px-3 py-3 w-[140px]">Mobile</th>
-                <th className="text-left px-3 py-3 w-[140px]">Role</th>
-                <th className="text-left px-3 py-3 w-[120px]">Status</th>
-                <th className="text-center px-3 py-3 w-[120px]">Action</th>
+                <th className="text-left ps-5 px-3 py-3 w-[150px]">Name</th>
+                <th className="text-left px-3 py-3 w-[150px]">Username</th>
+                <th className="text-left px-3 py-3 w-[200px]">Email</th>
+                <th className="text-left px-3 py-3 w-[100px]">Mobile</th>
+                <th className="text-left px-3 py-3 w-[100px]">Role</th>
+                <th className="text-left px-3 py-3 w-[80px]">Status</th>
+                <th className="text-center px-3 py-3 w-[155px]">Action</th>
               </tr>
             </thead>
 
@@ -188,11 +188,11 @@ const AdminUser = () => {
                       {item.name || "—"}
                     </td>
 
-                    <td className="px-3 py-5 text-gray-700">
-                      {item.username || "—"}
+                    <td className="px-3 truncate cursor-pointer py-5 text-gray-700">
+                      <span title={item.username}>{item.username || "—"}</span>
                     </td>
 
-                    <td className="px-3 py-5 text-gray-700 truncate max-w-[260px]">
+                    <td className="px-3 cursor-pointer py-5 text-gray-700 truncate max-w-[260px]">
                       <span title={item.email}>{item.email || "—"}</span>
                     </td>
 
@@ -225,16 +225,14 @@ const AdminUser = () => {
                             setSelectedUser({
                               id: item?.id,
                               status: item?.status,
+                              role_id: item?.role_id,
                             });
                           }}
                           className="p-2 px-3 flex items-center gap-2  bg-orange-100 text-orange-500 rounded-lg hover:bg-orange-200"
                         >
                           <FiEdit2 />
-                          <span>Change Status</span>
+                          <span>Role & Status</span>
                         </button>
-                        {/* <button className="p-2 px-3  bg-red-100 text-red-500 rounded-lg hover:bg-red-200">
-                          <FiTrash2 />
-                        </button> */}
                       </div>
                     </td>
                   </tr>
@@ -267,6 +265,7 @@ const AdminUser = () => {
         isOpen={openEditModal}
         onClose={() => setOpenEditModal(false)}
         user={selectedUser}
+        roles={roles}
       />
     </>
   );

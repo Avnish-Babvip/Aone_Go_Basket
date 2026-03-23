@@ -44,6 +44,21 @@ import State from "../pages/Location/State/State";
 import Company from "../pages/Company/Company";
 import Tax from "../pages/Tax/Tax";
 import Setting from "../pages/Setting/Setting";
+import DownloadOrder from "../pages/Order/DownloadOrder";
+import ChangePassword from "../pages/Authentication/ChangePassword";
+import DeliveryPincode from "../pages/Location/DeliveryPincodes/DeliveryPincode";
+import Subscriber from "../pages/Customer/Subscriber";
+import Contact from "../pages/Customer/Contact";
+import PaymentGateway from "../pages/PaymentGateway/PaymentGateway";
+import Home from "../pages/Home/Home";
+import AppBanner from "../pages/Home/AppBanner";
+import SiteSettings from "../pages/Setting/SiteSettings";
+import Faq from "../pages/CMS/Faq";
+import AboutUs from "../pages/CMS/AboutUs";
+import PrivacyPolicy from "../pages/CMS/PrivacyPolicy";
+import TermsAndConditions from "../pages/CMS/Terms&Conditions";
+import ReturnPolicy from "../pages/CMS/ReturnPolicy";
+import ContactUs from "../pages/CMS/ContactUs";
 
 export const appRouter = createBrowserRouter([
   /* ---------------- PUBLIC ROUTES ---------------- */
@@ -52,10 +67,10 @@ export const appRouter = createBrowserRouter([
     element: <DefaultLayout />, // Public layout
     children: [
       { path: "/", element: <Navigate to="/login" /> },
-      { path: "/login", element: <Login /> },
-      { path: "/login-otp", element: <LoginOTP /> },
-      { path: "/forgot-password", element: <ForgotPassword /> },
-      { path: "/admin/reset-password/", element: <ResetPassword /> },
+      { path: "login", element: <Login /> },
+      { path: "login-otp", element: <LoginOTP /> },
+      { path: "forgot-password", element: <ForgotPassword /> },
+      { path: "reset-password", element: <ResetPassword /> },
     ],
   },
 
@@ -68,10 +83,13 @@ export const appRouter = createBrowserRouter([
         element: <AdminDefaultLayout />,
         children: [
           { index: true, element: <Dashboard /> }, // 👈 this is "/admin"
+          { path: "change-password", element: <ChangePassword /> },
           { path: "user", element: <AdminUser /> },
           { path: "profile", element: <Profile /> },
           { path: "customer", element: <Customer /> },
           { path: "customer/kyc", element: <CustomerKyc /> },
+          { path: "customer/subscribe", element: <Subscriber /> },
+          { path: "customer/contact", element: <Contact /> },
           { path: "role", element: <Role /> },
           { path: "permission", element: <Permission /> },
           { path: "role/:id", element: <RolePermission /> },
@@ -85,6 +103,7 @@ export const appRouter = createBrowserRouter([
           { path: "order", element: <Order /> },
           { path: "order/assigned", element: <AssignOrder /> },
           { path: "order/unassigned", element: <UnassignOrder /> },
+          { path: "order/download", element: <DownloadOrder /> },
           { path: "rider", element: <Rider /> },
           { path: "rider/referral", element: <RiderReferral /> },
           { path: "rider/kyc", element: <RiderKyc /> },
@@ -95,6 +114,17 @@ export const appRouter = createBrowserRouter([
           { path: "settings/location", element: <State /> },
           { path: "settings/company-info", element: <Company /> },
           { path: "settings/order-settings", element: <Setting /> },
+          { path: "settings/delivery-pincode", element: <DeliveryPincode /> },
+          { path: "settings/payment-gateway", element: <PaymentGateway /> },
+          { path: "settings/site-settings", element: <SiteSettings /> },
+          { path: "cms/home-section", element: <Home /> },
+          { path: "cms/app-banner", element: <AppBanner /> },
+          { path: "cms/faq", element: <Faq /> },
+          { path: "cms/about-us", element: <AboutUs /> },
+          { path: "cms/privacy-policy", element: <PrivacyPolicy /> },
+          { path: "cms/terms-conditions", element: <TermsAndConditions /> },
+          { path: "cms/return-policy", element: <ReturnPolicy /> },
+          { path: "cms/contact-us", element: <ContactUs /> },
         ],
       },
     ],
@@ -107,6 +137,7 @@ export const appRouter = createBrowserRouter([
         element: <AdminDefaultLayout />,
         children: [
           { index: true, element: <RiderDashboard /> }, // 👈 this is "/rider"
+          { path: "change-password", element: <ChangePassword /> },
           { path: "order/assigned", element: <RiderAssignOrder /> },
           { path: "order/history", element: <RiderOrderHistory /> },
           { path: "wallet", element: <RiderWallet /> },

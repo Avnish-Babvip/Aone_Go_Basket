@@ -26,7 +26,7 @@ import {
 } from "../../features/actions/cart";
 import ChangePassword from "../../components/Modal/Account/ChangePassword";
 import { getCustomerDetails } from "../../features/actions/customer";
-import { FaHeart } from "react-icons/fa";
+import { siteSettings } from "../../features/actions/home";
 
 /* ================= HEADER ================= */
 
@@ -38,7 +38,7 @@ function Header() {
     (state) => state.authentication,
   );
   const searchRef = useRef(null);
-
+  const { siteData } = useSelector((state) => state.home);
   const { categoryData } = useSelector((state) => state.category);
   const dispatch = useDispatch();
   const customer = customerData?.customer;
@@ -49,7 +49,6 @@ function Header() {
   const [input, setInput] = useState(urlSearch);
 
   const [authView, setAuthView] = useState(null);
-  const { cartData } = useSelector((state) => state.cart);
 
   useEffect(() => {
     dispatch(getCartData());
@@ -93,6 +92,7 @@ function Header() {
   }, [searchParams]);
 
   useEffect(() => {
+    dispatch(siteSettings());
     dispatch(getCartData());
     dispatch(getAllCategoriesWithSubCategories());
   }, []);
@@ -107,6 +107,7 @@ function Header() {
       {/* TOP NAVBAR */}
       <header className="fixed top-0 w-full z-50 bg-white shadow-xs">
         <MainNavbar
+          logo={`${import.meta.env.VITE_REACT_APP_IMAGE_URL_2}/${siteData?.header_logo}`}
           authView={authView}
           setIsMenuOpen={setIsMenuOpen}
           setIsCartOpen={setIsCartOpen}
@@ -169,6 +170,7 @@ function Header() {
         category={categoryData}
         input={input}
         setInput={setInput}
+        logo={`${import.meta.env.VITE_REACT_APP_IMAGE_URL_2}/${siteData?.header_logo}`}
       />
 
       <CartSidebar isOpen={isCartOpen} onClose={() => setIsCartOpen(false)} />
@@ -221,6 +223,7 @@ function MainNavbar({
   input,
   setInput,
   searchRef,
+  logo,
 }) {
   const navigate = useNavigate();
   const { cartData } = useSelector((state) => state.cart);
@@ -234,11 +237,7 @@ function MainNavbar({
       <div className="container mx-auto px-4 h-20 flex items-center justify-between gap-4">
         {/* LOGO */}
         <NavLink to="/" className="flex-shrink-0 ">
-          <img
-            src="/images/logo.png"
-            alt="Logo"
-            className="h-18 w-18 object-contain"
-          />
+          <img src={logo} alt="Logo" className="object-contain" />
         </NavLink>
 
         {/* DESKTOP NAV */}
@@ -493,7 +492,7 @@ function AccountSection({ authView, setAuthView }) {
           )}
         </div>
 
-        <span className="hidden md:block">
+        <span className="hidden md:block capitalize">
           Hi, {customer?.name?.split(" ")[0] || "User"}
         </span>
 
@@ -578,7 +577,7 @@ function AccountSection({ authView, setAuthView }) {
 
 /* ================= MOBILE MENU ================= */
 
-function MobileMenuSidebar({ isOpen, onClose, category }) {
+function MobileMenuSidebar({ isOpen, onClose, category, logo }) {
   return (
     <div
       className={`fixed top-0 right-0 h-full w-[300px] bg-white z-[120] shadow-2xl transition-transform duration-300 ${
@@ -586,7 +585,7 @@ function MobileMenuSidebar({ isOpen, onClose, category }) {
       }`}
     >
       <div className="flex items-center justify-between px-5 pt-3  border-gray-200">
-        <img src="/images/logo.png" className="h-12 w-12 object-contain" />
+        <img src={logo} className="w-10" />
         <button onClick={onClose} className="text-2xl text-gray-400">
           <FiX />
         </button>

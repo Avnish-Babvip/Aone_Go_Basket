@@ -18,3 +18,27 @@ export const getHomeData = createAsyncThunk(
     }
   },
 );
+
+export const getHomeContent = createAsyncThunk(
+  "/api/home",
+  async (_, { rejectWithValue }) => {
+    try {
+      const { data } = await instance.get(`/home`);
+      return data;
+    } catch (error) {
+      return rejectWithValue(error.response.data.message || "Failed");
+    }
+  },
+);
+
+export const siteSettings = createAsyncThunk(
+  "/api/site-settings",
+  async (_, { rejectWithValue }) => {
+    try {
+      const { data } = await instance.get(`/site-settings`);
+      return data;
+    } catch (error) {
+      return rejectWithValue(error.response.data.message || "Failed");
+    }
+  },
+);

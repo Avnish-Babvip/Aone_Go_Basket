@@ -214,14 +214,23 @@ export default function MyOrders() {
                         Reorder
                       </button>
                     )}
-                    {order.payment_status === "failed" && (
-                      <button
-                        onClick={() => handleRetryPayment(order.id)}
-                        className="px-5 py-2 w-36 rounded-xl bg-brand-green text-white text-sm font-semibold hover:bg-emerald-600 transition"
-                      >
-                        {retryLoading ? <Spinner /> : "Retry Payment"}
-                      </button>
-                    )}
+                    {order.payment_status === "failed" ||
+                      (order.payment_status === "pending" &&
+                        order.payment_method === "online" && (
+                          <button
+                            onClick={() => {
+                              handleRetryPayment(order.id);
+                              setSelected(order.id);
+                            }}
+                            className="px-5 py-2 w-36 rounded-xl bg-brand-green text-white text-sm font-semibold hover:bg-emerald-600 transition"
+                          >
+                            {retryLoading && selected === order.id ? (
+                              <Spinner />
+                            ) : (
+                              "Retry Payment"
+                            )}
+                          </button>
+                        ))}
                     {(order.status === "placed" ||
                       order.status === "confirmed") && (
                       <button

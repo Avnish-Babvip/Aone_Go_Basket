@@ -64,6 +64,17 @@ const cartSlice = createSlice({
         state.errorMessage = "";
         state.couponLoading = false;
         state.errorMessage = action.payload || "Failed";
+        toast.error(action.payload, {
+          position: "top-right",
+          style: {
+            background: "#fb2c36",
+            color: "#fff",
+            borderRadius: "16px",
+            padding: "16px",
+            fontWeight: "600",
+          },
+          duration: 1000,
+        });
       })
       .addCase(removeCoupon.pending, (state, action) => {
         state.errorMessage = "";

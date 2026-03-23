@@ -12,6 +12,7 @@ import customer from "./slices/customer";
 import location from "./slices/location";
 import order from "./slices/order";
 import wishlist from "./slices/wishlist";
+import cms from "./slices/cms";
 
 // ---------------------------------------------------------
 
@@ -40,6 +41,7 @@ const reducer = combineReducers({
   customer,
   location,
   order,
+  cms,
   wishlist,
 });
 

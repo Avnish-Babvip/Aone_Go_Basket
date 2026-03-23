@@ -4,6 +4,7 @@ import { Textarea } from "../../ReusableInputs";
 
 export const FailedAssignedOrderModal = ({ isOpen, onClose, onSubmit }) => {
   if (!isOpen) return null;
+
   const {
     register,
     handleSubmit,

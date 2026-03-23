@@ -4,11 +4,16 @@ import { useDispatch, useSelector } from "react-redux";
 import { SelectWithId } from "../../ReusableInputs";
 import { HiX } from "react-icons/hi";
 import { Spinner } from "../../Loader/Spinner";
-import { editOrderStatus } from "../../../features/actions/order";
+import {
+  customerNotification,
+  editOrderStatus,
+} from "../../../features/actions/order";
 
 export const EditOrderStatusModal = ({ isOpen, onClose, user }) => {
   if (!isOpen) return null;
   const dispatch = useDispatch();
+  const { adminData } = useSelector((state) => state.authentication);
+  const loginToken = adminData?.token;
   const { orderLoading } = useSelector((state) => state.order);
   const {
     register,
@@ -20,10 +25,61 @@ export const EditOrderStatusModal = ({ isOpen, onClose, user }) => {
     },
   });
 
+  const statusMessages = {
+    placed: {
+      title: "Order Placed",
+      message: "Your order has been placed",
+    },
+    confirmed: {
+      title: "Order Confirmed",
+      message: "Your order has been confirmed",
+    },
+    shipped: {
+      title: "Order Shipped",
+      message: "Your order has been shipped successfully",
+    },
+    failed: {
+      title: "Order Failed",
+      message: "Your order has been failed successfully",
+    },
+    cancelled: {
+      title: "Order Cancelled",
+      message: "Your order has been cancelled",
+    },
+  };
+
+  const statusFlow = [
+    { label: "Pending", value: "pending" },
+    { label: "Placed", value: "placed" },
+    { label: "Confirmed", value: "confirmed" },
+    { label: "Failed", value: "failed" },
+    { label: "Shipped", value: "shipped" },
+    { label: "Cancelled", value: "cancelled" },
+  ];
+
+  const currentIndex = statusFlow.findIndex(
+    (status) => status.value === user?.status,
+  );
+
+  const statusOptions = statusFlow.slice(currentIndex);
+
   const onSubmit = (data) => {
+    const statusInfo = statusMessages[data.status];
+
+    const payload = {
+      customer_ids: [user.customerId],
+      title: statusInfo.title,
+      message: statusInfo.message,
+      type: "order",
+      extra: {
+        order_id: user.id,
+      },
+    };
+
     dispatch(editOrderStatus({ payload: data, id: user?.id }))
       .unwrap()
       .then(() => {
+        dispatch(customerNotification({ payload, loginToken }));
         onClose();
       });
   };
@@ -63,11 +119,7 @@ export const EditOrderStatusModal = ({ isOpen, onClose, user }) => {
           <SelectWithId
             label="Order Status"
             name="status"
-            options={[
-              { label: "Placed", value: "placed" },
-              { label: "Confirmed", value: "confirmed" },
-              { label: "Shipped", value: "shipped" },
-            ]}
+            options={statusOptions}
             register={register}
             required
             errors={errors}

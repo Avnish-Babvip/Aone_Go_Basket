@@ -1,94 +1,115 @@
-import React, { useState } from "react";
-import { BiChevronRight, BiHome } from "react-icons/bi";
-import { Link } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { BiChevronRight } from "react-icons/bi";
+import { useDispatch, useSelector } from "react-redux";
+import { getFaq } from "../features/actions/cms";
 
 const FAQPage = () => {
-  const [openIndex, setOpenIndex] = useState(null);
+  const dispatch = useDispatch();
+  const { faqData, cmsLoading } = useSelector((state) => state.cms);
 
-  const faqData = [
-    {
-      question: "Ways to Reach Customer Support?",
-      answer:
-        "Got questions? Reach out via the Contact Us page, send an email, or call the listed phone line. When the office is open, staff help sort big shipments, share delivery news, handle money matters, plus keep things moving smoothly.",
-    },
-    {
-      question: "How long does delivery take?",
-      answer:
-        "Timing changes based on how much is ordered and where it's going. Usually, bulk shipments go out when planned, arriving by set dates so supplies stay steady and work keeps moving smoothly.",
-    },
-    {
-      question: "How do I place a bulk order?",
-      answer:
-        "Now and then, retailers take a look at what’s in stock. They might need large amounts - those requests go through without using the word and. Price checks happen before anything moves forward. After approval comes packing, done by the crew who know the shelves best. Dispatch dates appear once boxes are sealed. Shipping follows only when every detail is set.",
-    },
-    {
-      question: "What payment options are available?",
-      answer:
-        "Paying by bank transfer works, while UPI stands as another option. Approved digital methods come through just fine, whereas certain business arrangements may allow tailored payment setups when relevant. Security wraps every transaction, keeping wholesale activity clear and steady behind the scenes.",
-    },
-  ];
+  const [openIndex, setOpenIndex] = useState(null);
+  const faq = (Array.isArray(faqData?.faq_items) && faqData?.faq_items) || [];
 
   const toggleAccordion = (index) => {
     setOpenIndex(openIndex === index ? null : index);
   };
 
+  useEffect(() => {
+    dispatch(getFaq());
+  }, []);
+
   return (
     <div className="min-h-screen bg-gray-50 mt-20">
-      <div className="relative w-full h-30 sm:h-48 md:h-56 lg:h-72 xl:h-96 overflow-hidden flex flex-col items-center justify-center border-b border-gray-100">
-        <img
-          src="/images/faq.webp"
-          alt="FAQ"
-          className="absolute inset-0 w-full h-full object-cover"
-        />
-
-        {/* <div className="absolute inset-0 bg-black/20"></div> */}
-
-        <div className="relative z-10 text-center px-4">
-          <h1 className="text-xl md:text-4xl font-bold text-white">
-            Frequently Asked Questions
-          </h1>
-        </div>
+      {/* ================= BANNER ================= */}
+      <div className="relative w-full h-30 sm:h-48 md:h-56 lg:h-72 xl:h-96 overflow-hidden flex items-center justify-center border-b border-gray-100">
+        {cmsLoading ? (
+          <div className="w-full h-full bg-gray-200 animate-pulse" />
+        ) : (
+          <>
+            <img
+              src={`${import.meta.env.VITE_REACT_APP_IMAGE_URL_2}/${faqData?.banner_bg_image}`}
+              alt="FAQ"
+              className="absolute inset-0 w-full h-full object-cover"
+            />
+            <div className="relative z-10 text-center px-4">
+              <h1 className="text-xl md:text-4xl font-bold text-white">
+                {faqData?.banner_title}
+              </h1>
+            </div>
+          </>
+        )}
       </div>
 
-      {/* FAQ List Section */}
+      {/* ================= FAQ SECTION ================= */}
       <div className="max-w-4xl mx-auto px-4 py-16">
-        <div className="space-y-4">
-          {faqData.map((item, index) => (
-            <div
-              key={index}
-              className="bg-white border border-gray-100 rounded-lg shadow-sm overflow-hidden transition-all duration-300 hover:shadow-md"
-            >
-              <button
-                onClick={() => toggleAccordion(index)}
-                className="w-full flex items-center justify-between p-6 text-left focus:outline-none group"
-              >
-                <span
-                  className={`text-lg font-semibold transition-colors ${openIndex === index ? "text-brand-green" : "text-gray-800"}`}
-                >
-                  {item.question}
-                </span>
-                <BiChevronRight
-                  className={`text-gray-400 transition-transform duration-300 ${openIndex === index ? "rotate-90 text-brand-green" : "group-hover:translate-x-1"}`}
-                  size={20}
-                />
-              </button>
-
-              {/* Accordion Content */}
+        {cmsLoading ? (
+          <FullFaqSkeleton />
+        ) : (
+          <div className="space-y-4">
+            {faq.map((item, index) => (
               <div
-                className={`px-6 overflow-hidden transition-all duration-300 ease-in-out ${
-                  openIndex === index
-                    ? "max-h-40 pb-6 opacity-100"
-                    : "max-h-0 opacity-0"
-                }`}
+                key={index}
+                className="bg-white border border-gray-100 rounded-lg shadow-sm overflow-hidden transition-all duration-300 hover:shadow-md"
               >
-                <p className="text-gray-600 leading-relaxed">{item.answer}</p>
+                <button
+                  onClick={() => toggleAccordion(index)}
+                  className="w-full flex items-center justify-between p-6 text-left group"
+                >
+                  <span
+                    className={`text-lg font-semibold ${
+                      openIndex === index ? "text-brand-green" : "text-gray-800"
+                    }`}
+                  >
+                    {item.question}
+                  </span>
+
+                  <BiChevronRight
+                    className={`transition-transform ${
+                      openIndex === index
+                        ? "rotate-90 text-brand-green"
+                        : "text-gray-400"
+                    }`}
+                    size={20}
+                  />
+                </button>
+
+                <div
+                  className={`px-6 overflow-hidden transition-all duration-300 ${
+                    openIndex === index
+                      ? "max-h-40 pb-6 opacity-100"
+                      : "max-h-0 opacity-0"
+                  }`}
+                >
+                  <p className="text-gray-600">{item.answer}</p>
+                </div>
               </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );
 };
 
 export default FAQPage;
+
+const FullFaqSkeleton = () => {
+  return (
+    <div className="space-y-4">
+      {[...Array(6)].map((_, i) => (
+        <div
+          key={i}
+          className="bg-white border border-gray-100 rounded-lg shadow-sm p-6 animate-pulse"
+        >
+          <div className="flex justify-between items-center">
+            {/* Question */}
+            <div className="h-5 w-3/4 bg-gray-200 rounded"></div>
+
+            {/* Arrow */}
+            <div className="h-5 w-5 bg-gray-200 rounded"></div>
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+};

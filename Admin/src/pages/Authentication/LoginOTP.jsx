@@ -5,25 +5,9 @@ import { OtpGrid } from "../../components/OtpGrid";
 import { adminLogin, verifyAdmin } from "../../features/actions/authentication";
 import { useDispatch, useSelector } from "react-redux";
 import { Spinner } from "../../components/Loader/Spinner";
+import { slides } from "./Login";
 
 const LoginOTP = () => {
-  const slides = [
-    {
-      title: "Demo Text Here",
-      subtitle: "Slider 1",
-      desc: "Founder, Flo and Wer shop",
-    },
-    {
-      title: "Empower Your Business",
-      subtitle: "Slider 2",
-      desc: "Grow with Smart HRMS Tools",
-    },
-    {
-      title: "Seamless Experience",
-      subtitle: "Slider 3",
-      desc: "Manage employees with ease",
-    },
-  ];
   const [current, setCurrent] = useState(0);
   const nextSlide = () => {
     setCurrent((prev) => (prev + 1) % slides.length);
@@ -126,7 +110,7 @@ const LoginOTP = () => {
           <div className="transition-all duration-700 absolute bottom-10">
             <h2 className="text-3xl font-bold mb-2">{slides[current].title}</h2>
             <h4 className="font-semibold">{slides[current].subtitle}</h4>
-            <p className="text-gray-400">{slides[current].desc}</p>
+            <p className="text-gray-300">{slides[current].desc}</p>
             <p className="text-sm mt-6 opacity-70">
               {current + 1} of {slides.length}
             </p>

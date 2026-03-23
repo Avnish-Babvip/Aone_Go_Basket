@@ -19,6 +19,10 @@ import commission from "./slices/commission";
 import coupon from "./slices/coupon";
 import offer from "./slices/offer";
 import tax from "./slices/tax";
+import dashboard from "./slices/dashboard";
+import paymentGateway from "./slices/paymentGateway";
+import home from "./slices/home";
+import cms from "./slices/cms";
 import rider_order from "./slices/rider/order";
 import rider_user from "./slices/rider/user";
 import rider_wallet from "./slices/rider/wallet";
@@ -40,6 +44,10 @@ const rootReducer = combineReducers({
   coupon,
   offer,
   tax,
+  dashboard,
+  paymentGateway,
+  home,
+  cms,
   rider_order,
   rider_user,
   rider_wallet,
