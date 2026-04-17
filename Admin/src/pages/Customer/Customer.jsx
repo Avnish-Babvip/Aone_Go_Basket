@@ -82,7 +82,9 @@ const Customer = () => {
                 <th className="text-left px-3 py-3 w-[160px]">Username</th>
                 <th className="text-left px-3 py-3 w-[260px]">Email</th>
                 <th className="text-left px-3 py-3 w-[140px]">Mobile</th>
-                <th className="text-left px-3 py-3 w-[140px]">Referral Code</th>
+                <th className="text-left px-3 py-3 w-[140px]">
+                  Rider Referral Code
+                </th>
                 <th className="text-left px-3 py-3 w-[120px]">Status</th>
                 <th className="text-center px-3 py-3 w-[150px]">Action</th>
               </tr>
@@ -147,7 +149,7 @@ const Customer = () => {
                       {item.mobile || "—"}
                     </td>
                     <td className="px-3 py-5 text-gray-700 whitespace-nowrap">
-                      {item.referral_code || "—"}
+                      {item.used_rider_code || "—"}
                     </td>
                     <td className="px-3 py-5">
                       <span

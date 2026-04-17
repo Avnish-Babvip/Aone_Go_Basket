@@ -109,6 +109,36 @@ export const Header = ({ setSidebarOpen }) => {
     "/admin/settings/payment-gateway": {
       title: "Payment Gateway List",
     },
+    "/admin/cms/home-section": {
+      title: "Home Section ",
+    },
+    "/admin/cms/app-banner": {
+      title: "App Banner ",
+    },
+    "/admin/cms/about-us": {
+      title: "About Us",
+    },
+    "/admin/cms/faq": {
+      title: "Faq ",
+    },
+    "/admin/cms/privacy-policy": {
+      title: "Privacy Policy",
+    },
+    "/admin/cms/contact-us": {
+      title: "Contact Us",
+    },
+    "/admin/cms/return-policy": {
+      title: "Return Policy",
+    },
+    "/admin/cms/terms-conditions": {
+      title: "Terms & Conditions",
+    },
+    "/admin/maintenance/mode": {
+      title: "Maintenance Setting",
+    },
+    "/admin/maintenance/contact": {
+      title: "Maintenance Contact List",
+    },
 
     "/rider": {
       title: "Rider Dashboard",

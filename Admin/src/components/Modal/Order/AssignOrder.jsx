@@ -7,17 +7,17 @@ import {
   assignOrder,
   customerNotification,
 } from "../../../features/actions/order";
-import { getAllRiderKyc } from "../../../features/actions/rider";
+import { getAllRiders } from "../../../features/actions/rider";
 import Select from "react-select"; // searchable dropdown
 
-export const AssignOrderModal = ({ isOpen, onClose, id, city, customerId }) => {
+export const AssignOrderModal = ({ isOpen, onClose, id, customerId }) => {
   if (!isOpen) return null;
 
   const dispatch = useDispatch();
   const { orderLoading } = useSelector((state) => state.order);
   const { adminData } = useSelector((state) => state.authentication);
   const loginToken = adminData?.token;
-  const { kycData } = useSelector((state) => state.rider); // assuming you store fetched riders here
+  const { riderData } = useSelector((state) => state.rider); // assuming you store fetched riders here
   const [options, setOptions] = useState([]);
   const {
     handleSubmit,
@@ -29,26 +29,22 @@ export const AssignOrderModal = ({ isOpen, onClose, id, city, customerId }) => {
   useEffect(() => {
     if (id) {
       dispatch(
-        getAllRiderKyc({
+        getAllRiders({
           per_page: 1000,
-          status: "approved",
-          city_id: city?.id,
         }),
       );
     }
   }, [id, dispatch]);
-
   // Transform riders into react-select options
   useEffect(() => {
-    if (kycData?.data) {
-      const opts = kycData.data.map((r) => ({
-        value: r?.rider?.admin_id,
-        label: `${r?.rider?.admin?.name} (${r?.rider?.admin?.email || "No Email"})`,
+    if (riderData?.data) {
+      const opts = riderData.data.map((r) => ({
+        value: r?.admin?.id,
+        label: `${r?.admin?.name} (${r?.admin?.email || "No Email"})`,
       }));
-      console.log(opts);
       setOptions(opts);
     }
-  }, [kycData]);
+  }, [riderData]);
 
   const onSubmit = (data) => {
     const payload = {
@@ -87,25 +83,25 @@ export const AssignOrderModal = ({ isOpen, onClose, id, city, customerId }) => {
         {/* HEADER */}
         <div className="px-8 pt-8">
           <h2 className="text-center text-black text-xl font-semibold mb-2">
-            Assign Order to Rider
+            Assign New Rider
           </h2>
 
-          <p className="text-center text-sm text-gray-500">
+          {/* <p className="text-center text-sm text-gray-500">
             City:{" "}
             <span className="font-medium text-gray-700">{city?.name}</span>
-          </p>
+          </p> */}
         </div>
 
         {/* BODY */}
         <div className="px-8 pb-6">
           <label className="block text-sm font-medium text-gray-700 mb-2">
-            Rider Name
+            New Rider Name
           </label>
 
           <Select
             options={options}
             isSearchable
-            placeholder="Search rider name"
+            placeholder="Type rider name"
             styles={{
               control: (base, state) => ({
                 ...base,

@@ -19,7 +19,6 @@ export const ViewAssignOrder = ({ isOpen, onClose, data }) => {
   return (
     <div className="fixed inset-0 bg-black/30 backdrop-blur-sm flex justify-center items-center z-50">
       <div className="bg-[#f9f7f7] w-[95%] sm:w-[700px] max-h-[90vh] rounded-xl shadow-xl flex flex-col relative">
-
         {/* CLOSE */}
         <button
           className="absolute top-4 right-4 text-gray-400 hover:text-gray-700"
@@ -40,10 +39,9 @@ export const ViewAssignOrder = ({ isOpen, onClose, data }) => {
 
         {/* BODY */}
         <div className="flex-1 overflow-y-auto px-8 py-6 space-y-6">
-
           {/* Rider Info */}
           <Section title="Rider Info">
-            <Info label="Rider Name" value={data?.rider?.name} />
+            <Info label="Rider Name" value={data?.rider?.admin?.name} />
             <Info label="Rider ID" value={data?.rider_id} />
           </Section>
 
@@ -66,7 +64,6 @@ export const ViewAssignOrder = ({ isOpen, onClose, data }) => {
             <Info label="Order Status" value={data?.order?.status} />
             <Info label="Total Amount" value={`₹${data?.order?.total}`} />
           </Section>
-
         </div>
 
         {/* FOOTER */}
@@ -87,9 +84,7 @@ export const ViewAssignOrder = ({ isOpen, onClose, data }) => {
 const Section = ({ title, children }) => (
   <div>
     <h4 className="font-semibold text-gray-700 mb-3">{title}</h4>
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-      {children}
-    </div>
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">{children}</div>
   </div>
 );
 

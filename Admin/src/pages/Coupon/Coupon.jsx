@@ -120,8 +120,8 @@ const Coupon = () => {
                 <th className="text-left px-3 py-3 w-[100px]">
                   Min Cart Value
                 </th>
-                <th className="text-left px-3 py-3 w-[80px]">Total Coupons</th>
                 <th className="text-left px-3 py-3 w-[80px]">Used Coupons</th>
+                <th className="text-left px-3 py-3 w-[80px]">Expired</th>
                 <th className="text-left px-3 py-3 w-[80px]">Status</th>
                 <th className="text-center px-3 py-3 w-[50px]">Action</th>
               </tr>
@@ -190,10 +190,10 @@ const Coupon = () => {
                       {item.min_cart_value || "—"}
                     </td>
                     <td className="px-3 py-5 text-gray-700 whitespace-nowrap">
-                      {item.usage_limit || "—"}
+                      {item.used_count || "—"}
                     </td>
                     <td className="px-3 py-5 text-gray-700 whitespace-nowrap">
-                      {item.used_count || "—"}
+                      {item.is_expired ? "Yes" : "No"}
                     </td>
 
                     <td className="px-3 py-5">

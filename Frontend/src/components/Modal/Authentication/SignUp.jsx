@@ -17,6 +17,7 @@ import { Spinner } from "../../Loader/Spinner";
 
 const SignUpModal = ({ isOpen, onClose, onSwitch }) => {
   const dispatch = useDispatch();
+  const { siteData } = useSelector((state) => state.home);
   const { isLoading } = useSelector((state) => state.authentication);
   const {
     register,
@@ -100,9 +101,9 @@ const SignUpModal = ({ isOpen, onClose, onSwitch }) => {
             {/* Logo */}
             <div className="text-center md:text-left my-4">
               <img
-                src="/images/logo.png"
+                src={`${import.meta.env.VITE_REACT_APP_IMAGE_URL_2}/${siteData?.footer_logo}`}
                 alt="Logo"
-                className="h-16  w-auto inline-block md:block"
+                className="h-16 w-auto inline-block md:block"
               />
             </div>
 

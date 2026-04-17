@@ -4,42 +4,52 @@ import { useDispatch, useSelector } from "react-redux";
 import { useSearchParams } from "react-router-dom";
 import Pagination from "../../components/Pagination";
 import TableSkeleton from "../../components/TableSkeleton";
-import { getAllSubscribers } from "../../features/actions/customer";
+import { getMaintenanceContact } from "../../features/actions/maintenance";
 
-const Subscriber = () => {
+const MaintenanceContact = () => {
   const dispatch = useDispatch();
+  const formatDate = (dateString) => {
+    if (!dateString) return "—";
+    return new Date(dateString).toLocaleString("en-IN", {
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: true,
+    });
+  };
   const [searchParams, setSearchParams] = useSearchParams();
-  const { subscriberData, customerLoading } = useSelector(
-    (state) => state.customer,
+  const { contactData, maintenanceLoading } = useSelector(
+    (state) => state.maintenance,
   );
-  const users = subscriberData?.data || [];
+  const users = contactData?.data || [];
   const hasData = Array.isArray(users) && users.length > 0;
 
   const page = Number(searchParams.get("page")) || 1;
-  const searchQuery = searchParams.get("search") || "";
 
-  const updateParams = ({ page, search }) => {
+  const updateParams = ({ page }) => {
     const params = {};
     if (page) params.page = page;
-    if (search) params.search = search;
     setSearchParams(params);
   };
 
   useEffect(() => {
     dispatch(
-      getAllSubscribers({
-        search: searchQuery,
+      getMaintenanceContact({
         page,
       }),
     );
-  }, [page, searchQuery]);
+  }, [page]);
 
   return (
     <>
       <div className="bg-white rounded-xl shadow-sm overflow-hidden">
         {/* HEADER */}
         <div className="flex items-center justify-between px-6 py-4 border-b">
-          <h2 className="font-semibold text-gray-800">All Email Subscriber</h2>
+          <h2 className="font-semibold text-gray-800">
+            All Maintenance Contacts
+          </h2>
         </div>
 
         {/* TABLE */}
@@ -47,34 +57,38 @@ const Subscriber = () => {
           <table className="min-w-[900px] w-full text-sm table-fixed">
             <thead className="bg-gray-50 text-gray-500">
               <tr>
+                <th className="text-left ps-5 px-3 py-3 w-[160px]">Name</th>
                 <th className="text-left ps-5 px-3 py-3 w-[160px]">Email</th>
-                <th className="text-left px-3 py-3 w-[140px]">IP Address</th>
-                <th className="text-left px-3 py-3 w-[120px]">Status</th>
+                <th className="text-left px-3 py-3 w-[140px]">Phone</th>
+                <th className="text-left px-3 py-3 w-[140px]">Message</th>
+                <th className="text-left px-3 py-3 w-[120px]">Contacted At</th>
               </tr>
             </thead>
 
             <tbody className="divide-y">
-              {customerLoading ? (
+              {maintenanceLoading ? (
                 /* ================= SKELETON ================= */
                 <TableSkeleton
                   rows={5}
                   columns={[
-                    { width: "w-24 h-4" }, // Mobile
                     { width: "w-32 h-4" }, // Name
+                    { width: "w-32 h-4" }, // Username
+                    { width: "w-24 h-4" }, // Mobile
+                    { width: "w-56 h-4" }, // Email
                     { width: "w-20 h-4" }, // Status
                   ]}
                 />
               ) : !hasData ? (
                 /* ================= EMPTY STATE ================= */
                 <tr>
-                  <td colSpan={3} className="py-28">
+                  <td colSpan={5} className="py-28">
                     <div className="w-full flex flex-col items-center justify-center text-center">
                       <div className="w-14 h-14 flex items-center justify-center rounded-full bg-gray-100 mb-4">
                         <FiEye className="text-gray-400 text-xl" />
                       </div>
 
                       <p className="text-gray-600 font-medium">
-                        No subscriber found
+                        No contact found
                       </p>
 
                       <p className="text-sm text-gray-400 mt-1">
@@ -95,18 +109,19 @@ const Subscriber = () => {
                     </td>
 
                     <td className="px-3 py-5 text-gray-700 whitespace-nowrap">
-                      {item.ip_address || "—"}
+                      {item.name || "—"}
                     </td>
-                    <td className="px-3 py-5">
-                      <span
-                        className={`px-3 py-1 rounded-full text-xs font-medium capitalize ${
-                          item.status
-                            ? "bg-green-100 text-green-600"
-                            : "bg-red-100 text-red-600"
-                        }`}
-                      >
-                        {item.status ? "active" : "inactive"}
-                      </span>
+                    <td className="px-3 py-5 text-gray-700 whitespace-nowrap">
+                      {item.mobile || "—"}
+                    </td>
+                    <td
+                      className="truncate cursor-pointer px-3 py-5 text-gray-700"
+                      title={item.message}
+                    >
+                      {item.message || "—"}
+                    </td>
+                    <td className="px-3 py-5 text-gray-700 whitespace-nowrap">
+                      {formatDate(item.created_at) || "—"}
                     </td>
                   </tr>
                 ))
@@ -116,13 +131,12 @@ const Subscriber = () => {
         </div>
 
         {/* PAGINATION */}
-        {!customerLoading && hasData && subscriberData && (
+        {!maintenanceLoading && hasData && contactData && (
           <Pagination
-            data={subscriberData}
+            data={contactData}
             page={page}
             label="customers"
             onPageChange={updateParams}
-            extraParams={{ search: searchQuery }}
           />
         )}
       </div>
@@ -130,4 +144,4 @@ const Subscriber = () => {
   );
 };
 
-export default Subscriber;
+export default MaintenanceContact;

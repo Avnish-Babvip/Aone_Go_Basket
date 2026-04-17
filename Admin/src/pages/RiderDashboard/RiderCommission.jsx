@@ -68,7 +68,9 @@ const RiderCommission = () => {
                 <h3 className="text-4xl font-bold mt-2">
                   {commission.type === "percentage"
                     ? `${commission.value}%`
-                    : `₹${commission.value}`}
+                    : commission.type === "fixed"
+                      ? `₹${commission.value}`
+                      : `NA`}
                 </h3>
 
                 <p className="text-sm mt-3 opacity-90">
@@ -86,7 +88,7 @@ const RiderCommission = () => {
                   <div>
                     <span className="text-gray-400">Type:</span>
                     <p className="font-medium text-gray-800 capitalize">
-                      {commission.type}
+                      {commission.type || "NA"}
                     </p>
                   </div>
 
@@ -95,7 +97,9 @@ const RiderCommission = () => {
                     <p className="font-medium text-gray-800">
                       {commission.type === "percentage"
                         ? `${commission.value}%`
-                        : `₹${commission.value}`}
+                        : commission.type === "fixed"
+                          ? `₹${commission.value}`
+                          : `NA`}
                     </p>
                   </div>
 

@@ -7,6 +7,8 @@ import TableSkeleton from "../../components/TableSkeleton";
 import { EditOrderStatusModal } from "../../components/Modal/Order/EditOrderStatus";
 import { getAllAssignOrders } from "../../features/actions/order";
 import { ViewAssignOrder } from "../../components/Modal/Order/ViewAssignOrder";
+import { TbTruckDelivery } from "react-icons/tb";
+import { AssignOrderModal } from "../../components/Modal/Order/AssignOrder";
 
 const AssignOrder = () => {
   const dispatch = useDispatch();
@@ -15,13 +17,15 @@ const AssignOrder = () => {
     (state) => state.order,
   );
   const [selectedUser, setSelectedUser] = useState({});
+  const [openAssignModal, setOpenAssignModal] = useState(false);
+
   const [openViewModal, setOpenViewModal] = useState(false);
   const [openEditModal, setOpenEditModal] = useState(false);
   const page = Number(searchParams.get("page")) || 1;
   const searchQuery = searchParams.get("search") || "";
   const from_date = searchParams.get("from_date") || "";
   const to_date = searchParams.get("to_date") || "";
-
+  const blockedStatuses = ["failed", "delivered", "shipped", "cancelled"];
   const users = assignedOrderData?.data || [];
   const hasData = Array.isArray(users) && users.length > 0;
   const updateParams = ({ page, search, from_date, to_date }) => {
@@ -134,17 +138,17 @@ const AssignOrder = () => {
           <table className="min-w-[900px] w-full text-sm table-fixed">
             <thead className="bg-gray-50 text-gray-500">
               <tr>
-                <th className="text-left  ps-5  px-3 py-3 w-[160px]">
+                <th className="text-left  ps-5  px-3 py-3 w-[80px]">
                   Order Number
                 </th>
-                <th className="text-left px-3 py-3 w-[160px]">Rider Name</th>
-                <th className="text-left px-3 py-3 w-[120px]">Assigned At</th>
-                <th className="text-left px-3 py-3 w-[120px]">Delivered At</th>
-                <th className="text-left px-3 py-3 w-[120px]">
+                <th className="text-left px-3 py-3 w-[80px]">Rider Name</th>
+                <th className="text-left px-3 py-3 w-[80px]">Assigned At</th>
+                <th className="text-left px-3 py-3 w-[80px]">Delivered At</th>
+                <th className="text-left px-3 py-3 w-[80px]">
                   Delivery Status
                 </th>
-                <th className="text-left px-3 py-3 w-[120px]">Price</th>
-                <th className="text-center px-3 py-3 w-[50px]">Action</th>
+                <th className="text-left px-3 py-3 w-[50px]">Price</th>
+                <th className="text-center px-3 py-3 w-[160px]">Action</th>
               </tr>
             </thead>
 
@@ -162,13 +166,13 @@ const AssignOrder = () => {
                     { width: "w-24 h-4" }, // Status
                   ]}
                   actionColumn
-                  actionCount={1}
+                  actionCount={3}
                   actionWidth="w-12 h-8"
                 />
               ) : !hasData ? (
                 /* ================= EMPTY STATE ================= */
                 <tr>
-                  <td colSpan={6} className="py-28">
+                  <td colSpan={7} className="py-28">
                     <div className="w-full flex flex-col items-center justify-center text-center">
                       <div className="w-14 h-14 flex items-center justify-center rounded-full bg-gray-100 mb-4">
                         <FiEye className="text-gray-400 text-xl" />
@@ -195,7 +199,7 @@ const AssignOrder = () => {
                       {item?.order?.order_number || "—"}
                     </td>
                     <td className="px-3 py-5 text-gray-700">
-                      {item?.rider?.name || "—"}
+                      {item?.rider?.admin?.name || "—"}
                     </td>
                     <td className="px-3 py-5 text-gray-700">
                       {formatDate(item?.assigned_at) || "—"}
@@ -229,6 +233,42 @@ const AssignOrder = () => {
                         >
                           <FiEye />
                         </button>
+                        <button
+                          onClick={() => {
+                            setOpenAssignModal(true);
+                            setSelectedUser({
+                              id: item?.order_id,
+                              customerId: item?.customer_id,
+                              riderId: item?.rider_id,
+                            });
+                          }}
+                          className="p-2 px-3 w-[148px] justify-center flex items-center gap-2 bg-indigo-100 text-indigo-500 rounded-lg hover:bg-indigo-200"
+                        >
+                          <TbTruckDelivery />
+                          <span>Change Rider</span>
+                        </button>
+
+                        <button
+                          onClick={() => {
+                            if (!blockedStatuses.includes(item?.status)) {
+                              setOpenEditModal(true);
+                              setSelectedUser({
+                                id: item?.id,
+                                status: item?.status,
+                                customerId: item?.customer?.id,
+                              });
+                            }
+                          }}
+                          className={`p-2 px-3 flex items-center gap-2 w-36 rounded-lg 
+        ${
+          blockedStatuses.includes(item?.status)
+            ? "invisible"
+            : "bg-orange-100 text-orange-500 hover:bg-orange-200"
+        }`}
+                        >
+                          <FiEdit2 />
+                          <span>Change Status</span>
+                        </button>
                       </div>
                     </td>
                   </tr>
@@ -253,6 +293,13 @@ const AssignOrder = () => {
         isOpen={openEditModal}
         onClose={() => setOpenEditModal(false)}
         user={selectedUser}
+      />
+      <AssignOrderModal
+        isOpen={openAssignModal}
+        onClose={() => setOpenAssignModal(false)}
+        id={selectedUser?.id}
+        customerId={selectedUser?.customerId}
+        riderId={selectedUser?.riderid}
       />
       <ViewAssignOrder
         isOpen={openViewModal}

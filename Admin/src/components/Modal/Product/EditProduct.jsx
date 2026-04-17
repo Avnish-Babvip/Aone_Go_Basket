@@ -405,7 +405,9 @@ export const EditProductModal = ({
                 >
                   {/* HEADER */}
                   <div className="flex justify-between items-center">
-                    <h4 className="font-medium">Variation {vIndex + 1}</h4>
+                    <h4 className="font-semibold text-gray-800">
+                      Variation {vIndex + 1}
+                    </h4>
 
                     {fields.length > 1 && (
                       <button

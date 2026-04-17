@@ -65,7 +65,7 @@ const Sidebar = ({ closeSidebar }) => {
       children: [
         { name: "View Orders", url: `/admin/order` },
         { name: "Assigned Order", url: "/admin/order/assigned" },
-        { name: "Unassigned Order", url: "/admin/order/unassigned" },
+        // { name: "Unassigned Order", url: "/admin/order/unassigned" },
         { name: "Download Order", url: "/admin/order/download" },
       ],
     },
@@ -97,7 +97,7 @@ const Sidebar = ({ closeSidebar }) => {
       children: [
         { name: "All Riders", url: `/admin/rider` },
         { name: "Riders Referrals", url: "/admin/rider/referral" },
-        { name: "Rider KYC Approval", url: "/admin/rider/kyc" },
+        // { name: "Rider KYC Approval", url: "/admin/rider/kyc" },
         { name: "Rider Commission", url: "/admin/rider/commission" },
       ],
     },
@@ -212,6 +212,14 @@ const Sidebar = ({ closeSidebar }) => {
         { name: "Contact Us", url: "/admin/cms/contact-us" },
         { name: "Terms & Conditions", url: "/admin/cms/terms-conditions" },
         { name: "Return Policy", url: "/admin/cms/return-policy" },
+      ],
+    },
+    {
+      label: "Maintenance",
+      icon: FiFileText,
+      children: [
+        { name: "Maintenance Mode", url: "/admin/maintenance/mode" },
+        { name: "Maintenance Contact", url: "/admin/maintenance/contact" },
       ],
     },
     {

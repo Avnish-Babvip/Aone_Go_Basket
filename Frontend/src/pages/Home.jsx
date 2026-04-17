@@ -12,8 +12,9 @@ function Home() {
   const { homeData, contentData, homeLoading } = useSelector(
     (state) => state.home,
   );
+  const content = Array.isArray(contentData) ? contentData : [];
 
-  const sectionContent = (contentData || []).reduce((acc, item) => {
+  const sectionContent = content?.reduce((acc, item) => {
     if (!acc[item.section]) acc[item.section] = [];
     acc[item.section].push(item);
     return acc;

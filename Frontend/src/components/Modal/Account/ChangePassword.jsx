@@ -17,6 +17,7 @@ const ChangePassword = ({ isOpen, onClose, onSwitch }) => {
     watch,
     formState: { errors },
   } = useForm();
+  const { siteData } = useSelector((state) => state.home);
 
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -87,9 +88,9 @@ const ChangePassword = ({ isOpen, onClose, onSwitch }) => {
             {/* Logo */}
             <div className="mb-6 text-center md:text-left">
               <img
-                src="/images/logo.png"
+                src={`${import.meta.env.VITE_REACT_APP_IMAGE_URL_2}/${siteData?.footer_logo}`}
                 alt="Logo"
-                className="h-24 md:h-32 w-auto inline-block md:block"
+                className="h-24  w-auto inline-block md:block"
               />
             </div>
 

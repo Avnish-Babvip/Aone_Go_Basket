@@ -13,6 +13,7 @@ import location from "./slices/location";
 import order from "./slices/order";
 import wishlist from "./slices/wishlist";
 import cms from "./slices/cms";
+import maintenance from "./slices/maintenance";
 
 // ---------------------------------------------------------
 
@@ -43,6 +44,7 @@ const reducer = combineReducers({
   order,
   cms,
   wishlist,
+  maintenance,
 });
 
 const rootReducer = (state, action) => {

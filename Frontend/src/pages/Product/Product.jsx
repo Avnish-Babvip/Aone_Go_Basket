@@ -323,7 +323,8 @@ function FilterSidebar({ onFilterChange, currentFilters, category }) {
   const [openCategory, setOpenCategory] = useState();
   const [isMobileOpen, setIsMobileOpen] = useState(false);
   const { priceData } = useSelector((state) => state.category);
-
+  const [localMin, setLocalMin] = useState(currentFilters.minPrice);
+  const [localMax, setLocalMax] = useState(currentFilters.maxPrice);
   const content = (
     <div className="space-y-8">
       {/* HEADER */}
@@ -457,19 +458,28 @@ function FilterSidebar({ onFilterChange, currentFilters, category }) {
         <div>
           <div className="flex justify-between text-xs mb-1">
             <span>Min</span>
-            <span className="font-bold">₹{currentFilters.minPrice}</span>
+            <span className="font-bold">₹{localMin}</span>
           </div>
           <input
+            onMouseUp={() =>
+              onFilterChange({
+                ...currentFilters,
+                minPrice: localMin,
+                maxPrice: localMax,
+              })
+            }
+            onTouchEnd={() =>
+              onFilterChange({
+                ...currentFilters,
+                minPrice: localMin,
+                maxPrice: localMax,
+              })
+            }
             type="range"
             min={priceData?.min_price}
             max={priceData?.max_price}
-            value={currentFilters.minPrice}
-            onChange={(e) =>
-              onFilterChange({
-                ...currentFilters,
-                minPrice: Number(e.target.value),
-              })
-            }
+            value={localMin}
+            onChange={(e) => setLocalMin(Number(e.target.value))}
             className="w-full accent-brand-green"
           />
         </div>
@@ -478,25 +488,39 @@ function FilterSidebar({ onFilterChange, currentFilters, category }) {
         <div>
           <div className="flex justify-between text-xs mb-1">
             <span>Max</span>
-            <span className="font-bold">₹{currentFilters.maxPrice}</span>
+            <span className="font-bold">₹{localMax}</span>
           </div>
           <input
+            onMouseUp={() =>
+              onFilterChange({
+                ...currentFilters,
+                minPrice: localMin,
+                maxPrice: localMax,
+              })
+            }
+            onTouchEnd={() =>
+              onFilterChange({
+                ...currentFilters,
+                minPrice: localMin,
+                maxPrice: localMax,
+              })
+            }
             type="range"
             min={priceData?.min_price}
             max={priceData?.max_price}
-            value={currentFilters.maxPrice}
-            onChange={(e) =>
-              onFilterChange({
-                ...currentFilters,
-                maxPrice: Number(e.target.value),
-              })
-            }
+            value={localMax}
+            onChange={(e) => setLocalMax(Number(e.target.value))}
             className="w-full accent-brand-green"
           />
         </div>
       </div>
     </div>
   );
+
+  useEffect(() => {
+    setLocalMin(currentFilters.minPrice);
+    setLocalMax(currentFilters.maxPrice);
+  }, [currentFilters.minPrice, currentFilters.maxPrice]);
 
   return (
     <>

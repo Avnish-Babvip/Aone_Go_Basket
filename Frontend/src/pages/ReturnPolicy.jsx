@@ -1,82 +1,17 @@
-import React from "react";
-import { Link } from "react-router-dom";
+import React, { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { getReturnPolicyList } from "../features/actions/cms";
 
 const ReturnPolicy = () => {
-  const sections = [
-    {
-      id: "personal-info",
-      title: " Inspection at Delivery",
-      content: (
-        <div className="space-y-4">
-          <p>
-            Fresh off the truck, items need a quick check by store staff. Should
-            something seem off - missing pieces, dents, scratches - a note goes
-            straight to the driver on site. Mistakes caught then stay documented
-            right away. Problems left unmentioned at drop-off lose their voice
-            later. The clock starts ticking once the vehicle pulls up.
-          </p>
-        </div>
-      ),
-    },
-    {
-      id: "snap",
-      title: "Eligible Returns",
-      content: (
-        <div className="space-y-4">
-          <p>
-            When something arrives broken, flawed, or wrong, it might qualify
-            for return - if noticed right when delivered. Only items showing
-            issues upon arrival can be sent back. Problems must show up the
-            moment the package is opened. If it's damaged or not what was
-            ordered, there's a chance to send it back immediately. A product
-            needs clear faults visible at handover to count. Returns happen
-            solely when defects appear on delivery day.
-          </p>
-        </div>
-      ),
-    },
-    {
-      id: "other-info",
-      title: "Non-Returnable Items",
-      content: (
-        <div className="space-y-4">
-          <p>
-            A fresh batch of products might head back only if problems show up
-            later. When something arrives with no note about condition, it stays
-            put unless flaws appear clear. Quality checks decide the fate of
-            groceries and similar things.
-          </p>
-        </div>
-      ),
-    },
-    {
-      id: "links",
-      title: "Return Approval Process",
-      content: (
-        <div className="space-y-4">
-          <p>
-            Each request to send something back must pass a quick check inside
-            the system. When accepted, you might get a new item instead, an
-            account update, or your money back - depends on how things are set
-            up.
-          </p>
-        </div>
-      ),
-    },
-    {
-      id: "security",
-      title: "Final Decision",
-      content: (
-        <div className="space-y-4">
-          <p>
-            Aone Go Basket gets to look over every return request before
-            deciding what happens next. The call on whether a return works out
-            comes solely from them after their review.
-          </p>
-        </div>
-      ),
-    },
-  ];
+  const dispatch = useDispatch();
+  const { returnPolicyData, cmsLoading } = useSelector((state) => state.cms);
+  const { siteData } = useSelector((state) => state.home);
+
+  useEffect(() => {
+    dispatch(getReturnPolicyList());
+  }, []);
+
+  const sections = Array.isArray(returnPolicyData) ? returnPolicyData : [];
 
   const scrollToSection = (id) => {
     const element = document.getElementById(id);
@@ -97,81 +32,136 @@ const ReturnPolicy = () => {
 
   return (
     <div className="min-h-screen bg-white mt-20 text-gray-700">
-      {/* HEADER */}
-      <div className="relative w-full h-16 sm:h-24 md:h-32 lg:h-50 xl:h-56 overflow-hidden flex flex-col items-center justify-center border-b border-gray-100">
-        <img
-          src="/images/return-policy.webp"
-          alt="Privacy Background"
-          className="absolute inset-0 w-full h-full object-cover"
-        />
-        {/* <div className="absolute inset-0 bg-white/70"></div> */}
+      {cmsLoading ? (
+        <div className="animate-pulse">
+          {/* HEADER SKELETON */}
+          <div className="w-full h-32 md:h-56 bg-gray-200" />
 
-        <div className="relative z-10 text-center">
-          <h1 className="text-xl md:text-4xl font-bold text-gray-900 mb-2">
-            Return Policy
-          </h1>
-        </div>
-      </div>
-
-      {/* MAIN CONTAINER */}
-      <div className="max-w-7xl mx-auto px-4 md:px-10 py-10 md:py-16 flex flex-col md:flex-row gap-8 md:gap-12">
-        {/* RESPONSIVE TABS / SIDEBAR */}
-        <aside className="w-full md:w-1/4">
-          <nav className="sticky top-0 md:top-28 z-20 bg-white border-b md:border-b-0 md:border-l border-gray-200">
-            {/* Horizontal Scroll on Mobile, Vertical List on Desktop */}
-            <div className="flex md:flex-col overflow-x-auto md:overflow-x-visible no-scrollbar whitespace-nowrap md:whitespace-normal py-2 md:py-0">
-              {sections.map((section) => (
-                <button
-                  key={section.id}
-                  onClick={() => scrollToSection(section.id)}
-                  className="px-5 py-3 text-xs md:text-sm font-semibold text-gray-600 hover:text-brand-green hover:bg-lime-50 border-b-2 md:border-b-0 md:border-l-2 border-transparent hover:border-brand-green transition-all flex-shrink-0"
-                >
-                  {section.title}
-                </button>
-              ))}
-            </div>
-          </nav>
-        </aside>
-
-        {/* CONTENT */}
-        <main className="w-full md:w-3/4 space-y-16 md:space-y-20">
-          {sections.map((section) => (
-            <section
-              key={section.id}
-              id={section.id}
-              className="scroll-mt-36 md:scroll-mt-32"
-            >
-              <h2 className="text-xl md:text-2xl font-bold text-gray-900 mb-6 pb-2 border-b border-gray-100">
-                {section.title}
-              </h2>
-              <div className="text-sm md:text-base leading-relaxed text-gray-600">
-                {section.content}
+          {/* MAIN */}
+          <div className="max-w-7xl mx-auto px-4 md:px-10 py-10 md:py-16 flex flex-col md:flex-row gap-8 md:gap-12">
+            {/* SIDEBAR SKELETON */}
+            <aside className="w-full md:w-1/4">
+              <div className="flex md:flex-col gap-3 overflow-hidden">
+                {[...Array(5)].map((_, i) => (
+                  <div key={i} className="h-8 w-28 bg-gray-200 rounded"></div>
+                ))}
               </div>
-            </section>
-          ))}
+            </aside>
 
-          {/* FOOTER */}
-          <div className="mt-20 pt-12 border-t border-gray-100 text-center">
-            <h3 className="text-xl md:text-2xl font-bold text-gray-900 mb-4">
-              Be Safe, Be Secure
-            </h3>
-            <p className="text-sm text-gray-600 max-w-3xl mx-auto mb-8">
-              Aone Go Basket strives to have a secure, transparent, and
-              professionally controlled wholesale grocery distribution channel
-              backed by responsible technology and credible working procedures.
-            </p>
-            <p className="text-base md:text-lg font-semibold">
-              Media contacts:{" "}
-              <a
-                href="mailto:info@aonegobasket.com"
-                className="text-brand-green hover:underline"
-              >
-                info@aonegobasket.com
-              </a>
-            </p>
+            {/* CONTENT SKELETON */}
+            <main className="w-full md:w-3/4 space-y-12">
+              {[...Array(5)].map((_, i) => (
+                <div key={i} className="space-y-4">
+                  <div className="h-6 w-48 bg-gray-200 rounded"></div>
+                  <div className="h-4 w-full bg-gray-200 rounded"></div>
+                  <div className="h-4 w-5/6 bg-gray-200 rounded"></div>
+                  <div className="h-4 w-2/3 bg-gray-200 rounded"></div>
+                </div>
+              ))}
+
+              {/* FOOTER SKELETON */}
+              <div className="mt-10 space-y-4">
+                <div className="h-6 w-64 bg-gray-200 mx-auto rounded"></div>
+                <div className="h-4 w-full max-w-xl bg-gray-200 mx-auto rounded"></div>
+                <div className="h-4 w-40 bg-gray-200 mx-auto rounded"></div>
+              </div>
+            </main>
           </div>
-        </main>
-      </div>
+        </div>
+      ) : (
+        <>
+          {/* HEADER */}
+          <div className="relative w-full h-16 sm:h-24 md:h-32 lg:h-50 xl:h-56 overflow-hidden flex flex-col items-center justify-center border-b border-gray-100">
+            <img
+              src={`${import.meta.env.VITE_REACT_APP_IMAGE_URL_2}/${siteData?.common?.banner?.[3]}`}
+              alt="Privacy Background"
+              className="absolute inset-0 w-full h-full object-cover"
+            />
+
+            <div className="relative z-10 text-center">
+              <h1 className="text-xl md:text-4xl font-bold text-gray-900 mb-2">
+                Return Policy
+              </h1>
+            </div>
+          </div>
+
+          {/* MAIN */}
+          <div className="max-w-7xl mx-auto px-4 md:px-10 py-10 md:py-16 flex flex-col md:flex-row gap-8 md:gap-12">
+            {/* SIDEBAR */}
+            <aside className="w-full md:w-1/4">
+              <nav className="sticky top-0 md:top-28 z-20 bg-white border-b md:border-b-0 md:border-l border-gray-200">
+                <div className="flex md:flex-col overflow-x-auto md:overflow-x-visible no-scrollbar whitespace-nowrap md:whitespace-normal py-2 md:py-0">
+                  {sections.map((section) => {
+                    const id = section.category_name
+                      .toLowerCase()
+                      .replace(/\s+/g, "-");
+
+                    return (
+                      <button
+                        key={section.id}
+                        onClick={() => scrollToSection(id)}
+                        className="px-5 py-3 text-xs md:text-sm font-semibold text-gray-600 hover:text-brand-green hover:bg-lime-50 border-b-2 md:border-b-0 md:border-l-2 border-transparent hover:border-brand-green transition-all flex-shrink-0"
+                      >
+                        {section.category_name}
+                      </button>
+                    );
+                  })}
+                </div>
+              </nav>
+            </aside>
+
+            {/* CONTENT */}
+            <main className="w-full md:w-3/4 space-y-16 md:space-y-20">
+              {sections.map((section) => {
+                const id = section.category_name
+                  .toLowerCase()
+                  .replace(/\s+/g, "-");
+
+                return (
+                  <section
+                    key={section.id}
+                    id={id}
+                    className="scroll-mt-36 md:scroll-mt-32"
+                  >
+                    <h2 className="text-xl md:text-2xl font-bold text-gray-900 mb-6 pb-2 border-b border-gray-100">
+                      {section.category_name}
+                    </h2>
+
+                    <div className="text-sm md:text-base leading-relaxed text-gray-600 space-y-4">
+                      <p>{section.description}</p>
+
+                      {section.highlight_text && (
+                        <p className="font-semibold text-gray-900 bg-gray-50 p-3 border-l-4 border-brand-green">
+                          {section.highlight_text}
+                        </p>
+                      )}
+                    </div>
+                  </section>
+                );
+              })}
+
+              {/* FOOTER */}
+              <div className="mt-20 pt-12 border-t border-gray-100 text-center">
+                <h3 className="text-xl md:text-2xl font-bold text-gray-900 mb-4">
+                  {siteData?.common?.title}
+                </h3>
+                <p className="text-sm text-gray-600 max-w-3xl mx-auto mb-8">
+                  {siteData?.common?.description}
+                </p>
+                <p className="text-base md:text-lg font-semibold">
+                  Media contacts:{" "}
+                  <a
+                    href={`mailto:${siteData?.common?.email}`}
+                    className="text-brand-green hover:underline"
+                  >
+                    {siteData?.common?.email}
+                  </a>
+                </p>
+              </div>
+            </main>
+          </div>
+        </>
+      )}
     </div>
   );
 };

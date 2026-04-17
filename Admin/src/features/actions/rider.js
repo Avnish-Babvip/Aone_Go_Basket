@@ -91,9 +91,9 @@ export const getAllRiderKyc = createAsyncThunk(
       if (status !== "" && status !== undefined) {
         params.append("status", status);
       }
-      if (status !== "" && status !== undefined) {
-        params.append("city_id", city_id);
-      }
+      // if (status !== "" && status !== undefined) {
+      //   params.append("city_id", city_id);
+      // }
 
       const link = `/admin/rider-kyc?${params.toString()}`;
 

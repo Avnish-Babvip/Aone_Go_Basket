@@ -23,6 +23,7 @@ import dashboard from "./slices/dashboard";
 import paymentGateway from "./slices/paymentGateway";
 import home from "./slices/home";
 import cms from "./slices/cms";
+import maintenance from "./slices/maintenance";
 import rider_order from "./slices/rider/order";
 import rider_user from "./slices/rider/user";
 import rider_wallet from "./slices/rider/wallet";
@@ -48,6 +49,7 @@ const rootReducer = combineReducers({
   paymentGateway,
   home,
   cms,
+  maintenance,
   rider_order,
   rider_user,
   rider_wallet,

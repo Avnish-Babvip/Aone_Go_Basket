@@ -59,6 +59,8 @@ import PrivacyPolicy from "../pages/CMS/PrivacyPolicy";
 import TermsAndConditions from "../pages/CMS/Terms&Conditions";
 import ReturnPolicy from "../pages/CMS/ReturnPolicy";
 import ContactUs from "../pages/CMS/ContactUs";
+import MaintenanceContact from "../pages/Maintenance/MaintenanceContact";
+import MaintenanceMode from "../pages/Maintenance/MaintenanceMode";
 
 export const appRouter = createBrowserRouter([
   /* ---------------- PUBLIC ROUTES ---------------- */
@@ -125,6 +127,8 @@ export const appRouter = createBrowserRouter([
           { path: "cms/terms-conditions", element: <TermsAndConditions /> },
           { path: "cms/return-policy", element: <ReturnPolicy /> },
           { path: "cms/contact-us", element: <ContactUs /> },
+          { path: "maintenance/contact", element: <MaintenanceContact /> },
+          { path: "maintenance/mode", element: <MaintenanceMode /> },
         ],
       },
     ],

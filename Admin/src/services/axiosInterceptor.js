@@ -1,5 +1,5 @@
 import axios from "axios";
-import { resetUserState } from "../features/slices/authentication";
+import { logoutFromInterceptor } from "../features/slices/authentication";
 
 // This code is used to access redux store in this file.
 let store;
@@ -16,8 +16,8 @@ instance.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response?.status === 401) {
-      store.dispatch(resetUserState());
+      store.dispatch(logoutFromInterceptor());
     }
     return Promise.reject(error);
-  }
+  },
 );

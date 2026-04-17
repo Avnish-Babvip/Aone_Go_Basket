@@ -1,6 +1,13 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { toast } from "sonner";
-import { getAboutUs, getFaq } from "../actions/cms";
+import {
+  getAboutUs,
+  getContactSetting,
+  getFaq,
+  getPrivacyPolicy,
+  getReturnPolicyList,
+  getTermsConditions,
+} from "../actions/cms";
 
 const formattedDate = new Date().toLocaleString("en-US", {
   weekday: "long",
@@ -17,6 +24,10 @@ const initialState = {
   cmsLoading: false,
   faqData: {},
   aboutUsData: {},
+  privacyData: {},
+  contactSettingData: {},
+  returnPolicyData: {},
+  termsConditionsData: {},
 };
 
 // ---------------------------------------------------------------------------------------
@@ -53,6 +64,70 @@ const cmsSlice = createSlice({
         state.aboutUsData = action.payload.data;
       })
       .addCase(getAboutUs.rejected, (state, action) => {
+        state.errorMessage = action.payload || "Failed";
+        state.cmsLoading = false;
+        toast(action.payload, {
+          description: formattedDate,
+        });
+      })
+      .addCase(getPrivacyPolicy.pending, (state) => {
+        state.errorMessage = "";
+        state.cmsLoading = true;
+      })
+      .addCase(getPrivacyPolicy.fulfilled, (state, action) => {
+        state.errorMessage = "";
+        state.cmsLoading = false;
+        state.privacyData = action.payload.data;
+      })
+      .addCase(getPrivacyPolicy.rejected, (state, action) => {
+        state.errorMessage = action.payload || "Failed";
+        state.cmsLoading = false;
+        toast(action.payload, {
+          description: formattedDate,
+        });
+      })
+      .addCase(getContactSetting.pending, (state) => {
+        state.errorMessage = "";
+        state.cmsLoading = true;
+      })
+      .addCase(getContactSetting.fulfilled, (state, action) => {
+        state.errorMessage = "";
+        state.cmsLoading = false;
+        state.contactSettingData = action.payload.data;
+      })
+      .addCase(getContactSetting.rejected, (state, action) => {
+        state.errorMessage = action.payload || "Failed";
+        state.cmsLoading = false;
+        toast(action.payload, {
+          description: formattedDate,
+        });
+      })
+      .addCase(getReturnPolicyList.pending, (state) => {
+        state.errorMessage = "";
+        state.cmsLoading = true;
+      })
+      .addCase(getReturnPolicyList.fulfilled, (state, action) => {
+        state.errorMessage = "";
+        state.cmsLoading = false;
+        state.returnPolicyData = action.payload.data;
+      })
+      .addCase(getReturnPolicyList.rejected, (state, action) => {
+        state.errorMessage = action.payload || "Failed";
+        state.cmsLoading = false;
+        toast(action.payload, {
+          description: formattedDate,
+        });
+      })
+      .addCase(getTermsConditions.pending, (state) => {
+        state.errorMessage = "";
+        state.cmsLoading = true;
+      })
+      .addCase(getTermsConditions.fulfilled, (state, action) => {
+        state.errorMessage = "";
+        state.cmsLoading = false;
+        state.termsConditionsData = action.payload.data;
+      })
+      .addCase(getTermsConditions.rejected, (state, action) => {
         state.errorMessage = action.payload || "Failed";
         state.cmsLoading = false;
         toast(action.payload, {

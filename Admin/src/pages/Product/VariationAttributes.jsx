@@ -23,7 +23,7 @@ export const VariationAttributes = ({
 
   return (
     <div className="space-y-4">
-      <h5 className="font-medium text-gray-700">Attributes</h5>
+      <h5 className="font-semibold text-sm text-gray-700">Attributes</h5>
 
       {fields.map((field, aIndex) => {
         const attributeIdPath = `variations.${vIndex}.attributes.${aIndex}.attribute_id`;

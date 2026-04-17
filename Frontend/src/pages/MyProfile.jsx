@@ -59,7 +59,7 @@ export default function ProfilePage() {
           </h2>
 
           {kycData ? <KycStatusCard kyc={kycData} /> : <KycUploadSection />}
-          {kycData.status === "rejected" && <KycUploadSection />}
+          {kycData?.status === "rejected" && <KycUploadSection />}
         </div>
       </div>
     </>
@@ -378,9 +378,9 @@ function FormInput({ label, register, error, disabled = false }) {
 
 function KycStatusCard({ kyc }) {
   const getStatusStyle = () => {
-    if (kyc.status === "approved") return "bg-emerald-100 text-emerald-700";
-    if (kyc.status === "pending") return "bg-yellow-100 text-yellow-700";
-    if (kyc.status === "rejected") return "bg-red-100 text-red-600";
+    if (kyc?.status === "approved") return "bg-emerald-100 text-emerald-700";
+    if (kyc?.status === "pending") return "bg-yellow-100 text-yellow-700";
+    if (kyc?.status === "rejected") return "bg-red-100 text-red-600";
   };
 
   return (
@@ -396,11 +396,11 @@ function KycStatusCard({ kyc }) {
         <span
           className={`px-4 py-1 rounded-full text-xs font-medium capitalize ${getStatusStyle()}`}
         >
-          {kyc.status}
+          {kyc?.status}
         </span>
       </div>
 
-      {kyc.status === "rejected" && (
+      {kyc?.status === "rejected" && (
         <p className="text-xs text-red-500 mt-3">
           Your document was rejected. Please resubmit.
         </p>

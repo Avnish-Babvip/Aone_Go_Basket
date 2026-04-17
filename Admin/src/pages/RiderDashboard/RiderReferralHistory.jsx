@@ -115,7 +115,7 @@ const RiderReferralHistory = () => {
               ) : !hasData ? (
                 /* ================= EMPTY STATE ================= */
                 <tr>
-                  <td colSpan={6} className="py-28">
+                  <td colSpan={2} className="py-28">
                     <div className="w-full flex flex-col items-center justify-center text-center">
                       <div className="w-14 h-14 flex items-center justify-center rounded-full bg-gray-100 mb-4">
                         <FiEye className="text-gray-400 text-xl" />

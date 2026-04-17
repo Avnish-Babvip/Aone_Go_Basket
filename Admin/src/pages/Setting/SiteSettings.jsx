@@ -398,6 +398,7 @@ function SiteSettingsForm() {
           >
             {/* TITLE */}
             <InputField
+              disabled={true}
               label="Banner Title"
               register={register(`common_banner_title.${index}`)}
             />
@@ -430,14 +431,23 @@ function SiteSettingsForm() {
 
 /* ================= REUSABLE INPUT ================= */
 
-const InputField = ({ label, register, type = "text", error }) => (
+const InputField = ({ disabled, label, register, type = "text", error }) => (
   <div>
     <label className="text-sm font-semibold mb-2 block">{label}</label>
+
     <input
+      disabled={disabled}
       type={type}
       {...register}
-      className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-brand-green outline-none"
+      className={`w-full px-4 py-3 rounded-xl border outline-none transition
+      ${
+        disabled
+          ? "bg-gray-100 text-gray-400 border-gray-200 cursor-not-allowed opacity-80"
+          : "bg-white text-gray-700 border-gray-200 focus:ring-2 focus:ring-brand-green"
+      }
+    `}
     />
+
     {error && <p className="text-red-500 text-xs mt-1">{error.message}</p>}
   </div>
 );

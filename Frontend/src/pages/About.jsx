@@ -6,6 +6,7 @@ import { getAboutUs } from "../features/actions/cms";
 const AboutUs = () => {
   const dispatch = useDispatch();
   const { aboutUsData, cmsLoading } = useSelector((state) => state.cms);
+  const { siteData } = useSelector((state) => state.home);
 
   useEffect(() => {
     dispatch(getAboutUs());
@@ -123,10 +124,10 @@ const AboutUs = () => {
             <p className="text-base md:text-lg font-medium text-gray-900">
               Reach out for press questions at{" "}
               <a
-                href="mailto:info@aonegobasket.com"
+                href={`mailto:${siteData?.common?.email}`}
                 className="text-teal-600 font-bold hover:underline"
               >
-                info@aonegobasket.com
+                {siteData?.common?.email}
               </a>
             </p>
             <p className="text-sm text-gray-500 mt-2">

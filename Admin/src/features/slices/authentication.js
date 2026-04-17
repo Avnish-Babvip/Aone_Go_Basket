@@ -54,6 +54,9 @@ const authSlice = createSlice({
           password: "",
         }));
     },
+    logoutFromInterceptor: (state) => {
+      ((state.isLoading = false), (state.isAdminLoggedIn = false));
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -85,7 +88,6 @@ const authSlice = createSlice({
       .addCase(verifyAdmin.pending, (state) => {
         state.isLoading = true;
         state.errorMessage = "";
-        state.isAdminLoggedIn = false;
       })
       .addCase(verifyAdmin.fulfilled, (state, action) => {
         state.isLoading = false;
@@ -99,7 +101,6 @@ const authSlice = createSlice({
       })
       .addCase(verifyAdmin.rejected, (state, action) => {
         state.isLoading = false;
-        state.isAdminLoggedIn = false;
         state.errorMessage = action.payload || "Failed.";
         toast(action.payload, {
           description: formattedDate,
@@ -232,5 +233,5 @@ const authSlice = createSlice({
 // -------------------------------------------------------------------------
 
 // Action creators are generated for each case reducer function
-export const { resetUserState } = authSlice.actions;
+export const { resetUserState, logoutFromInterceptor } = authSlice.actions;
 export default authSlice.reducer;

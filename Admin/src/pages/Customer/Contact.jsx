@@ -79,14 +79,14 @@ const Contact = () => {
               ) : !hasData ? (
                 /* ================= EMPTY STATE ================= */
                 <tr>
-                  <td colSpan={7} className="py-28">
+                  <td colSpan={5} className="py-28">
                     <div className="w-full flex flex-col items-center justify-center text-center">
                       <div className="w-14 h-14 flex items-center justify-center rounded-full bg-gray-100 mb-4">
                         <FiEye className="text-gray-400 text-xl" />
                       </div>
 
                       <p className="text-gray-600 font-medium">
-                        No subscriber found
+                        No contact found
                       </p>
 
                       <p className="text-sm text-gray-400 mt-1">

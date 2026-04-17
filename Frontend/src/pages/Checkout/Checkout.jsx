@@ -25,7 +25,7 @@ import { clearError } from "../../features/slices/order";
 export default function Checkout() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const [paymentMethod, setPaymentMethod] = useState("cod");
+  const [paymentMethod, setPaymentMethod] = useState("online");
   const [isAddressModalOpen, setIsAddressModalOpen] = useState(false);
   const [editAddressData, setEditAddressData] = useState(null);
   const [couponCode, setCouponCode] = useState("");
@@ -577,7 +577,7 @@ export default function Checkout() {
 
               <div className="space-y-3">
                 {/* COD */}
-                <label className="flex items-center gap-3 border border-gray-200 rounded-xl p-3 cursor-pointer hover:border-brand-green transition">
+                {/* <label className="flex items-center gap-3 border border-gray-200 rounded-xl p-3 cursor-pointer hover:border-brand-green transition">
                   <input
                     type="radio"
                     name="paymentMethod"
@@ -587,7 +587,7 @@ export default function Checkout() {
                     className="accent-brand-green "
                   />
                   <span className="text-sm font-medium">Cash on Delivery</span>
-                </label>
+                </label> */}
 
                 {/* ONLINE */}
                 <label className="flex items-center gap-3 border border-gray-200 rounded-xl p-3 cursor-pointer hover:border-brand-green transition">

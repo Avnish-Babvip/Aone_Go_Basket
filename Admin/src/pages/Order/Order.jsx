@@ -62,8 +62,6 @@ const Order = () => {
     setSearchParams(params);
   };
 
-  const blockedStatuses = ["delivered", "shipped", "cancelled"];
-
   const getOrderStatusStyle = (status) => {
     switch (status?.toLowerCase()) {
       case "placed":
@@ -357,7 +355,7 @@ const Order = () => {
                 <th className="text-left px-3 py-3 w-[120px]">Customer Name</th>
                 <th className="text-left px-3 py-3 w-[95px]">Pay Method</th>
                 <th className="text-left px-3 py-3 w-[100px]">Order Status</th>
-                <th className="text-left px-3 py-3 w-[100px]">Rider Status</th>
+                <th className="text-left px-3 py-3 w-[100px]">Rider Name</th>
                 <th className="text-left px-3 py-3 w-[110px]">Price</th>
                 <th className="text-center px-3 py-3 w-[400px]">Action</th>
               </tr>
@@ -378,7 +376,7 @@ const Order = () => {
                     { width: "w-20 h-4" }, // Status
                   ]}
                   actionColumn
-                  actionCount={3}
+                  actionCount={2}
                   actionWidth="w-12 h-8"
                 />
               ) : !hasData ? (
@@ -449,16 +447,8 @@ const Order = () => {
                       </span>
                     </td>
 
-                    <td className="px-3 py-5">
-                      <span
-                        className={`px-3 py-1 rounded-full text-xs font-medium capitalize ${
-                          item.is_assigned
-                            ? "bg-green-100 text-green-600"
-                            : "bg-red-100 text-red-600"
-                        }`}
-                      >
-                        {item.is_assigned ? "assigned" : "no rider"}
-                      </span>
+                    <td className="px-3 text-gray-800 py-5">
+                      {item.assignment?.rider?.admin?.name || "NA"}
                     </td>
 
                     <td className="px-3 py-5 text-gray-700 whitespace-nowrap">
@@ -475,25 +465,6 @@ const Order = () => {
                           className="p-2 px-3 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200"
                         >
                           <FiEye />
-                        </button>
-
-                        <button
-                          onClick={() => {
-                            setOpenEditModal(true);
-                            setSelectedUser({
-                              id: item?.id,
-                              status: item?.status,
-                              customerId: item?.customer?.id,
-                            });
-                          }}
-                          className={`p-2 px-3 flex items-center gap-2 bg-orange-100 text-orange-500 rounded-lg hover:bg-orange-200 ${
-                            blockedStatuses.includes(item?.status)
-                              ? "invisible pointer-events-none"
-                              : ""
-                          }`}
-                        >
-                          <FiEdit2 />
-                          <span>Change Status</span>
                         </button>
 
                         <button

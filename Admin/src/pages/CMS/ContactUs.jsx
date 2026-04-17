@@ -4,7 +4,6 @@ import { useForm, useFieldArray } from "react-hook-form";
 import { Spinner } from "../../components/Loader/Spinner";
 
 import { useState } from "react";
-import { instance } from "../../services/axiosInterceptor";
 import { getContactUs, updateContactUs } from "../../features/actions/cms";
 
 export default function ContactUs() {

@@ -10,6 +10,7 @@ import { useNavigate } from "react-router-dom";
 const Login = ({ isOpen, onClose, onSwitch }) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const { siteData } = useSelector((state) => state.home);
   const { isLoading, isCredentials, errorMessage } = useSelector(
     (state) => state.authentication,
   );
@@ -87,7 +88,7 @@ const Login = ({ isOpen, onClose, onSwitch }) => {
             {/* Logo */}
             <div className="mb-8 md:mb-5 text-center md:text-left">
               <img
-                src="/images/logo.png"
+                src={`${import.meta.env.VITE_REACT_APP_IMAGE_URL_2}/${siteData?.footer_logo}`}
                 alt="Logo"
                 className="h-24 w-auto inline-block md:block"
               />

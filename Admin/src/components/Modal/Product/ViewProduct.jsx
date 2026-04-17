@@ -106,7 +106,7 @@ export const ViewProductModal = ({ isOpen, onClose, product }) => {
                   key={variation.id}
                   className="bg-white border rounded-xl p-4 space-y-3"
                 >
-                  <h5 className="font-semibold text-sm">
+                  <h5 className="font-semibold text-gray-600 text-sm">
                     Variation {index + 1}
                   </h5>
 

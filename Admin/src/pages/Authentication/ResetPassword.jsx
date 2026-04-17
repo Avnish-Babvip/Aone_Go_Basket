@@ -139,27 +139,43 @@ const ResetPassword = () => {
         </form>
 
         {/* Right Side - Slider */}
-        <div className="hidden md:flex w-1/2 bg-gradient-to-b from-[#009220] to-[#549A01] text-white flex-col  justify-end px-10 relative">
-          <div className="transition-all duration-700 absolute bottom-10">
+        <div className="hidden md:flex w-1/2  text-white flex-col justify-end px-10 relative overflow-hidden">
+          {/* Background Image */}
+          <div className="absolute inset-0">
+            {/* Image */}
+            <img
+              src={slides[current].imageUrl}
+              alt="background"
+              className="absolute inset-0 w-full h-full object-cover transition-opacity duration-700"
+            />
+
+            {/* Gradient overlay */}
+            <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/70"></div>
+          </div>
+
+          {/* Overlay */}
+          {/* <div className="absolute inset-0 bg-gradient-to-b "></div> */}
+
+          <div className="transition-all duration-700 absolute bottom-10 z-10">
             <h2 className="text-3xl font-bold mb-2">{slides[current].title}</h2>
             <h4 className="font-semibold">{slides[current].subtitle}</h4>
-            <p className="text-gray-300">{slides[current].desc}</p>
+            <p className="text-gray-200">{slides[current].desc}</p>
             <p className="text-sm mt-6 opacity-70">
               {current + 1} of {slides.length}
             </p>
           </div>
 
           {/* Controls */}
-          <div className="absolute bottom-10 right-10 flex gap-3">
+          <div className="absolute bottom-10 right-10 flex gap-3 z-10">
             <button
               onClick={prevSlide}
-              className="w-9 h-9 flex  items-center justify-center rounded-full border border-gray-400 hover:bg-gray-200 hover:text-black transition"
+              className="w-9 h-9 flex items-center justify-center rounded-full border border-gray-300 hover:bg-white hover:text-black transition"
             >
               <IoArrowBackOutline />
             </button>
             <button
               onClick={nextSlide}
-              className="w-9 h-9 flex items-center justify-center rounded-full border border-gray-400 hover:bg-gray-200 hover:text-black transition"
+              className="w-9 h-9 flex items-center justify-center rounded-full border border-gray-300 hover:bg-white hover:text-black transition"
             >
               <IoArrowForwardOutline />
             </button>
